@@ -1,0 +1,3 @@
+class KeyNode < Node
+
+end

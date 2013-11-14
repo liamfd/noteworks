@@ -1,0 +1,3 @@
+class DefinitionNode < Node
+
+end
