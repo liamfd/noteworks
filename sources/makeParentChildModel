@@ -1,0 +1,1 @@
+rails generate model ParentChild child:references parent:references

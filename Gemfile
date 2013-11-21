@@ -43,3 +43,7 @@ end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
+
+gem 'devise', '3.2.1'
+
+gem "hirb" , "~> 0.7.1"

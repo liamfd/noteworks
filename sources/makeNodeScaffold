@@ -1,0 +1,1 @@
+rails generate scaffold Node title:string category:references work:references

@@ -1,0 +1,6 @@
+rails generate model Node title:string category:references work:references
+rails generate model Note node:references body:text
+rails generate model Category name:string
+rails generate model Position x:int y:int size:int node:references
+rails generate model Work markup:text group:references
+rails generate model WorkGroup user:references
