@@ -1,0 +1,21 @@
+<h1>Listing nodes</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Category</th>
+      <th>Work</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @work.nodes.each do |node| %>
+      <tr>
+        <td><%= node.title %></td>
+        <td><%= node.category.name %></td>
+        <td><%= node.work.name %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -3,7 +3,9 @@
 one:
   markup: MyText
   group_id: 
+  name: MyString
 
 two:
   markup: MyText
   group_id: 
+  name: MyString

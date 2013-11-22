@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Markup:</strong>
+  <%= @work.markup %>
+</p>
+
+<p>
+  <strong>Group:</strong>
+  <%= @work.group %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @work.name %>
+</p>
+
+<%= link_to 'Edit', edit_work_path(@work) %> |
+<%= link_to 'Back', works_path %>

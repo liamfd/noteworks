@@ -1,5 +1,8 @@
 Noteweb::Application.routes.draw do
-  get "work/index"
+  get "works/:id/takenotes", to: "works#takenotes"
+  resources :works
+
+  get "works/index"
   resources :works
 
   get "node/index"
@@ -7,6 +10,7 @@ Noteweb::Application.routes.draw do
 
   get "node/index"
   devise_for :users
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

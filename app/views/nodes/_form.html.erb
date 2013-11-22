@@ -16,12 +16,11 @@
     <%= f.text_field :title %>
   </div>
   <div class="field">
-    <%= f.label :category_id %><br>
-    <%= f.text_field :category_id %>
+    <%= f.collection_select :category_id, Category.order(:name),:id,:name, include_blank: true %>
   </div>
   <div class="field">
     <%= f.label :work_id %><br>
-    <%= f.text_field :work_id %>
+    <%= f.collection_select :work_id, Work.order(:name),:id,:name%>
   </div>
   <div class="actions">
     <%= f.submit %>
