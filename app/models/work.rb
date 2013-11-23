@@ -31,6 +31,12 @@ class Work < ActiveRecord::Base
 				
 				@title = line.match(/>(.*)/).captures.first
 				puts @title
+
+				@new_node = @const_type.new()
+				@new_node.category_id = @category_id
+				@new_node.title = @title
+				@new_node.work_id = self.id
+				@new_node.save
 			end
 		end
 	end
