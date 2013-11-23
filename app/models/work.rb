@@ -4,6 +4,7 @@ class Work < ActiveRecord::Base
   has_many :nodes, dependent: :destroy
 
 	def parseText
+		Node.destroy_all(work_id: self.id)
 		markup.each_line do |line|
 			puts "\n--------\n"
 			#parser rules: any amount of whitespace followed immediately by < means new node. Otherwise, new note.

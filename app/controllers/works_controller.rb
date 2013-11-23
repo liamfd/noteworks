@@ -1,5 +1,5 @@
 class WorksController < ApplicationController
-  before_action :set_work, only: [:show, :edit, :update, :destroy, :takenotes]
+  before_action :set_work, only: [:show, :edit, :update, :destroy, :takenotes, :updatenotes]
 
   # GET /works
   # GET /works.json
@@ -32,8 +32,8 @@ class WorksController < ApplicationController
 
     respond_to do |format|
       if @work.save
-        format.html { redirect_to @work, notice: 'Work was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @work }
+        format.html { redirect_to @work, notice: 'Work was successfully updated.' }
+        format.json { render action: 'takenotes', status: :created, location: @work }
       else
         format.html { render action: 'new' }
         format.json { render json: @work.errors, status: :unprocessable_entity }
@@ -47,6 +47,20 @@ class WorksController < ApplicationController
     respond_to do |format|
       if @work.update(work_params)
         format.html { redirect_to @work, notice: 'Work was successfully updated.' }
+        format.json { head :no_content }
+      else
+        format.html { render action: 'edit' }
+        format.json { render json: @work.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /works/1
+  # PATCH/PUT /works/1.json
+  def updatenotes
+    respond_to do |format|
+      if @work.update(work_params)
+        format.html { render action: 'takenotes'}
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
