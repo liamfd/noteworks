@@ -1,0 +1,1 @@
+rails generate model Stack size:integer
