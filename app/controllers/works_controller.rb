@@ -57,7 +57,9 @@ class WorksController < ApplicationController
 
   # PATCH/PUT /works/1
   # PATCH/PUT /works/1.json
+    
   def updatenotes
+    @work.parseText
     respond_to do |format|
       if @work.update(work_params)
         format.html { render action: 'takenotes'}

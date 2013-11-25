@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131123173758) do
+ActiveRecord::Schema.define(version: 20131124190656) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
@@ -60,6 +60,12 @@ ActiveRecord::Schema.define(version: 20131123173758) do
   end
 
   add_index "positions", ["node_id"], name: "index_positions_on_node_id"
+
+  create_table "stacks", force: true do |t|
+    t.integer  "size"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false

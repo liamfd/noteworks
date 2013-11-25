@@ -7,6 +7,7 @@
       <th>Category</th>
       <th>Work</th>
       <th>Type</th>
+      <th>Parent</th>
     </tr>
   </thead>
 
@@ -17,6 +18,9 @@
         <td><%= node.category.name %></td>
         <td><%= node.work.name %></td>
         <td><%= node.type %></td>
+        <% if node.parents.first != nil %>
+          <td><%= node.parents.first.title %></td>
+        <% end %>
       </tr>
     <% end %>
   </tbody>
