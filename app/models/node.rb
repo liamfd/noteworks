@@ -14,4 +14,11 @@ class Node < ActiveRecord::Base
   has_many :parents, through: :parent_relationships, source: 'child'
 
   belongs_to :node, class_name: "Node"
+
+  def as_json(*args)
+    {
+    title: "#{self.title}",
+    id: "#{self.id}"
+    }
+  end
 end

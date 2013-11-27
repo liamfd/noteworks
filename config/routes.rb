@@ -1,5 +1,6 @@
 Noteweb::Application.routes.draw do
   get "works/:id/takenotes", to: "works#takenotes"
+  get "works/:id/testnetwork", to: "works#testnetwork"
   patch "works/:id", to: "works#updatenotes"
   resources :works
 

@@ -1,5 +1,5 @@
 class WorksController < ApplicationController
-  before_action :set_work, only: [:show, :edit, :update, :destroy, :takenotes, :updatenotes]
+  before_action :set_work, only: [:show, :edit, :update, :destroy, :testnetwork, :takenotes, :updatenotes]
 
   # GET /works
   # GET /works.json
@@ -21,9 +21,6 @@ class WorksController < ApplicationController
   def edit
   end
 
-  # GET /works/1/takenotes
-  def takenotes
-  end
 
   # POST /works
   # POST /works.json
@@ -55,6 +52,22 @@ class WorksController < ApplicationController
     end
   end
 
+  # DELETE /works/1
+  # DELETE /works/1.json
+  def destroy
+    @work.destroy
+    respond_to do |format|
+      format.html { redirect_to works_url }
+      format.json { head :no_content }
+    end
+  end
+
+
+  # GET /works/1/takenotes
+  def takenotes
+  end
+
+
   # PATCH/PUT /works/1
   # PATCH/PUT /works/1.json
     
@@ -71,14 +84,10 @@ class WorksController < ApplicationController
     end
   end
 
-  # DELETE /works/1
-  # DELETE /works/1.json
-  def destroy
-    @work.destroy
-    respond_to do |format|
-      format.html { redirect_to works_url }
-      format.json { head :no_content }
-    end
+
+  def testnetwork
+    @nodes = @work.nodes
+    render json: @nodes
   end
 
   private

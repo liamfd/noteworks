@@ -38,6 +38,7 @@ class Work < ActiveRecord::Base
 				@new_node.category_id = @category_id
 
 				@title = line.match(/>(.*)/).captures.first
+				@title = @title.strip
 				#puts @title
 				@new_node.title = @title
 

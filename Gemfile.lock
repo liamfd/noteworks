@@ -36,6 +36,8 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.3)
+    d3js-rails (3.1.6)
+      railties (>= 3.0, < 5.0)
     daemons (1.1.9)
     devise (3.2.1)
       bcrypt-ruby (~> 3.0)
@@ -83,6 +85,7 @@ GEM
     rake (10.1.0)
     rdoc (3.12.2)
       json (~> 1.4)
+    rubyvis (0.5.2)
     sass (3.2.12)
     sass-rails (4.0.1)
       railties (>= 4.0.0, < 5.0)
@@ -126,11 +129,13 @@ PLATFORMS
 
 DEPENDENCIES
   coffee-rails (~> 4.0.0)
+  d3js-rails (~> 3.1.6)
   devise (= 3.2.1)
   hirb (~> 0.7.1)
   jbuilder (~> 1.2)
   jquery-rails
   rails (= 4.0.1)
+  rubyvis (= 0.5.2)
   sass-rails (~> 4.0.0)
   sdoc
   sqlite3
