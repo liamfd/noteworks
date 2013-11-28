@@ -7,8 +7,8 @@ class Link < ActiveRecord::Base
 
   def as_json(*args)
     {
-    source: "#{parent.id-215}",
-    target: "#{child.id-215}",
+    source: "#{parent.id}",
+    target: "#{child.id}",
     weight: "#{1}"
     }
   end

@@ -60,18 +60,20 @@
   var nodes = <%= raw(@nodes.to_json) %>
   var links = <%= raw(@links.to_json) %>
 
-  var firstelement = links[0].source
+  var firstelement = +links[0].source
   document.write(firstelement);
   
   links.forEach(function(l) {
     l.source = +l.source;
-    l.source = l.source-links[0].source;
+    l.source = l.source-firstelement;
     l.target = +l.target
-    l.target = l.target-links[0].source;
-    //document.write(l.source);
-    //document.write("</br>");
+    l.target = l.target-firstelement;
+    document.write(l.source);
+    document.write(l.target)
+    document.write("</br>");
 });
-
+ var firstelement = links[0].source
+  document.write(firstelement);
   var width = 960,
       height = 500;
 
