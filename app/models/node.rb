@@ -7,11 +7,11 @@ class Node < ActiveRecord::Base
   validates :category_id, presence: true
   validates :work_id, presence: true
 
-  has_many :child_relationships, class_name: "ParentChild", foreign_key: 'child_id'
-  has_many :parent_relationships, class_name: "ParentChild", foreign_key: 'parent_id'
+  has_many :child_relationships, class_name: "Link", foreign_key: 'parent_id', dependent: :destroy
+  has_many :parent_relationships, class_name: "Link", foreign_key: 'child_id', dependent: :destroy
 
-  has_many :children, through: :child_relationships, source: 'parent'
-  has_many :parents, through: :parent_relationships, source: 'child'
+  has_many :children, through: :child_relationships, source: 'child'
+  has_many :parents, through: :parent_relationships, source: 'parent'
 
   belongs_to :node, class_name: "Node"
 

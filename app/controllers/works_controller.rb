@@ -65,6 +65,8 @@ class WorksController < ApplicationController
 
   # GET /works/1/takenotes
   def takenotes
+    @notes = @work.nodes.to_json
+    @links = @work.links.to_json
   end
 
 

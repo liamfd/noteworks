@@ -11,13 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131124190656) do
+ActiveRecord::Schema.define(version: 20131128034825) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "links", force: true do |t|
+    t.integer  "child_id"
+    t.integer  "parent_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "work_id"
+  end
+
+  add_index "links", ["child_id"], name: "index_links_on_child_id"
+  add_index "links", ["parent_id"], name: "index_links_on_parent_id"
 
   create_table "nodes", force: true do |t|
     t.string   "title"
@@ -39,16 +50,6 @@ ActiveRecord::Schema.define(version: 20131124190656) do
   end
 
   add_index "notes", ["node_id"], name: "index_notes_on_node_id"
-
-  create_table "parent_children", force: true do |t|
-    t.integer  "child_id"
-    t.integer  "parent_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "parent_children", ["child_id"], name: "index_parent_children_on_child_id"
-  add_index "parent_children", ["parent_id"], name: "index_parent_children_on_parent_id"
 
   create_table "positions", force: true do |t|
     t.integer  "x"

@@ -2,6 +2,7 @@ class Work < ActiveRecord::Base
   belongs_to :group
 
   has_many :nodes, dependent: :destroy
+  has_many :links
 
 	def parseText
 		Node.destroy_all(work_id: self.id)
@@ -38,7 +39,7 @@ class Work < ActiveRecord::Base
 				@new_node.category_id = @category_id
 
 				@title = line.match(/>(.*)/).captures.first
-				@title = @title.strip
+				@title = @title.strip	
 				#puts @title
 				@new_node.title = @title
 
@@ -61,7 +62,7 @@ class Work < ActiveRecord::Base
 					end #at this point, @currNodeDepth is the nearest element that's not as deep as the new one, it's parent
 					@parentNode = Node.find(@currNodeDepth.node_idnum)
 
-					@relation = ParentChild.new(child_id: @new_node.id, parent_id:@parentNode.id)
+					@relation = Link.new(child_id: @new_node.id, parent_id: @parentNode.id, work_id:self.id)
 					@relation.save
 					@new_node.parent_relationships << @relation
 					@parentNode.child_relationships << @relation
