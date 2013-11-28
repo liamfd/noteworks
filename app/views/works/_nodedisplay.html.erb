@@ -26,7 +26,7 @@
   </tbody>
 </table>
 
-<style>
+<!--<style>
 
 .chart rect {
   fill: #ff00ff;
@@ -40,47 +40,85 @@
 
 </style>
 <svg class="chart"></svg>
+<script src="http://d3js.org/d3.v3.min.js"></script>-->
+
+<style>
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+</style>
+<body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <%= javascript_tag do %>
+  var nodes = <%= raw(@nodes.to_json) %>
+  var links = <%= raw(@links.to_json) %>
 
-//var data = ["215", "216", "217", "218", "219"];
-//var data = [{"id":"215"},{"id":"216"},{"id":"217"},{"id":"218"},{"id":"219"}];
-var data = <%= raw(@nodes.to_json) %>
-  document.write("</br>");
-data.forEach(function(d) {
-  d.id = +d.id;
-  d.id = d.id-200;
- // document.write(d.id);
- // document.write("</br>");
+  var firstelement = links[0].source
+  document.write(firstelement);
+  
+  links.forEach(function(l) {
+    l.source = +l.source;
+    l.source = l.source-links[0].source;
+    l.target = +l.target
+    l.target = l.target-links[0].source;
+    //document.write(l.source);
+    //document.write("</br>");
 });
-var width = 420,
-    barHeight = 20;
 
-var x = d3.scale.linear()
-    .domain([0, d3.max(data, function(d) { return d.id; })])
-    .range([0, width]);
+  var width = 960,
+      height = 500;
 
-var chart = d3.select(".chart")
-    .attr("width", width)
-    .attr("height", barHeight * data.length);
+  var color = d3.scale.category20();
 
-var bar = chart.selectAll("g")
-    .data(data)
-  .enter().append("g")
-    .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+  var force = d3.layout.force()
+      .charge(-120)
+      .linkDistance(30)
+      .size([width, height]);
 
-bar.append("rect")
-    .attr("width", function(d) { return x(d.id); })
-    .attr("height", barHeight - 1);
+  var svg = d3.select("body").append("svg")
+      .attr("width", width)
+      .attr("height", height);
 
-bar.append("text")
-    .attr("x", function(d) { return x(d.id) - 3; })
-    .attr("y", barHeight / 2)
-    .attr("dy", ".35em")
-    .text(function(d) { return d.id; });
+  force
+      .nodes(nodes)
+      .links(links)
+      .start();
 
-var test2 = d3.max(data, function(d) { return d.id; });
-    document.write(test2);
+  var link = svg.selectAll(".link")
+      .data(links)
+    .enter().append("line")
+      .attr("class", "link")
+      .style("stroke-width", function(d) { return Math.sqrt(d.weight); });
+
+  var node = svg.selectAll(".node")
+      .data(nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", 5)
+      .style("fill", function(d) { return color(d.id); })
+      .call(force.drag);
+
+  node.append("title")
+      .text(function(d) { return d.title; });
+
+  force.on("tick", function() {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+    
+  });
 <% end %>
 
 <p><%= @nodes.to_json %></p>
+<p><%= @links.to_json %></p>
