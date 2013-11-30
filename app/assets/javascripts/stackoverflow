@@ -1,0 +1,83 @@
+I'm having a bit of trouble getting a something to work with D3.js. Namely, I'm trying to make a tree of nodes, using the basic code from http://bl.ocks.org/mbostock/1021953. I switched it to load the data inline, as opposed to loading from file, because I'm using it with a Rails application and don't want to have repetitive information. I switched the line so that you could see the format of my data. 
+
+Anyways, here's the bulk of my code:
+
+    <%= javascript_tag do %>
+      var nodes = <%= raw(@nodes.to_json) %>;
+      var links = <%= raw(@links.to_json) %>;
+
+      var firstelement = +links[0].source;
+  
+    links.forEach(function(l) {
+        l.source = +l.source;
+        l.source = l.source-firstelement;
+        l.target = +l.target
+        l.target = l.target-firstelement;
+        document.write(l.source);
+        document.write(l.target)
+        document.write("</br>");
+    });
+
+      var width = 960,
+          height = 500;
+
+      var color = d3.scale.category20();
+
+      var force = d3.layout.force()
+          .charge(-1000)
+          .linkDistance(300)
+          .size([width, height]);
+
+      var svg = d3.select("body").append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+      force
+          .nodes(nodes)
+          .links(links)
+          .start();
+
+      var link = svg.selectAll(".link")
+           .data(links)
+        .enter().append("line")
+          .attr("class", "link")
+          .style("stroke-width", function(d) { return Math.sqrt(d.weight); });
+
+      var node = svg.selectAll(".node")
+           .data(nodes)
+        .enter().append("circle")
+          .attr("class", "node")
+          .attr("r", 50)
+          .style("fill", function(d) { return color(d.id); })
+          .call(force.drag);
+
+      node.append("title")
+          .text(function(d) { return d.title; });
+
+      node.append("text")
+        .attr("x", function(d) { return d.x; } )
+       .attr("y", function(d) { return d.y; })
+        .text(function(d) { return d.title; });
+
+      force.on("tick", function() {
+        link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("cx", function(a) { return a.x; })
+            .attr("cy", function(a) { return a.y; });
+    
+      });
+    <% end %>
+
+
+This seems like it should work to me, but I can seem to manage it. The links work, but the nodes all remain in the top left corner. I've tried just entering the circles directly and appending the text to them, but while that behaves properly, it doesn't display the text. I'd like the title to be centered in the nodes.
+
+More generally, I'm kind of confused by how this is working. What does "d" refer to within lines like
+
+    function(d) { return d.source.x; }
+
+It seems to be declaring a function and calling it simultaneously. I know that it doesn't have to be specifically the character "d," (for instance, switching the "d" to an "a" seems to make no difference as long as it's done both in the declaration and within the function.) But what is it referring to? The data entered into the object that's being modified? For instance, if I wanted to print that out, (outside of the attribute,) how would I do it?
+
+Sorry, I'm new to D3 (and fairly new to JavaScript in general)

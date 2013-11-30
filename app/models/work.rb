@@ -35,8 +35,17 @@ class Work < ActiveRecord::Base
 				#get the category string, use it to pull a category id
 				#puts @category
 				@category = @withinBrackets.match(/\.(.*)>/).captures.first
-				@category_id = (Category.where("name = ?", @category).first).id
+				@category_id = 0
+				Category.all.each do |cat|
+					if @category == cat.name
+						@category_id = (Category.where("name = ?", @category).first).id
+					end
+				end
+				if @category_id == 0
+					@category_id = (Category.where(name: "Uncategorized").first).id
+				end
 				@new_node.category_id = @category_id
+				puts @category_id
 
 				@title = line.match(/>(.*)/).captures.first
 				@title = @title.strip	
