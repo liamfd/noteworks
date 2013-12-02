@@ -75,6 +75,8 @@ class WorksController < ApplicationController
     
   def updatenotes
     @work.parseText
+    #@nodes = @work.nodes
+    #@links = @work.links
     respond_to do |format|
       if @work.update(work_params)
         format.html { render action: 'takenotes'}

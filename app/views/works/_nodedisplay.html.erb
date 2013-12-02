@@ -42,6 +42,10 @@
   stroke-opacity: .6;
 }
 
+g {
+  fill:#808;
+}
+
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -51,17 +55,13 @@
   var links = <%= raw(@links.to_json) %>;
 
   var firstelement = +links[0].source;
-  document.write(firstelement);
   
   links.forEach(function(l) {
     l.source = +l.source;
     l.source = l.source-firstelement;
     l.target = +l.target
     l.target = l.target-firstelement;
-    document.write(l.source);
-    document.write(l.target)
-    document.write("</br>");
-});
+  });
 
   var width = 960,
       height = 500;
@@ -103,9 +103,8 @@
       .text(function(d) { return d.title; });
 
   node.append("text")
-    .attr("x", function(d) { return d.x; } )
-   .attr("y", function(d) { return d.y; })
-    .text(function(d) { return d.title; });
+    .attr("transform", function(d) { return "translate( -25,  0 )"; })
+    .text(function(d) { return d.title; })
 
   force.on("tick", function() {
     link.attr("x1", function(d) { return d.source.x; })
@@ -113,8 +112,7 @@
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
 
-    node.attr("cx", function(a) { return a.x; })
-        .attr("cy", function(a) { return a.y; }); 
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y+")"; });
   });
 
 <% end %>
@@ -186,7 +184,7 @@
 
   node.append("svg:text")
     .attr("x", function(d) { return d.x; } )
-   .attr("y", function(d) { return d.y; })
+    .attr("y", function(d) { return d.y; })
     .text(function(d) { return d.title; });
 
   force.on("tick", function() {
