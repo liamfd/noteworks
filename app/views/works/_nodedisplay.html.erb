@@ -64,13 +64,13 @@ g {
   });
 
   var width = 960,
-      height = 500;
+      height = 1000;
 
   var color = d3.scale.category20();
 
   var force = d3.layout.force()
-      .charge(-1000)
-      .linkDistance(300)
+      .charge(-2500)
+      .linkDistance(200)
       .size([width, height]);
 
   var svg = d3.select("body").append("svg")

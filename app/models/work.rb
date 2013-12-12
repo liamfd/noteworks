@@ -4,6 +4,14 @@ class Work < ActiveRecord::Base
   has_many :nodes, dependent: :destroy
   has_many :links
 
+  @@types = [ "Basic",
+         "Comparison",
+         "Definition",
+         "Example",
+         "Key",
+         "Media"
+    ]
+
 	def parseText
 		Node.destroy_all(work_id: self.id)
 		Struct.new("NodeDepth", :node_idnum, :depth)
@@ -27,8 +35,14 @@ class Work < ActiveRecord::Base
 				#get type, convert it to a constant
 				@type = @withinBrackets.match(/<(.*)\./).captures.first
 				@type[0] = @type[0].capitalize
-				@type = (@type + "Node")
-				#puts @type
+				if @@types.include? @type
+					@type = (@type + "Node")
+				else
+					@type = "BasicNode"
+				end
+				puts @type
+
+
 				@const_type = @type.constantize
 				@new_node = @const_type.new()
 
@@ -90,6 +104,36 @@ class Work < ActiveRecord::Base
 				#somehow have to break this up such that it says 3 whitespace = 1 tab. 
 				#ah, but the javascript will do that for me.
 
+			elsif @firstChar == '-'
+				@content = line.match(/-(.*)/).captures.first
+				
+				@parentNodeDepth = @stack.pop
+				@parent = Node.find(@parentNodeDepth.node_idnum)
+
+				@new_note = Note.new()
+				@new_note.body = @content
+				@new_note.node_id = @parent.id
+
+				@new_note.save
+
+				@stack.push(@parentNodeDepth)
+				
+			elsif @firstChar == ':'
+				puts "colontown!"
+			else
+				#this currently does the same as the dash
+				@content = line.match(/-(.*)/).captures.first
+				
+				@parentNodeDepth = @stack.pop
+				@parent = Node.find(@parentNodeDepth.node_idnum)
+
+				@new_note = Note.new()
+				@new_note.body = @content
+				@new_note.node_id = @parent.id
+
+				@new_note.save
+
+				@stack.push(@parentNodeDepth)
 			end
 		end
 	end
