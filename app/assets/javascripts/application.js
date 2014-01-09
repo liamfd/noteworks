@@ -16,3 +16,4 @@
 //= require_tree .
 
 //= require d3
+//= require cytoscape.js-2.0.4/arbor.js
