@@ -1,3 +1,6 @@
+<head>
+
+</head>
 <h1>Listing nodes</h1>
 
 <table>
@@ -25,7 +28,97 @@
     <% end %>
   </tbody>
 </table>
+  <div id="cy"></div>
+<style>
+  #cy {
+    height: 600px;
+    width: 980px;
+    left: 0;
+    top: 0;
+    border: 1px solid #b0b0b0;
+  }
+</style>
 
+
+<script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
+<script>
+  $('#cy').cytoscape({
+    style: cytoscape.stylesheet()
+      .selector('node')
+        .css({
+          'content': 'data(name)',
+          'text-valign': 'center',
+          'color': 'white',
+          'text-outline-width': 2,
+          'text-outline-color': '#888'
+        })
+      .selector('edge')
+        .css({
+          'target-arrow-shape': 'triangle'
+        })
+      .selector(':selected')
+        .css({
+          'background-color': 'black',
+          'line-color': 'black',
+          'target-arrow-color': 'black',
+          'source-arrow-color': 'black'
+        })
+      .selector('.faded')
+        .css({
+          'opacity': 0.25,
+          'text-opacity': 0
+        }),
+    
+    elements: {
+      nodes: [
+        { data: { id: 'j', name: 'Jerry' } },
+        { data: { id: 'e', name: 'Elaine' } },
+        { data: { id: 'k', name: 'Kramer' } },
+        { data: { id: 'g', name: 'George' } }
+      ],
+      edges: [
+        { data: { source: 'j', target: 'e' } },
+        { data: { source: 'j', target: 'k' } },
+        { data: { source: 'j', target: 'g' } },
+        { data: { source: 'e', target: 'j' } },
+        { data: { source: 'e', target: 'k' } },
+        { data: { source: 'k', target: 'j' } },
+        { data: { source: 'k', target: 'e' } },
+        { data: { source: 'k', target: 'g' } },
+        { data: { source: 'g', target: 'j' } }
+      ]
+    },
+    
+    ready: function(){
+      window.cy = this;
+      
+      // giddy up...
+      
+      cy.elements().unselectify();
+      
+      cy.on('tap', 'node', function(e){
+        var node = e.cyTarget; 
+        var neighborhood = node.neighborhood().add(node);
+        
+        cy.elements().addClass('faded');
+        neighborhood.removeClass('faded');
+      });
+      
+      cy.on('tap', function(e){
+        if( e.cyTarget === cy ){
+          cy.elements().removeClass('faded');
+        }
+      });
+    }
+  });
+</script>
+
+
+
+
+
+
+<!--
 <style>
 .node {
   stroke: #fff;
@@ -47,7 +140,8 @@ g {
 }
 
 </style>
-<body>
+
+
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <%= javascript_tag do %>
 
@@ -115,7 +209,7 @@ g {
     node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y+")"; });
   });
 
-<% end %>
+<% end %> -->
 
 <p><%= @nodes.to_json %></p>
 <p><%= @links.to_json %></p>
