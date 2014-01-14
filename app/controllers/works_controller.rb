@@ -74,12 +74,11 @@ class WorksController < ApplicationController
   # PATCH/PUT /works/1.json
     
   def updatenotes
-    @work.parseText
     #@nodes = @work.nodes
     #@links = @work.links
     respond_to do |format|
       if @work.update(work_params)
-        format.html { render action: 'takenotes'}
+        format.html { redirect_to action: 'takenotes'}
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }

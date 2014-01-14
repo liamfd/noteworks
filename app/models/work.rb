@@ -11,7 +11,16 @@ class Work < ActiveRecord::Base
          "Key",
          "Media"
     ]
+   
+   before_save :before_save_checker
 
+	#bottom, private
+   def before_save_checker 
+   		if markup_changed?
+   			parseText
+   		end
+   end
+	
 	def parseText
 		Node.destroy_all(work_id: self.id)
 		Struct.new("NodeDepth", :node_idnum, :depth)
