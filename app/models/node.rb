@@ -15,10 +15,4 @@ class Node < ActiveRecord::Base
 
   belongs_to :node, class_name: "Node"
 
-  def as_json(*args)
-    {
-    title: "#{self.title}",
-    id: "#{self.id}"
-    }
-  end
 end
