@@ -4,8 +4,10 @@
 $( document ).ready(function() {
     var ele = gon.elements;
     ele = JSON.stringify(ele);
-    ele = ele.substr(1, ele.length-2);
     $( ".test" ).text(ele);
+
+    var lel = gon.elements;
+    $( ".test" ).text(JSON.stringify(lel));
   });
 
 $(loadCy = function(){
@@ -86,46 +88,14 @@ $(loadCy = function(){
           'width' : '100px',
           'height' : '100px'
       }),
-    
-"elements":{"nodes":[{"data":{"id":"820","title":"Jerry"}},{"data":{"id":"821","title":"Elaine"}},{"data":{"id":"822","title":"Kramer"}},{"data":{"id":"823","title":"Geor"}}],"edges":[{"data":{"source":"820","target":"821"}},{"data":{"source":"822","target":"823"}}]},
-/*
-    "elements":{
-      "nodes":[
-        {"data":{"id":'820',"title":"Jerry"}},
-        {"data":{"id":'821',"title":"Elaine"}},
-        {"data":{"id":'822',"title":"Kramer"}},
-        {"data":{"id":'823',"title":"Geor"}}
-      ],
-      "edges":[
-        {"data":{"source":'820',"target":'821'}},
-        {"data":{"source":'822',"target":'823'}}
-      ]
-    },*/
-    /*elements: {
-      nodes: [
-        { data: { id: 'j', title: 'Jerry' } },
-        { data: { id: 'e', title: 'Elaine' } },
-        { data: { id: 'k', title: 'Kramer' } },
-        { data: { id: 'g', title: 'George' } }
-      ],
-      edges: [
-        { data: { source: 'j', target: 'e' } },
-        { data: { source: 'j', target: 'k' } },
-        { data: { source: 'j', target: 'g' } },
-        { data: { source: 'e', target: 'j' } },
-        { data: { source: 'e', target: 'k' } },
-        { data: { source: 'k', target: 'j' } },
-        { data: { source: 'k', target: 'e' } },
-        { data: { source: 'k', target: 'g' } },
-        { data: { source: 'g', target: 'j' } }
-      ]
-    },*/
+
+    elements:gon.elements,
 
     ready: function(){
       window.cy = this;
-      
+  
       cy.elements().unselectify();
-      
+    
       cy.on('tap', 'node', function(e){
         var node = e.cyTarget;
         var neighborhood = node.neighborhood().add(node);
