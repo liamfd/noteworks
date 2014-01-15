@@ -48,6 +48,9 @@ GEM
     erubis (2.7.0)
     eventmachine (1.0.3)
     execjs (2.0.2)
+    gon (5.0.1)
+      actionpack (>= 2.3.0)
+      json
     hike (1.2.3)
     hirb (0.7.1)
     i18n (0.6.5)
@@ -134,6 +137,7 @@ DEPENDENCIES
   coffee-rails (~> 4.0.0)
   d3js-rails (~> 3.1.6)
   devise (= 3.2.1)
+  gon
   hirb (~> 0.7.1)
   jbuilder (~> 1.2)
   jquery-rails

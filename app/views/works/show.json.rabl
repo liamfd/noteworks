@@ -1,10 +1,11 @@
 object @work => :elements
 
 child :nodes, :root => :nodes, :object_root => :datas do
-	attributes :id, :title
+	node(:id) { |node| node.id.to_s() }
+	node(:title) { |node| node.title }
 end
 
 child :links, :root => :edges, :object_root => :datas do
-	attribute :parent_id => :source
-	attribute :child_id => :target
+	node(:source) { |link| link.parent_id.to_s() }
+	node(:target) { |link| link.child_id.to_s() }
 end

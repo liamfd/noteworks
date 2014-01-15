@@ -67,6 +67,7 @@ class WorksController < ApplicationController
   def takenotes
     @nodes = @work.nodes
     @links = @work.links
+    gon.rabl "app/views/works/show.json.rabl", as: "elements"
   end
 
 

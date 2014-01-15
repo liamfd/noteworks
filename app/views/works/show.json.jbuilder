@@ -1,1 +1,5 @@
-json.extract! @work, :markup, :group_id, :name, :created_at, :updated_at
+json.elements @work.id.to_s()
+
+json.set! @work.nodes do |node|
+	json.id  node.id.to_s()
+end
