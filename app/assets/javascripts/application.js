@@ -18,3 +18,5 @@
 //= require d3
 //= require cytoscape.js-2.0.4/arbor.js
 //= require cytoscape.js-2.0.4/cytoscape.min.js
+
+//= require works
