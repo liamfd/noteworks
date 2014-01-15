@@ -5,7 +5,7 @@ $( document ).ready(function() {
     $( ".test" ).text( "The DOM is now loaded and can be manipulated." );
   });
 
-
+/*
 $('#cy').cytoscape({
   layout: {
     name: 'arbor',
@@ -75,8 +75,6 @@ $('#cy').cytoscape({
         'height' : '100px'
       }),
 
-
-
   elements: {
     nodes: [
       { data: { id: 'j', title: 'Jerry' } },
@@ -120,4 +118,4 @@ $('#cy').cytoscape({
 
   }
 
-});
+}); */
