@@ -1,4 +1,4 @@
-object @work => :elements
+object @work
 
 child :nodes, :root => :nodes, :object_root => :datas do
 	node(:id) { |node| node.id.to_s() }
