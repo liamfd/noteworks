@@ -21,7 +21,9 @@ cytoscape.js */
 
 // this is put as a global var in the browser
 // or it's just a global to this module if commonjs
+var cytoscape;
 
+//SO FUNCTION MODIFIED FOR MULTIPLE NOTES
 function getLines(ctx, text, maxWidth) {
     var words = text.split(" ");
     var lines = [];
@@ -30,7 +32,11 @@ function getLines(ctx, text, maxWidth) {
     for (var i = 1; i < words.length; i++) {
         var word = words[i];
         var width = ctx.measureText(currentLine + " " + word).width;
-        if (width < maxWidth) {
+        if (word == "//-") {
+       		lines.push(currentLine);
+       		currentLine = "-";
+        }
+        else if (width < maxWidth) {
             currentLine += " " + word;
         } else {
             lines.push(currentLine);
@@ -40,8 +46,6 @@ function getLines(ctx, text, maxWidth) {
     lines.push(currentLine);
     return lines;
 }
-
-var cytoscape;
 
 (function(){
 

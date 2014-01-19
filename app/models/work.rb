@@ -76,6 +76,7 @@ class Work < ActiveRecord::Base
 				@new_node.title = @title
 
 				@new_node.work_id = self.id
+
 				@new_node.save
 
 
@@ -126,6 +127,9 @@ class Work < ActiveRecord::Base
 				@new_note.save
 
 				@stack.push(@parentNodeDepth)
+
+				#improve this later? this is repetitive. also have to initiliaze combined_notes
+				@parent.combine_notes
 				
 			elsif @firstChar == ':'
 				puts "colontown!"

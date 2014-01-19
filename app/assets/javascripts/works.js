@@ -60,7 +60,7 @@ $(loadCy = function(){
           'text-outline-width': 3,
           'text-outline-color': '#888',
           'text-valign': 'center',
-          'color': '#080',
+          'color': '#fff',
           'width': 'mapData(weight, 30, 80, 20, 50)',
           'height': 'mapData(height, 0, 200, 10, 45)',
           'border-color': '#fff'
@@ -75,7 +75,7 @@ $(loadCy = function(){
       .selector('edge')
         .css({
           'width': 2,
-          'target-arrow-shape': 'triangle'
+          'target-arrow-shape': 'none'
         })
       .selector('.faded')
         .css({
@@ -85,9 +85,12 @@ $(loadCy = function(){
 
       .selector('.largeNode')
        .css({
+          'content': 'data(notes)',
           'width' : '300px',
           'height' : '300px',
-          'shape' : 'roundrectangle'
+          'shape' : 'roundrectangle',
+          'border-color' : "#f00",
+          'background-color' : '#ddd'
       }),
 
     elements:gon.elements,
