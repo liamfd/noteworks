@@ -1,5 +1,5 @@
-
-/* cytoscape.js */
+/* 
+cytoscape.js */
 
 /**
  * This file is part of cytoscape.js 2.0.4.
@@ -21,6 +21,26 @@
 
 // this is put as a global var in the browser
 // or it's just a global to this module if commonjs
+
+function getLines(ctx, text, maxWidth) {
+    var words = text.split(" ");
+    var lines = [];
+    var currentLine = words[0];
+
+    for (var i = 1; i < words.length; i++) {
+        var word = words[i];
+        var width = ctx.measureText(currentLine + " " + word).width;
+        if (width < maxWidth) {
+            currentLine += " " + word;
+        } else {
+            lines.push(currentLine);
+            currentLine = word;
+        }
+    }
+    lines.push(currentLine);
+    return lines;
+}
+
 var cytoscape;
 
 (function(){
@@ -11911,10 +11931,39 @@ var cytoscape;
 			+ (element._private.style["text-opacity"].value
 			* element._private.style["opacity"].value * parentOpacity) + ")";
 		
+		//THIS IS MY MODIFIED CODE, WORKING FROM SO's getLines FUNCTION
 		if (text != undefined) {
+			//THIS IS USING THE SO CODE
+			var lines = getLines(context, text, 300);
+			var vert_offset = 0;
+
+			// Thanks sysord@github for the isNaN checks!
+			if (isNaN(textX)) { textX = 0; }
+			if (isNaN(textY)) { textY = 0; }
+		
 			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
 			if (lineWidth > 0) {
 				context.lineWidth = lineWidth;
+				for (i = 0; i < lines.length; i++){
+					context.strokeText(lines[i], textX, textY+vert_offset);	
+					vert_offset += 20;
+				}			
+			}
+			vert_offset = 0;
+		
+			for (i = 0; i < lines.length; i++){
+				context.fillText("" + lines[i], textX, textY+vert_offset);	
+				vert_offset += 20;
+			}
+			// record the text's width for use in bounding box calc
+			element._private.rstyle.labelWidth = context.measureText( text ).width;
+		}
+		//THIS IS THE ORIGINAL CYTOSCAPE CODE
+		/*if (text != undefined) {
+			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
+			if (lineWidth > 0) {
+				context.lineWidth = lineWidth;
+
 				context.strokeText(text, textX, textY);
 			}
 
@@ -11922,11 +11971,13 @@ var cytoscape;
 			if (isNaN(textX)) { textX = 0; }
 			if (isNaN(textY)) { textY = 0; }
 
+			THIS IS THE ORIGINAL FILLTEXT LINE
 			context.fillText("" + text, textX, textY);
 
 			// record the text's width for use in bounding box calc
 			element._private.rstyle.labelWidth = context.measureText( text ).width;
 		}
+		*/
 	};
 
 	

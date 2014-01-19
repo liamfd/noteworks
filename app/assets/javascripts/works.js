@@ -15,7 +15,7 @@ $(loadCy = function(){
   options = {
     layout: {
       name: 'arbor',
-      liveUpdate: false, // whether to show the layout as it's running
+      liveUpdate: true, // whether to show the layout as it's running
       ready: undefined, // callback on layoutready 
       stop: undefined, // callback on layoutstop
       maxSimulationTime: 4000, // max length in ms to run the layout
@@ -60,7 +60,7 @@ $(loadCy = function(){
           'text-outline-width': 3,
           'text-outline-color': '#888',
           'text-valign': 'center',
-          'color': '#fff',
+          'color': '#080',
           'width': 'mapData(weight, 30, 80, 20, 50)',
           'height': 'mapData(height, 0, 200, 10, 45)',
           'border-color': '#fff'
@@ -85,8 +85,9 @@ $(loadCy = function(){
 
       .selector('.largeNode')
        .css({
-          'width' : '100px',
-          'height' : '100px'
+          'width' : '300px',
+          'height' : '300px',
+          'shape' : 'roundrectangle'
       }),
 
     elements:gon.elements,
@@ -99,9 +100,6 @@ $(loadCy = function(){
       cy.on('tap', 'node', function(e){
         var node = e.cyTarget;
         var neighborhood = node.neighborhood().add(node);
-        
-        cy.nodes().addClass('faded');
-        cy.nodes().removeClass('faded');
         node.toggleClass('largeNode');
       });
       
