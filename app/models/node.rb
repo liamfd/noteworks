@@ -17,7 +17,7 @@ class Node < ActiveRecord::Base
 
   def combine_notes
     @notes = self.notes
-    @full_text = self.title.strip
+    @full_text = ""
     
 
     for @note in @notes

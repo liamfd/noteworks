@@ -27,16 +27,15 @@ var cytoscape;
 function getLines(ctx, text, maxWidth) {
     var words = text.split(" ");
     var lines = [];
-    var currentLine = words[0];
+    var currentLine = "";
 
-    for (var i = 1; i < words.length; i++) {
+    for (var i = 0; i < words.length; i++) {
         var word = words[i];
         var width = ctx.measureText(currentLine + " " + word).width;
         if (word == "//-") {
        		lines.push(currentLine);
        		currentLine = "-";
-        }
-        else if (width < maxWidth) {
+        } else if (width < maxWidth) {
             currentLine += " " + word;
         } else {
             lines.push(currentLine);
@@ -3665,6 +3664,7 @@ function getLines(ctx, text, maxWidth) {
 			{ name: "text-halign", type: t.halign },
 			{ name: "color", type: t.color },
 			{ name: "content", type: t.text },
+			{ name: "node_title", type: t.text },
 			{ name: "text-outline-color", type: t.color },
 			{ name: "text-outline-width", type: t.size },
 			{ name: "text-outline-opacity", type: t.zeroOneNumber },
@@ -3798,6 +3798,7 @@ function getLines(ctx, text, maxWidth) {
 					"text-halign": "center",
 					"color": color,
 					"content": undefined, // => no label
+					"node_title": undefined, // => no label
 					"text-outline-color": "#000",
 					"text-outline-width": 0,
 					"text-outline-opacity": 1,
@@ -3815,6 +3816,7 @@ function getLines(ctx, text, maxWidth) {
 					"opacity": 1,
 					"z-index": 0,
 					"content": "",
+					"node_title": "",
 					"overlay-opacity": 0,
 					"overlay-color": "#000",
 					"overlay-padding": 10,
@@ -7417,6 +7419,7 @@ function getLines(ctx, text, maxWidth) {
 
 				var style = ele._private.style;
 				var label = style['content'].value;
+				var label = style['node_title'].value;
 				var fontSize = style['font-size'];
 				var halign = style['text-halign'];
 				var valign = style['text-valign'];
@@ -10380,7 +10383,8 @@ function getLines(ctx, text, maxWidth) {
 		// helper function to determine label width
 		var getLabelWidth = function(node)
 		{
-			var text = String(node._private.style["content"].value);
+		//	var text = String(node._private.style["content"].value);
+			var text = String(node._private.style["node_title"].value);
 			var textTransform = node._private.style["text-transform"].value;
 
 			if (textTransform == "none") {
@@ -11907,6 +11911,7 @@ function getLines(ctx, text, maxWidth) {
 			+ labelSize + " " + labelFamily;
 		
 		var text = String(element._private.style["content"].value);
+		var node_title = String(element._private.style["node_title"].value); //LIAM DID THIS
 		var textTransform = element._private.style["text-transform"].value;
 		
 		if (textTransform == "none") {
@@ -11934,34 +11939,71 @@ function getLines(ctx, text, maxWidth) {
 			+ element._private.style["text-outline-color"].value[2] + ","
 			+ (element._private.style["text-opacity"].value
 			* element._private.style["opacity"].value * parentOpacity) + ")";
-		
-		//THIS IS MY MODIFIED CODE, WORKING FROM SO's getLines FUNCTION
-		if (text != undefined) {
-			//THIS IS USING THE SO CODE
-			var lines = getLines(context, text, 300);
-			var vert_offset = 0;
 
-			// Thanks sysord@github for the isNaN checks!
-			if (isNaN(textX)) { textX = 0; }
-			if (isNaN(textY)) { textY = 0; }
-		
+		//LIAM'S SHIT	
+		if (isNaN(textX)) { textX = 0; }
+		if (isNaN(textY)) { textY = 0; }
+		var vert_offset = 0;
+
+		//TITLE
+		if (node_title != undefined) {
 			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
+			var lines = getLines(context, node_title, 300);
+
+			var prev_vert_offset = vert_offset;
+
+			//move the title down if large node
+			if (text != "") {
+				vert_offset += 20;
+			}
+			var prev_vert_offset = vert_offset;
+
 			if (lineWidth > 0) {
 				context.lineWidth = lineWidth;
-				for (i = 0; i < lines.length; i++){
+				for (i = 0; i < lines.length; i++){					
 					context.strokeText(lines[i], textX, textY+vert_offset);	
 					vert_offset += 20;
 				}			
 			}
-			vert_offset = 0;
+			vert_offset = prev_vert_offset;
 		
 			for (i = 0; i < lines.length; i++){
 				context.fillText("" + lines[i], textX, textY+vert_offset);	
 				vert_offset += 20;
 			}
+
 			// record the text's width for use in bounding box calc
-			element._private.rstyle.labelWidth = context.measureText( text ).width;
+			element._private.rstyle.labelWidth = context.measureText( node_title ).width;
 		}
+
+
+		//THIS IS MY MODIFIED CODE, WORKING FROM SO's getLines FUNCTION
+		if (text != undefined) {
+
+			//THIS IS USING THE SO CODE
+			var lines = getLines(context, text, 300);
+			var prev_vert_offset = vert_offset;
+			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
+
+			if (lineWidth > 0) {
+				context.lineWidth = lineWidth;
+				for (i = 0; i < lines.length; i++){
+					
+					context.strokeText(lines[i], textX, textY+vert_offset);	
+					vert_offset += 20;
+				}			
+			}
+			vert_offset = prev_vert_offset;
+		
+			for (i = 0; i < lines.length; i++){
+				context.fillText("" + lines[i], textX, textY+vert_offset);	
+				vert_offset += 20;
+			}
+		}
+		
+
+		//END OF LIAM
+
 		//THIS IS THE ORIGINAL CYTOSCAPE CODE
 		/*if (text != undefined) {
 			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle

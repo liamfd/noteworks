@@ -54,7 +54,7 @@ $(loadCy = function(){
     style: cytoscape.stylesheet()
       .selector('node')
         .css({
-          'content': 'data(title)',
+          'node_title': 'data(title)',
           'font-family': 'helvetica',
           'font-size': 14,
           'text-outline-width': 3,
@@ -64,6 +64,18 @@ $(loadCy = function(){
           'width': 'mapData(weight, 30, 80, 20, 50)',
           'height': 'mapData(height, 0, 200, 10, 45)',
           'border-color': '#fff'
+        })
+      .selector('.largeNode')
+       .css({
+          'node_title' : 'data(title)',
+          'content': 'data(notes)',
+          'width' : '300px',
+          'height' : '300px',
+          'shape' : 'roundrectangle',
+          'text-valign' : "top",
+          'border-width' : "3px",
+          'border-color' : "#999",
+          'background-color' : '#fff'
         })
       .selector(':selected')
         .css({
@@ -81,18 +93,9 @@ $(loadCy = function(){
         .css({
           'opacity': 0.25,
           'text-opacity': 0
-       })
+       }),
 
-      .selector('.largeNode')
-       .css({
-          'content': 'data(notes)',
-          'width' : '300px',
-          'height' : '300px',
-          'shape' : 'roundrectangle',
-          'border-color' : "#f00",
-          'background-color' : '#ddd'
-      }),
-
+    
     elements:gon.elements,
 
     ready: function(){
