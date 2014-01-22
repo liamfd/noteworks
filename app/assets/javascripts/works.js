@@ -91,13 +91,13 @@ $(loadCy = function(){
         })
       .selector('edge')
         .css({
-          'width': 2,
+          'width': 3,
           'target-arrow-shape': 'none'
         })
       .selector('.faded')
         .css({
           'opacity': 0.9,
-          'text-opacity': .9,
+          'text-opacity': 0.9,
           'z-index': 1,
        }),
 
@@ -124,12 +124,11 @@ $(loadCy = function(){
         var targ = edge.target();
 
         //center of canvas
-      /*  var canvas = document.getElementById("cy");
-        var ctx = canvas.getContext( "2d" );
-        var cent_x = ctx.width/2;
-        var cent_y = ctx.height/2; */
-        var cent_x = 490;
-        var cent_y = 300;
+        var cont = $('#cy')[0];
+        var cent_x = (cont.offsetWidth)/2;
+        var cent_y = (cont.offsetHeight)/2;
+       // var cent_x = 490;
+       // var cent_y = 300;
         console.log(cent_x);
         console.log(cent_y);
 
