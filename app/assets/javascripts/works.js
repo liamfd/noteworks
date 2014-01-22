@@ -112,8 +112,8 @@ $(loadCy = function(){
       cy.on('tap', 'node', function(e){
         var node = e.cyTarget;
         var neighborhood = node.neighborhood().add(node);
-        cy.nodes().addClass('faded');
-        node.removeClass('faded');
+      //  cy.nodes().addClass('faded');
+      //  node.removeClass('faded');
         node.toggleClass('focused');
       });
 
@@ -123,8 +123,15 @@ $(loadCy = function(){
         var src = edge.source();
         var targ = edge.target();
 
-        var cent_x = 480;
+        //center of canvas
+      /*  var canvas = document.getElementById("cy");
+        var ctx = canvas.getContext( "2d" );
+        var cent_x = ctx.width/2;
+        var cent_y = ctx.height/2; */
+        var cent_x = 490;
         var cent_y = 300;
+        console.log(cent_x);
+        console.log(cent_y);
 
         var targ_x = targ.renderedPosition("x");
         var targ_y = targ.renderedPosition("y");
@@ -136,18 +143,18 @@ $(loadCy = function(){
         var targ_dist = Math.pow((cent_x - targ_x), 2) + Math.pow((cent_y - targ_y), 2);
         var src_dist = Math.pow((cent_x - src_x), 2) + Math.pow((cent_y - src_y), 2);
        
+        //whichever node is further away, center it
         if (targ_dist >= src_dist){
           cy.center(targ);
         } else {
           cy.center(src);
         }
 
-
       });
       
       cy.on('tap', function(e){
         if( e.cyTarget === cy ){
-          cy.nodes().removeClass('faded');
+        //  cy.nodes().removeClass('faded');
           cy.nodes().removeClass('focused');
         }
       });
