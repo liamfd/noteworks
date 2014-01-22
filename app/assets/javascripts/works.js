@@ -125,28 +125,25 @@ $(loadCy = function(){
 
         //center of canvas
         var cont = $('#cy')[0];
+        //var cont = document.getElementById(cy);
         var cent_x = (cont.offsetWidth)/2;
         var cent_y = (cont.offsetHeight)/2;
-       // var cent_x = 490;
-       // var cent_y = 300;
-        console.log(cent_x);
-        console.log(cent_y);
-
+     
+        //x and y of the two nodes
+        var src_x = src.renderedPosition("x");
+        var src_y = src.renderedPosition("y");
         var targ_x = targ.renderedPosition("x");
         var targ_y = targ.renderedPosition("y");
        
-        var src_x = src.renderedPosition("x");
-        var src_y = src.renderedPosition("y");
-       
         //distance function, sans sqrt
-        var targ_dist = Math.pow((cent_x - targ_x), 2) + Math.pow((cent_y - targ_y), 2);
         var src_dist = Math.pow((cent_x - src_x), 2) + Math.pow((cent_y - src_y), 2);
+        var targ_dist = Math.pow((cent_x - targ_x), 2) + Math.pow((cent_y - targ_y), 2);
        
         //whichever node is further away, center it
-        if (targ_dist >= src_dist){
-          cy.center(targ);
-        } else {
+        if (src_dist >= targ_dist){
           cy.center(src);
+        } else {
+          cy.center(targ);
         }
 
       });
