@@ -11950,8 +11950,6 @@ function getLines(ctx, text, maxWidth) {
 			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
 			var lines = getLines(context, node_title, 300);
 
-			var prev_vert_offset = vert_offset;
-
 			//move the title down if large node
 			if (text != "") {
 				vert_offset += 20;

@@ -60,12 +60,14 @@ $(loadCy = function(){
           'text-outline-width': 3,
           'text-outline-color': '#888',
           'text-valign': 'center',
+          'text-halign' : 'center',
           'color': '#fff',
           'width': 'mapData(weight, 30, 80, 20, 50)',
           'height': 'mapData(height, 0, 200, 10, 45)',
-          'border-color': '#fff'
+          'border-color': '#fff',
+          'z-index' : 1
         })
-      .selector('.largeNode')
+      .selector('.focused')
        .css({
           'node_title' : 'data(title)',
           'content': 'data(notes)',
@@ -75,7 +77,10 @@ $(loadCy = function(){
           'text-valign' : "top",
           'border-width' : "3px",
           'border-color' : "#999",
-          'background-color' : '#fff'
+          'background-color' : '#fff',
+          'background-opacity' : 1,
+          "opacity" : 1,
+          "z-index" : 5,
         })
       .selector(':selected')
         .css({
@@ -91,8 +96,9 @@ $(loadCy = function(){
         })
       .selector('.faded')
         .css({
-          'opacity': 0.25,
-          'text-opacity': 0
+          'opacity': 0.9,
+          'text-opacity': .9,
+          'z-index': 1,
        }),
 
     
@@ -102,17 +108,47 @@ $(loadCy = function(){
       window.cy = this;
   
       cy.elements().unselectify();
-    
+
       cy.on('tap', 'node', function(e){
         var node = e.cyTarget;
         var neighborhood = node.neighborhood().add(node);
-        node.toggleClass('largeNode');
+        cy.nodes().addClass('faded');
+        node.removeClass('faded');
+        node.toggleClass('focused');
+      });
+
+      //CLICKING ON AN EDGE CENTERS THE NODE THAT IS FURTHER FROM THE MIDDLE, SO IT SWAPS IF DOUBLE CLICKED
+      cy.on('tap', 'edge', function(e){
+        var edge = e.cyTarget;
+        var src = edge.source();
+        var targ = edge.target();
+
+        var cent_x = 480;
+        var cent_y = 300;
+
+        var targ_x = targ.renderedPosition("x");
+        var targ_y = targ.renderedPosition("y");
+       
+        var src_x = src.renderedPosition("x");
+        var src_y = src.renderedPosition("y");
+       
+        //distance function, sans sqrt
+        var targ_dist = Math.pow((cent_x - targ_x), 2) + Math.pow((cent_y - targ_y), 2);
+        var src_dist = Math.pow((cent_x - src_x), 2) + Math.pow((cent_y - src_y), 2);
+       
+        if (targ_dist >= src_dist){
+          cy.center(targ);
+        } else {
+          cy.center(src);
+        }
+
+
       });
       
       cy.on('tap', function(e){
         if( e.cyTarget === cy ){
           cy.nodes().removeClass('faded');
-          cy.nodes().removeClass('largeNode');
+          cy.nodes().removeClass('focused');
         }
       });
     }
