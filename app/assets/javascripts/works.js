@@ -48,6 +48,7 @@ $(loadCy = function(){
     },
 
     showOverlay: false,
+    panningEnabled: true,
     minZoom: 0.5,
     maxZoom: 2,
 
@@ -67,21 +68,7 @@ $(loadCy = function(){
           'border-color': '#fff',
           'z-index' : 1
         })
-      .selector('.focused')
-       .css({
-          'node_title' : 'data(title)',
-          'content': 'data(notes)',
-          'width' : '300px',
-          'height' : '300px',
-          'shape' : 'roundrectangle',
-          'text-valign' : "top",
-          'border-width' : "3px",
-          'border-color' : "#999",
-          'background-color' : '#fff',
-          'background-opacity' : 1,
-          "opacity" : 1,
-          "z-index" : 5,
-        })
+    
       .selector(':selected')
         .css({
           'background-color': '#000',
@@ -94,6 +81,27 @@ $(loadCy = function(){
           'width': 3,
           'target-arrow-shape': 'none'
         })
+      .selector('.focused')
+       .css({
+          'node_title' : 'data(title)',
+          'content': 'data(notes)',
+          'width' : '300px',
+          'height' : '300px',
+          'shape' : 'roundrectangle',
+          'text-valign' : "top",
+          'border-width' : "3px",
+          'border-color' : "#555",
+          'background-color' : '#fff',
+          'background-opacity' : 1,
+          "opacity" : 1,
+          "z-index" : 5,
+        })
+      .selector('.less-focused')
+        .css({
+          'border-color' : "#999",
+          'z-index' : 3
+        })
+
       .selector('.faded')
         .css({
           'opacity': 0.9,
@@ -106,18 +114,9 @@ $(loadCy = function(){
 
     ready: function(){
       window.cy = this;
-  
       cy.elements().unselectify();
 
-      cy.on('tap', 'node', function(e){
-        var node = e.cyTarget;
-        var neighborhood = node.neighborhood().add(node);
-      //  cy.nodes().addClass('faded');
-      //  node.removeClass('faded');
-        node.toggleClass('focused');
-      });
-
-      //CLICKING ON AN EDGE CENTERS THE NODE THAT IS FURTHER FROM THE MIDDLE, SO IT SWAPS IF DOUBLE CLICKED
+      //centers the node further from the middle when clicking edge
       cy.on('tap', 'edge', function(e){
         var edge = e.cyTarget;
         var src = edge.source();
@@ -136,9 +135,9 @@ $(loadCy = function(){
         var targ_y = targ.renderedPosition("y");
        
         //distance function, sans sqrt
-        var src_dist = Math.pow((cent_x - src_x), 2) + Math.pow((cent_y - src_y), 2);
-        var targ_dist = Math.pow((cent_x - targ_x), 2) + Math.pow((cent_y - targ_y), 2);
-       
+        var src_dist = (cent_x - src_x) * (cent_x - src_x) + (cent_y - src_y) * (cent_y - src_y);
+        var targ_dist = (cent_x - targ_x) * (cent_x - targ_x) + (cent_y - targ_y) * (cent_y - targ_y);
+
         //whichever node is further away, center it
         if (src_dist >= targ_dist){
           cy.center(src);
@@ -148,10 +147,26 @@ $(loadCy = function(){
 
       });
       
+      //bring focus to the element as they're clicked, prioritizing the most recent click
+      cy.on('tap', 'node', function(e){
+        var curr_node = e.cyTarget; 
+        var prev_foci = cy.elements('node.focused');
+
+        prev_foci.not(curr_node).addClass('less-focused'); //middleground all focused nodes except current
+
+        if (curr_node.hasClass('less-focused')){ //if it's been middlegrounded, foreground
+          curr_node.removeClass('less-focused');
+        } 
+        else { //otherwise, swap between foreground and background
+          curr_node.toggleClass('focused');
+        }
+      });
+      
+      //resets the nodes when background is clicked
       cy.on('tap', function(e){
         if( e.cyTarget === cy ){
-        //  cy.nodes().removeClass('faded');
-          cy.nodes().removeClass('focused');
+          cy.elements().removeClass('focused');
+          cy.elements().removeClass('less-focused');
         }
       });
     }

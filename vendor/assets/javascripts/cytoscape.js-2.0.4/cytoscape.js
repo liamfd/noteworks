@@ -9618,22 +9618,35 @@ function getLines(ctx, text, maxWidth) {
 	CanvasRenderer.isTouch = ('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch;
 
 	CanvasRenderer.prototype.notify = function(params) {
-		if ( params.type == "destroy" ){
+//		if ( params.type == "destroy" ){
+		switch( params.type ){
+
+		case "destroy":
 			this.destroy();
 			return;
 
-		} else if (params.type == "add"
+		/*} else if (params.type == "add"
 			|| params.type == "remove"
 			|| params.type == "load"
 		) {
-			
+		*/
+		case "add":
+		case "remove":
+		case "load":	
 			this.updateNodesCache();
 			this.updateEdgesCache();
-		}
+		//}
+		break;
 
-		if (params.type == "viewport") {
+	//	if (params.type == "viewport") {
+		case "viewport":
 			this.data.canvasNeedsRedraw[CanvasRenderer.SELECT_BOX] = true;
 			this.data.canvasRedrawReason[CanvasRenderer.SELECT_BOX].push("viewchange");
+
+			break;
+		case "style" :
+			this.updateCachedZSortedEles();
+			break;
 		}
 		
 		this.data.canvasNeedsRedraw[CanvasRenderer.DRAG] = true; this.data.canvasRedrawReason[CanvasRenderer.DRAG].push("notify");
@@ -10662,8 +10675,9 @@ function getLines(ctx, text, maxWidth) {
 			}
 		};
 
-		var result = a._private.style["z-index"].value
-			- b._private.style["z-index"].value;
+		//var result = a._private.style["z-index"].value
+		//	- b._private.style["z-index"].value;
+		var result = a._private.style["z-index"].value - b._private.style["z-index"].value;
 
 		var depthA = 0;
 		var depthB = 0;
@@ -10715,14 +10729,21 @@ function getLines(ctx, text, maxWidth) {
 		return 0;
 	};
 
-	CanvasRenderer.prototype.getCachedZSortedEles = function(){
+//	CanvasRenderer.prototype.getCachedZSortedEles = function(){
+	CanvasRenderer.prototype.updateCachedZSortedEles = function(){
+		this.getCachedZSortedEles (true);
+	};
+
+	CanvasRenderer.prototype.getCachedZSortedEles = function( forceRecalc){
 		var lastNodes = this.lastZOrderCachedNodes;
 		var lastEdges = this.lastZOrderCachedEdges;
 		var nodes = this.getCachedNodes();
 		var edges = this.getCachedEdges();
 		var eles = [];
 
-		if( !lastNodes || !lastEdges || lastNodes !== nodes || lastEdges !== edges ){ 
+		//if( !lastNodes || !lastEdges || lastNodes !== nodes || lastEdges !== edges ){ 
+		if( forceRecalc || !lastNodes || !lastEdges || lastNodes !== nodes || lastEdges !== edges ){ 
+		
 			//console.time('cachezorder')
 			
 			for( var i = 0; i < nodes.length; i++ ){
