@@ -49,6 +49,7 @@ $(loadCy = function(){
 
     showOverlay: false,
     panningEnabled: true,
+    boxSelectionEnabled: false,
     minZoom: 0.5,
     maxZoom: 2,
 
@@ -90,7 +91,7 @@ $(loadCy = function(){
           'shape' : 'roundrectangle',
           'text-valign' : "top",
           'border-width' : "3px",
-          'border-color' : "#555",
+          'border-color' : "#666",
           'background-color' : '#fff',
           'background-opacity' : 1,
           "opacity" : 1,

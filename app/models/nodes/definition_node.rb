@@ -1,3 +1,0 @@
-class DefinitionNode < Node
-
-end

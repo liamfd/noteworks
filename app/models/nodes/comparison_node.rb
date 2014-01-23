@@ -1,3 +1,0 @@
-class ComparisonNode < Node
-
-end

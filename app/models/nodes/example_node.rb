@@ -1,3 +1,0 @@
-class ExampleNode < Node
-
-end
