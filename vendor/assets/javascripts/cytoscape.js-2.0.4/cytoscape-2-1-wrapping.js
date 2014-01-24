@@ -12141,6 +12141,11 @@ function getLines(ctx, text, maxWidth) {
 		var vert_offset = 0;
 		var prev_vert_offset = 0;
 
+		labelSize = "18px";
+		context.font = labelStyle + " " + labelWeight + " "
+			+ labelSize + " " + labelFamily;
+		
+		
 		//in my case, the title
 		if (text != undefined) {
 			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
@@ -12148,7 +12153,7 @@ function getLines(ctx, text, maxWidth) {
 			
 			//move the title down if large node
 			if (note_text != "") {
-				vert_offset += 20;
+				vert_offset += 24;
 			}
 
 			//save the current offset
@@ -12159,10 +12164,7 @@ function getLines(ctx, text, maxWidth) {
 				for (i = 0; i < lines.length; i++){
 					
 					context.strokeText(lines[i], textX, textY+vert_offset);	
-					vert_offset += 20;
-
-					console.log("------------");
-					console.log(vert_offset);
+					vert_offset += 24;
 				}			
 			}
 
@@ -12171,10 +12173,13 @@ function getLines(ctx, text, maxWidth) {
 		
 			for (i = 0; i < lines.length; i++){
 				context.fillText("" + lines[i], textX, textY+vert_offset);	
-				vert_offset += 20;
+				vert_offset += 24;
 			}
 		}
-
+		labelSize = element._private.style["font-size"].pxValue + "px";
+		context.font = labelStyle + " " + labelWeight + " "
+			+ labelSize + " " + labelFamily;
+		
 		//The notes
 		if (note_text != undefined) {
 			var lines = getLines(context, note_text, 300);
@@ -12193,9 +12198,6 @@ function getLines(ctx, text, maxWidth) {
 			for (i = 0; i < lines.length; i++){
 				context.fillText("" + lines[i], textX, textY+vert_offset);	
 				vert_offset += 20;
-
-				console.log(vert_offset);
-				console.log("*********");
 			}
 
 			// record the text's width for use in bounding box calc
