@@ -16,7 +16,7 @@
 
 //= require d3
 //= require cytoscape.js-2.0.4/arbor
-//= require cytoscape.js-2.0.4/cytoscape
+//= require cytoscape.js-2.0.4/cytoscape-2-1-wrapping.js
 //= require cytoscape.js-2.0.4/jquery.cxtmenu
 //= require cytoscape.js-2.0.4/jquery.cytoscape-edgehandles
 //= require cytoscape.js-2.0.4/jquery.cytoscape-navigator

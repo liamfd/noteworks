@@ -9641,7 +9641,7 @@ function getLines(ctx, text, maxWidth) {
 	//	if (params.type == "viewport") {
 		case "viewport":
 			this.data.canvasNeedsRedraw[CanvasRenderer.SELECT_BOX] = true;
-			this.data.canvasRedrawReason[CanvasRenderer.SELECT_BOX].push("viewchange");
+			//this.data.canvasRedrawReason[CanvasRenderer.SELECT_BOX].push("viewchange");
 
 			break;
 		case "style" :
@@ -11975,6 +11975,7 @@ function getLines(ctx, text, maxWidth) {
 			if (text != "") {
 				vert_offset += 20;
 			}
+			
 			var prev_vert_offset = vert_offset;
 
 			if (lineWidth > 0) {

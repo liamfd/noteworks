@@ -56,7 +56,7 @@ $(loadCy = function(){
     style: cytoscape.stylesheet()
       .selector('node')
         .css({
-          'node_title': 'data(title)',
+          'content': 'data(notes)',
           'font-family': 'helvetica',
           'font-size': 14,
           'text-outline-width': 3,
@@ -84,8 +84,8 @@ $(loadCy = function(){
         })
       .selector('.focused')
        .css({
-          'node_title' : 'data(title)',
-          'content': 'data(notes)',
+          'content' : 'data(title)',
+          'notes': 'data(notes)',
           'width' : '300px',
           'height' : '300px',
           'shape' : 'roundrectangle',
