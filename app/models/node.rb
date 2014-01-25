@@ -15,6 +15,15 @@ class Node < ActiveRecord::Base
 
   belongs_to :node, class_name: "Node"
 
+  before_create :before_save_checker
+
+  #bottom, private
+   def before_create_color_randomizer 
+        if markup_changed?
+          parseText
+        end
+   end
+
   #adds a single node to the end of the current combined_notes string
   def add_note_to_combined(new_note)
     @new_piece = " //- " << new_note.body.strip
