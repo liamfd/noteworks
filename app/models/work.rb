@@ -114,6 +114,7 @@ class Work < ActiveRecord::Base
 				#somehow have to break this up such that it says 3 whitespace = 1 tab. 
 				#ah, but the javascript will do that for me.
 
+			#if it's a note
 			elsif @firstChar == '-'
 				@content = line.match(/-(.*)/).captures.first
 				
@@ -123,8 +124,10 @@ class Work < ActiveRecord::Base
 				@new_note = Note.new()
 				@new_note.body = @content
 				@new_note.node_id = @parent.id
-
 				@new_note.save
+
+				@parent.add_note_to_combined(@new_note)
+
 
 				@stack.push(@parentNodeDepth)
 				
