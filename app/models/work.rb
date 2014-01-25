@@ -60,8 +60,8 @@ class Work < ActiveRecord::Base
 				@category = @withinBrackets.match(/\.(.*)>/).captures.first
 				@category_id = 0
 				Category.all.each do |cat|
-					if @category == cat.name
-						@category_id = (Category.where("name = ?", @category).first).id
+					if (@category.downcase) == (cat.name).downcase
+						@category_id = (Category.where("name = ?", cat.name).first).id
 					end
 				end
 				if @category_id == 0

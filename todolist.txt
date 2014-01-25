@@ -5,8 +5,6 @@ relate the offset to the font_size in cytoscape.js
 figure out a way to show categories/titles
 add autofit
 
-ADD FOCUS ON DRAG
-
 work on the note/title disctinction
 	add fields for the text formatting for the title
 
@@ -18,9 +16,9 @@ NODE AUTO-SIZE
 	---------STREAMLINE IT ANYWAYS, SO YOU'RE NOT REDOING IT EVERY STEP
 
 
-map colors to categories
-	add field
-	randomly generate automatic?
+------map colors to categories
+-----	add field
+----	randomly generate automatic?
 	long term - allow for color picker
 
 
