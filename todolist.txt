@@ -1,0 +1,25 @@
+CURRENT
+relate the offset to the font_size in cytoscape.js
+--------working default when there're no nodes so the title isn't moved up
+figure out a way to assign colors to the title/node borders
+figure out a way to show categories/titles
+
+
+NODE AUTO-SIZE
+
+add the focus on drag, not just click
+
+FIX WHATEVERS WRONG WITH THE NOTE CONVERSION (TO A SINGLE CHUNK, MAKE IT ITERATIVE)
+	STREAMLINE IT ANYWAYS, SO YOU'RE NOT REDOING IT EVERY STEP
+	make it push the title down no matter what
+
+map colors to categories
+	add field
+	randomly generate automatic?
+	long term - allow for color picker
+
+
+
+LONG TERM
+	color picker for the category color
+

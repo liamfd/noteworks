@@ -103,12 +103,19 @@ $(loadCy = function(){
           'z-index' : 3
         })
 
+      .selector('.dragging')
+        .css({
+          "z-index":5
+        })
+
       .selector('.faded')
         .css({
           'opacity': 0.9,
           'text-opacity': 0.9,
           'z-index': 1,
        }),
+
+
 
     
     elements:gon.elements,
@@ -163,6 +170,22 @@ $(loadCy = function(){
         }
       });
       
+      cy.on('drag' , 'node', function(e){
+        var node = e.cyTarget;
+
+        node.addClass("dragging");
+    /*    var prev_foci = cy.elements('node.focused');
+
+        prev_foci.not(curr_node).addClass('less-focused'); //middleground all focused nodes except current
+
+        if (curr_node.hasClass('less-focused')){ //if it's been middlegrounded, foreground
+          curr_node.removeClass('less-focused');
+        } 
+        else { //otherwise, swap between foreground and background
+          curr_node.toggleClass('focused');
+        }*/
+      });
+
       //resets the nodes when background is clicked
       cy.on('tap', function(e){
         if( e.cyTarget === cy ){

@@ -3921,7 +3921,7 @@ function getLines(ctx, text, maxWidth) {
 					"opacity": 1,
 					"z-index": 0,
 					"content": "",
-					"notes": "",
+					"notes": "-", //the notes will never just be a dash, if nothing else it will have filler
 					"overlay-opacity": 0,
 					"overlay-color": "#000",
 					"overlay-padding": 10,
@@ -12107,6 +12107,7 @@ function getLines(ctx, text, maxWidth) {
 		
 		var text = String(element._private.style["content"].value);
 		var note_text = String(element._private.style["notes"].value);
+
 		var textTransform = element._private.style["text-transform"].value;
 		
 		if (textTransform == "none") {
@@ -12152,9 +12153,13 @@ function getLines(ctx, text, maxWidth) {
 			var lines = getLines(context, text, 300);
 			
 			//move the title down if large node
-			if (note_text != "") {
+			if (note_text != "-") {
 				vert_offset += 24;
+			//	console.log("not showing up as null string");
 			}
+			//else{
+			//	console.log("showing up as null string")
+			//}
 
 			//save the current offset
 			prev_vert_offset = vert_offset;
@@ -12181,7 +12186,7 @@ function getLines(ctx, text, maxWidth) {
 			+ labelSize + " " + labelFamily;
 		
 		//The notes
-		if (note_text != undefined) {
+		if (note_text != undefined && note_text != "-") {
 			var lines = getLines(context, note_text, 300);
 	
 			prev_vert_offset = vert_offset;
