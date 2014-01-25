@@ -59,14 +59,9 @@ $(loadCy = function(){
           'content': 'data(title)',
           'font-family': 'helvetica',
           'font-size': 14,
-          'text-outline-width': 3,
-          'text-outline-color': '#888',
-          'text-valign': 'center',
-          'text-halign' : 'center',
-          'color': '#fff',
+          
           'width': 'mapData(weight, 30, 80, 20, 50)',
           'height': 'mapData(height, 0, 200, 10, 45)',
-          'border-color': '#fff',
           'z-index' : 1
         })
     
@@ -82,6 +77,15 @@ $(loadCy = function(){
           'width': 3,
           'target-arrow-shape': 'none'
         })
+      .selector('.starting')
+        .css({
+          'text-outline-width': 3,
+          'text-outline-color': 'data(color)',
+          'background-color': '#888888',
+          'text-valign': 'center',
+          'text-halign' : 'center',
+          'color': '#fff',
+        })
       .selector('.focused')
        .css({
           'content' : 'data(title)',
@@ -89,9 +93,11 @@ $(loadCy = function(){
           'width' : '300px',
           'height' : '300px',
           'shape' : 'roundrectangle',
+          'text-outline-width': 0,
+          'color': '#888888',
           'text-valign' : "top",
           'border-width' : "3px",
-          'border-color' : "#666",
+          'border-color' : "data(color)",
           'background-color' : '#fff',
           'background-opacity' : 1,
           "opacity" : 1,
@@ -99,13 +105,8 @@ $(loadCy = function(){
         })
       .selector('.less-focused')
         .css({
-          'border-color' : "#999",
-          'z-index' : 3
-        })
-
-      .selector('.dragging')
-        .css({
-          "z-index":5
+          'z-index' : 3,
+          'background-color':"#dddddd"
         })
 
       .selector('.faded')
@@ -169,22 +170,6 @@ $(loadCy = function(){
           curr_node.toggleClass('focused');
         }
       });
-      
-      cy.on('drag' , 'node', function(e){
-        var node = e.cyTarget;
-
-        node.addClass("dragging");
-    /*    var prev_foci = cy.elements('node.focused');
-
-        prev_foci.not(curr_node).addClass('less-focused'); //middleground all focused nodes except current
-
-        if (curr_node.hasClass('less-focused')){ //if it's been middlegrounded, foreground
-          curr_node.removeClass('less-focused');
-        } 
-        else { //otherwise, swap between foreground and background
-          curr_node.toggleClass('focused');
-        }*/
-      });
 
       //resets the nodes when background is clicked
       cy.on('tap', function(e){
@@ -193,6 +178,11 @@ $(loadCy = function(){
           cy.elements().removeClass('less-focused');
         }
       });
+
+      cy.on('load', function(e) {
+        cy.elements().addClass("starting");
+      });
+
     }
   };
   $('#cy').cytoscape(options);
