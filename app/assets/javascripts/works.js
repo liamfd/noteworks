@@ -107,11 +107,10 @@ $(loadCy = function(){
           'text-valign' : "top",
           'font-size':"18px",
 
-
           'notes': 'data(notes)',
           'note-text-outline-width': 0,
           'note-text-outline-color':"#fff",
-          'note-color': '#888888',
+          'note-color': '#444',
           'note-font-size': "16px",
           'note-font-weight': "bold",
         })
