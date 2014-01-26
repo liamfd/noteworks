@@ -3769,7 +3769,6 @@ function getLines(ctx, text, maxWidth) {
 			{ name: "text-halign", type: t.halign },
 			{ name: "color", type: t.color },
 			{ name: "content", type: t.text },
-			{ name: "notes", type: t.text},
 			{ name: "text-outline-color", type: t.color },
 			{ name: "text-outline-width", type: t.size },
 			{ name: "text-outline-opacity", type: t.zeroOneNumber },
@@ -3790,6 +3789,22 @@ function getLines(ctx, text, maxWidth) {
 			{ name: "overlay-color", type: t.color },
 			{ name: "overlay-opacity", type: t.zeroOneNumber },
 
+			//liam's additions
+			{ name: "notes", type: t.text },
+			{ name: "note-color", type: t.color },
+			{ name: "note-text-outline-color", type: t.color },
+			{ name: "note-text-outline-width", type: t.size },
+			{ name: "note-text-outline-opacity", type: t.zeroOneNumber },
+			{ name: "note-text-opacity", type: t.zeroOneNumber },
+			{ name: "note-text-decoration", type: t.textDecoration },
+			{ name: "note-text-transform", type: t.textTransform },
+			{ name: "note-font-family", type: t.fontFamily },
+			{ name: "note-font-style", type: t.fontStyle },
+			{ name: "note-font-variant", type: t.fontVariant },
+			{ name: "note-font-weight", type: t.fontWeight },
+			{ name: "note-font-size", type: t.size },
+			{ name: "note-min-zoomed-font-size", type: t.size },
+				
 			// these are just for nodes
 			{ name: "background-color", type: t.color },
 			{ name: "background-opacity", type: t.zeroOneNumber },
@@ -3903,7 +3918,6 @@ function getLines(ctx, text, maxWidth) {
 					"text-halign": "center",
 					"color": color,
 					"content": undefined, // => no label
-					"notes": undefined,
 					"text-outline-color": "#000",
 					"text-outline-width": 0,
 					"text-outline-opacity": 1,
@@ -3921,10 +3935,26 @@ function getLines(ctx, text, maxWidth) {
 					"opacity": 1,
 					"z-index": 0,
 					"content": "",
-					"notes": "-", //the notes will never just be a dash, if nothing else it will have filler
 					"overlay-opacity": 0,
 					"overlay-color": "#000",
 					"overlay-padding": 10,
+
+					//liam's additions
+					"notes": undefined,
+					"note-color": color,
+					"note-text-outline-color": "#000",
+					"note-text-outline-width": 0,
+					"note-text-outline-opacity": 1,
+					"note-text-opacity": 1,
+					"note-text-decoration": "none",
+					"note-text-transform": textTransform,
+					"note-font-family": fontFamily,
+					"note-font-style": fontStyle,
+					"note-font-variant": fontVariant,
+					"note-font-weight": fontWeight,
+					"note-font-size": fontSize,
+					"note-min-zoomed-font-size": 0,
+					"notes": "-", //the notes will never just be a dash, if nothing else it will have filler
 
 					// node props
 					"background-color": "#888",
@@ -12095,21 +12125,23 @@ function getLines(ctx, text, maxWidth) {
 			}
 		}
 
+		//the two texts
+		var text = String(element._private.style["content"].value);
+		var note_text = String(element._private.style["notes"].value);
+
+
+		/* THIS IS THE STYLING FOR THE TITLE (THE ORIGINAL LABEL) */
 		// Font style
 		var labelStyle = element._private.style["font-style"].strValue;
 		var labelSize = element._private.style["font-size"].pxValue + "px";
 		var labelFamily = element._private.style["font-family"].strValue;
 		var labelVariant = element._private.style["font-variant"].strValue;
 		var labelWeight = element._private.style["font-weight"].strValue;
-		
 		context.font = labelStyle + " " + labelWeight + " "
 			+ labelSize + " " + labelFamily;
 		
-		var text = String(element._private.style["content"].value);
-		var note_text = String(element._private.style["notes"].value);
-
+		//text transform
 		var textTransform = element._private.style["text-transform"].value;
-		
 		if (textTransform == "none") {
 		} else if (textTransform == "uppercase") {
 			text = text.toUpperCase();
@@ -12126,14 +12158,14 @@ function getLines(ctx, text, maxWidth) {
 			+ element._private.style["color"].value[0] + ","
 			+ element._private.style["color"].value[1] + ","
 			+ element._private.style["color"].value[2] + ","
-			+ (element._private.style["text-opacity"].value
+			+ (element._private.style["note-text-opacity"].value
 			* element._private.style["opacity"].value * parentOpacity) + ")";
 		
 		context.strokeStyle = "rgba(" 
 			+ element._private.style["text-outline-color"].value[0] + ","
 			+ element._private.style["text-outline-color"].value[1] + ","
 			+ element._private.style["text-outline-color"].value[2] + ","
-			+ (element._private.style["text-opacity"].value
+			+ (element._private.style["note-text-opacity"].value
 			* element._private.style["opacity"].value * parentOpacity) + ")";
 		
 		//LIAM'S SHIT	
@@ -12142,11 +12174,6 @@ function getLines(ctx, text, maxWidth) {
 		var vert_offset = 0;
 		var prev_vert_offset = 0;
 
-		labelSize = "18px";
-		context.font = labelStyle + " " + labelWeight + " "
-			+ labelSize + " " + labelFamily;
-		
-		
 		//in my case, the title
 		if (text != undefined) {
 			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
@@ -12155,11 +12182,7 @@ function getLines(ctx, text, maxWidth) {
 			//move the title down if large node
 			if (note_text != "-") {
 				vert_offset += 24;
-			//	console.log("not showing up as null string");
 			}
-			//else{
-			//	console.log("showing up as null string")
-			//}
 
 			//save the current offset
 			prev_vert_offset = vert_offset;
@@ -12181,7 +12204,36 @@ function getLines(ctx, text, maxWidth) {
 				vert_offset += 24;
 			}
 		}
-		labelSize = element._private.style["font-size"].pxValue + "px";
+
+		/* THIS IS THE STYLING FOR THE NOTES */
+		// Font style
+		var labelStyle = element._private.style["note-font-style"].strValue;
+		var labelSize = element._private.style["note-font-size"].pxValue + "px";
+		var labelFamily = element._private.style["note-font-family"].strValue;
+		var labelVariant = element._private.style["note-font-variant"].strValue;
+		var labelWeight = element._private.style["note-font-weight"].strValue;
+		
+		context.font = labelStyle + " " + labelWeight + " "
+			+ labelSize + " " + labelFamily;
+			
+		// so text outlines aren't jagged
+		context.lineJoin = 'round';
+
+		context.fillStyle = "rgba(" 
+			+ element._private.style["note-color"].value[0] + ","
+			+ element._private.style["note-color"].value[1] + ","
+			+ element._private.style["note-color"].value[2] + ","
+			+ (element._private.style["text-opacity"].value
+			* element._private.style["opacity"].value * parentOpacity) + ")";
+		
+		context.strokeStyle = "rgba(" 
+			+ element._private.style["note-text-outline-color"].value[0] + ","
+			+ element._private.style["note-text-outline-color"].value[1] + ","
+			+ element._private.style["note-text-outline-color"].value[2] + ","
+			+ (element._private.style["text-opacity"].value
+			* element._private.style["opacity"].value * parentOpacity) + ")";
+
+
 		context.font = labelStyle + " " + labelWeight + " "
 			+ labelSize + " " + labelFamily;
 		
@@ -12208,24 +12260,6 @@ function getLines(ctx, text, maxWidth) {
 			// record the text's width for use in bounding box calc
 			//element._private.rstyle.labelWidth = context.measureText( node_title ).width;
 		}
-		/*
-		if (text != undefined) {
-			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
-			if (lineWidth > 0) {
-				context.lineWidth = lineWidth;
-				context.strokeText(text, textX, textY);
-			}
-
-			// Thanks sysord@github for the isNaN checks!
-			if (isNaN(textX)) { textX = 0; }
-			if (isNaN(textY)) { textY = 0; }
-
-			context.fillText("" + text, textX, textY);
-
-			// record the text's width for use in bounding box calc
-			element._private.rstyle.labelWidth = context.measureText( text ).width;
-		}
-		*/
 	};
 
 	

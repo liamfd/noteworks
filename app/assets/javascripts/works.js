@@ -81,27 +81,39 @@ $(loadCy = function(){
         .css({
           'text-outline-width': 3,
           'text-outline-color': 'data(color)',
-          'background-color': '#888888',
+          'background-color':'data(color)',
+          'background-color': '#aaa',
           'text-valign': 'center',
           'text-halign' : 'center',
           'color': '#fff',
+          'font-size':"16px",
         })
       .selector('.focused')
        .css({
-          'content' : 'data(title)',
-          'notes': 'data(notes)',
           'width' : '300px',
           'height' : '300px',
           'shape' : 'roundrectangle',
-          'text-outline-width': 0,
-          'color': '#888888',
-          'text-valign' : "top",
           'border-width' : "3px",
           'border-color' : "data(color)",
           'background-color' : '#fff',
           'background-opacity' : 1,
           "opacity" : 1,
           "z-index" : 5,
+
+          'content' : 'data(title)',
+          'text-outline-width': 3,
+          'text-outline-color': 'data(color)',
+          'color': '#fff',
+          'text-valign' : "top",
+          'font-size':"18px",
+
+
+          'notes': 'data(notes)',
+          'note-text-outline-width': 0,
+          'note-text-outline-color':"#fff",
+          'note-color': '#888888',
+          'note-font-size': "16px",
+          'note-font-weight': "bold",
         })
       .selector('.less-focused')
         .css({

@@ -8,7 +8,7 @@ add autofit
 work on the note/title disctinction
 	add fields for the text formatting for the title
 
-bullshit with the parser not recognizing non-lowercased stuffS
+---------bullshit with the parser not recognizing non-lowercased stuffS
 
 NODE AUTO-SIZE
 
