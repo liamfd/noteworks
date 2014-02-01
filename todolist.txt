@@ -3,14 +3,15 @@ relate the offset to the font_size in cytoscape.js
 -------- working default when there're no nodes so the title isn't moved up
 -------- figure out a way to assign colors to the title/node borders
 figure out a way to show categories/titles
-add autofit
+--------- add autofit
+translate tab to three spaces
 
-work on the note/title disctinction
-	add fields for the text formatting for the title
+-------work on the note/title disctinction
+------	add fields for the text formatting for the title
 
 ---------bullshit with the parser not recognizing non-lowercased stuffS
 
-NODE AUTO-SIZE
+NODE AUTO-HEIGHT
 
 --------FIX WHATEVERS WRONG WITH THE NOTE CONVERSION (TO A SINGLE CHUNK, MAKE IT ITERATIVE)
 	---------STREAMLINE IT ANYWAYS, SO YOU'RE NOT REDOING IT EVERY STEP

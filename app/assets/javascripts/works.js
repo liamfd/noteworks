@@ -81,8 +81,9 @@ $(loadCy = function(){
         .css({
           'text-outline-width': 3,
           'text-outline-color': 'data(color)',
-          'background-color':'data(color)',
-          'background-color': '#aaa',
+          'border-color':'data(color)',
+          'border-width':3,
+          'background-color': '#fff',
           'text-valign': 'center',
           'text-halign' : 'center',
           'color': '#fff',
