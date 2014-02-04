@@ -88,11 +88,12 @@ $(loadCy = function(){
           'text-halign' : 'center',
           'color': '#fff',
           'font-size':"16px",
+          'height':"30px",
         })
       .selector('.focused')
        .css({
           'width' : '300px',
-          'height' : '300px',
+          'height' : 'auto',
           'shape' : 'roundrectangle',
           'border-width' : "3px",
           'border-color' : "data(color)",

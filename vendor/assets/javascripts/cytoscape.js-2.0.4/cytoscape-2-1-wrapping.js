@@ -12260,6 +12260,12 @@ function getLines(ctx, text, maxWidth) {
 			// record the text's width for use in bounding box calc
 			//element._private.rstyle.labelWidth = context.measureText( node_title ).width;
 		}
+
+		//element._private.style["height"].pxValue = vert_offset;
+		//element._private.style["height"].strValue = vert_offset + "px";
+		//element._private.style["height"].value = vert_offset;
+		console.log(element._private.style["height"]);
+		//}
 	};
 
 	
@@ -12293,6 +12299,7 @@ function getLines(ctx, text, maxWidth) {
 		
 		nodeWidth = this.getNodeWidth(node);
 		nodeHeight = this.getNodeHeight(node);
+		//nodeHeight = "400".pxValue;
 		
 		context.lineWidth = node._private.style["border-width"].pxValue;
 
@@ -12706,6 +12713,9 @@ function getLines(ctx, text, maxWidth) {
 					
 					//if (element._private.group == "nodes") {
 					if ( element.isNode() ) {
+						element._private.style["height"].pxValue = 200;
+						element._private.style["height"].strValue = 200 + "px";
+						element._private.style["height"].value = 200;
 						r.drawNode(context, element);
 						
 						 r.drawNodeText(context, element);
