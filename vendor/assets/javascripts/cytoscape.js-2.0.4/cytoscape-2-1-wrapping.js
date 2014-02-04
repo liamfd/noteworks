@@ -12713,9 +12713,18 @@ function getLines(ctx, text, maxWidth) {
 					
 					//if (element._private.group == "nodes") {
 					if ( element.isNode() ) {
-						element._private.style["height"].pxValue = 200;
-						element._private.style["height"].strValue = 200 + "px";
-						element._private.style["height"].value = 200;
+
+						var nt_text = String(element._private.style["notes"].value);
+						var lines = getLines(context, nt_text, 300);
+						new_height = lines.length * 20;
+
+						var text = String(element._private.style["content"].value);
+						var lines = getLines(context, text, 300);
+						new_height += lines.length * 24 + 24;
+
+						element._private.style["height"].pxValue = new_height;
+						element._private.style["height"].strValue = new_height + "px";
+						element._private.style["height"].value = new_height;
 						r.drawNode(context, element);
 						
 						 r.drawNodeText(context, element);
