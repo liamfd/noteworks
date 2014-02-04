@@ -32,16 +32,20 @@ function getLines(ctx, text, maxWidth) {
     for (var i = 0; i < words.length; i++) {
         var word = words[i];
         var width = ctx.measureText(currentLine + " " + word).width;
+
         if (word == "//-") {
        		lines.push(currentLine);
        		currentLine = "-";
+       		console.log("width now is " + width);
         } else if (width < maxWidth) {
             currentLine += " " + word;
         } else {
             lines.push(currentLine);
             currentLine = word;
+            console.log("width now is " + width);
         }
     }
+    console.log("*&*********");
     lines.push(currentLine);
     return lines;
 }
@@ -12264,7 +12268,7 @@ function getLines(ctx, text, maxWidth) {
 		//element._private.style["height"].pxValue = vert_offset;
 		//element._private.style["height"].strValue = vert_offset + "px";
 		//element._private.style["height"].value = vert_offset;
-		console.log(element._private.style["height"]);
+		console.log("vert_offset:" + vert_offset);
 		//}
 	};
 
@@ -12714,17 +12718,41 @@ function getLines(ctx, text, maxWidth) {
 					//if (element._private.group == "nodes") {
 					if ( element.isNode() ) {
 
-						var nt_text = String(element._private.style["notes"].value);
-						var lines = getLines(context, nt_text, 300);
-						new_height = lines.length * 20;
+						//if it's got notes showing, autofit the height
+						if (String(element._private.style["notes"].value) != "-"){
+							var new_height = 0;
+							//height of the notes
+							var nt_text = String(element._private.style["notes"].value);
+							var lines = getLines(context, nt_text, 300);
+							console.log(lines);
+							new_height += lines.length * 20;
+							console.log("new height after notes:" + new_height);
 
-						var text = String(element._private.style["content"].value);
-						var lines = getLines(context, text, 300);
-						new_height += lines.length * 24 + 24;
+							//height of the title
+							var text = String(element._private.style["content"].value);
+							var lines = getLines(context, text, 300);
+							new_height += lines.length * 24;
+							console.log("new height after title:" + new_height);
 
-						element._private.style["height"].pxValue = new_height;
-						element._private.style["height"].strValue = new_height + "px";
-						element._private.style["height"].value = new_height;
+							//gap between
+							new_height += 24;
+
+							element._private.style["height"].pxValue = new_height;
+							element._private.style["height"].strValue = new_height + "px";
+							element._private.style["height"].value = new_height;
+
+							console.log("new height:" + new_height);
+						}
+
+						//otherwise, default it back to 30
+						//this is terrible code
+						else{
+							element._private.style["height"].pxValue = 30;
+							element._private.style["height"].strValue = 30 + "px";
+							element._private.style["height"].value = 30;
+							
+						}
+
 						r.drawNode(context, element);
 						
 						 r.drawNodeText(context, element);
