@@ -45,7 +45,6 @@ function getLines(ctx, text, maxWidth) {
             console.log("width now is " + width);
         }
     }
-    console.log("*&*********");
     lines.push(currentLine);
     return lines;
 }
@@ -12055,7 +12054,7 @@ function getLines(ctx, text, maxWidth) {
 	};
 
 	// Draw node text
-	CanvasRenderer.prototype.drawNodeText = function(context, node) {
+	CanvasRenderer.prototype.drawNodeText = function(context, node, title_lines, note_lines) {
 		
 		if ( !node.visible() ) {
 			return;
@@ -12109,12 +12108,15 @@ function getLines(ctx, text, maxWidth) {
 			context.textBaseline = "middle";
 			textY = node._private.position.y;
 		}
-		
-		this.drawText(context, node, textX, textY);
+		console.log("********");
+		console.log(title_lines);
+		console.log(note_lines);
+		console.log("--------");
+		this.drawText(context, node, textX, textY, title_lines, note_lines);
 	};
 	
 	// Draw text
-	CanvasRenderer.prototype.drawText = function(context, element, textX, textY) {
+	CanvasRenderer.prototype.drawText = function(context, element, textX, textY, title_lines, note_lines) {
 	
 		var parentOpacity = 1;
 		var parents = element.parents();
@@ -12129,6 +12131,7 @@ function getLines(ctx, text, maxWidth) {
 			}
 		}
 
+		
 		//the two texts
 		var text = String(element._private.style["content"].value);
 		var note_text = String(element._private.style["notes"].value);
@@ -12181,7 +12184,14 @@ function getLines(ctx, text, maxWidth) {
 		//in my case, the title
 		if (text != undefined) {
 			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
-			var lines = getLines(context, text, 300);
+			console.log("8888888888888");
+			console.log(title_lines);
+			//var title_lines = getLines(context, text, 300);
+			if (title_lines == undefined){
+				title_lines = " ";
+			}
+			console.log(title_lines);
+			console.log("&&&&&&&&&&&&&");
 			
 			//move the title down if large node
 			if (note_text != "-") {
@@ -12193,9 +12203,9 @@ function getLines(ctx, text, maxWidth) {
 			
 			if (lineWidth > 0) {
 				context.lineWidth = lineWidth;
-				for (i = 0; i < lines.length; i++){
+				for (i = 0; i < title_lines.length; i++){
 					
-					context.strokeText(lines[i], textX, textY+vert_offset);	
+					context.strokeText(title_lines[i], textX, textY+vert_offset);	
 					vert_offset += 24;
 				}			
 			}
@@ -12203,8 +12213,8 @@ function getLines(ctx, text, maxWidth) {
 			//start at the original offset, so shading lines up
 			vert_offset = prev_vert_offset;
 		
-			for (i = 0; i < lines.length; i++){
-				context.fillText("" + lines[i], textX, textY+vert_offset);	
+			for (i = 0; i < title_lines.length; i++){
+				context.fillText("" + title_lines[i], textX, textY+vert_offset);	
 				vert_offset += 24;
 			}
 		}
@@ -12243,21 +12253,27 @@ function getLines(ctx, text, maxWidth) {
 		
 		//The notes
 		if (note_text != undefined && note_text != "-") {
-			var lines = getLines(context, note_text, 300);
-	
+			console.log("8888888888888");
+			console.log(note_lines);
+			if (note_lines == undefined){
+				note_lines = " ";
+			}
+	//		var note_lines = getLines(context, note_text, 300);
+			console.log(note_lines);
+			console.log("&&&&&&&&&&&&&");
 			prev_vert_offset = vert_offset;
 
 			if (lineWidth > 0) {
 				context.lineWidth = lineWidth;
-				for (i = 0; i < lines.length; i++){					
-					context.strokeText(lines[i], textX, textY+vert_offset);	
+				for (i = 0; i < note_lines.length; i++){					
+					context.strokeText(note_lines[i], textX, textY+vert_offset);	
 					vert_offset += 20;
 				}			
 			}
 			vert_offset = prev_vert_offset;
 		
-			for (i = 0; i < lines.length; i++){
-				context.fillText("" + lines[i], textX, textY+vert_offset);	
+			for (i = 0; i < note_lines.length; i++){
+				context.fillText("" + note_lines[i], textX, textY+vert_offset);	
 				vert_offset += 20;
 			}
 
@@ -12268,7 +12284,6 @@ function getLines(ctx, text, maxWidth) {
 		//element._private.style["height"].pxValue = vert_offset;
 		//element._private.style["height"].strValue = vert_offset + "px";
 		//element._private.style["height"].value = vert_offset;
-		console.log("vert_offset:" + vert_offset);
 		//}
 	};
 
@@ -12717,25 +12732,24 @@ function getLines(ctx, text, maxWidth) {
 					
 					//if (element._private.group == "nodes") {
 					if ( element.isNode() ) {
+						var new_height = 0;
+						//height of the title
+						var text = String(element._private.style["content"].value);
+						var title_lines = getLines(context, text, 300);
+						new_height += title_lines.length * 24;
+						//console.log("new height after title:" + new_height);
 
+						//height of the notes
+						var nt_text = String(element._private.style["notes"].value);
+						var note_lines = getLines(context, nt_text, 300);
+						console.log(note_lines);
+						new_height += note_lines.length * 20;
+						//console.log("new height after notes:" + new_height);	
+
+						//gap between
+						new_height += 24;
 						//if it's got notes showing, autofit the height
 						if (String(element._private.style["notes"].value) != "-"){
-							var new_height = 0;
-							//height of the notes
-							var nt_text = String(element._private.style["notes"].value);
-							var lines = getLines(context, nt_text, 300);
-							console.log(lines);
-							new_height += lines.length * 20;
-							console.log("new height after notes:" + new_height);
-
-							//height of the title
-							var text = String(element._private.style["content"].value);
-							var lines = getLines(context, text, 300);
-							new_height += lines.length * 24;
-							console.log("new height after title:" + new_height);
-
-							//gap between
-							new_height += 24;
 
 							element._private.style["height"].pxValue = new_height;
 							element._private.style["height"].strValue = new_height + "px";
@@ -12749,13 +12763,12 @@ function getLines(ctx, text, maxWidth) {
 						else{
 							element._private.style["height"].pxValue = 30;
 							element._private.style["height"].strValue = 30 + "px";
-							element._private.style["height"].value = 30;
-							
+							element._private.style["height"].value = 30;	
 						}
 
 						r.drawNode(context, element);
 						
-						 r.drawNodeText(context, element);
+						 r.drawNodeText(context, element, title_lines, note_lines);
             			 r.drawNode(context, element, true);
 						
 					//} else if (element._private.group == "edges") {
