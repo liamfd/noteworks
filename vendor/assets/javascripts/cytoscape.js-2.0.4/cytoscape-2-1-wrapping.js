@@ -29,27 +29,19 @@ function getLines(ctx, text, maxWidth) {
     var lines = [];
     var currentLine = "";
 
-    console.log("********");
     for (var i = 0; i < words.length; i++) {
         var word = words[i];
         var width = ctx.measureText(currentLine + " " + word).width;
         if (word == "//-") {
        		lines.push(currentLine);
        		currentLine = "-";
-       		console.log(word + ctx.measureText(word).width);
-       	//	console.log("width now is " + width);
-        } else if (width < maxWidth) {
+       } else if (width < maxWidth) {
             currentLine += " " + word;
-       		console.log(word + ctx.measureText(word).width);
-       	//	console.log("width now is " + width);
         } else {
             lines.push(currentLine);
             currentLine = word;
-       		console.log(word + ctx.measureText(word).width);
-       	//	console.log("width now is " + width);
-        }
+       }
     }
-    console.log("7777777777");
     lines.push(currentLine);
     return lines;
 }
@@ -12113,6 +12105,9 @@ function getLines(ctx, text, maxWidth) {
 			context.textBaseline = "middle";
 			textY = node._private.position.y;
 		}
+		if (note_lines == undefined){
+			console.log("in node_text:" + note_lines);
+		}
 		this.drawText(context, node, textX, textY, title_lines, note_lines);
 	};
 	
@@ -12131,7 +12126,6 @@ function getLines(ctx, text, maxWidth) {
 				return;
 			}
 		}
-		
 		//the two texts
 		var text = String(element._private.style["content"].value);
 		var note_text = String(element._private.style["notes"].value);
@@ -12181,7 +12175,8 @@ function getLines(ctx, text, maxWidth) {
 		var prev_vert_offset = 0;
 
 		//in my case, the title
-		if (text != undefined) {
+		//must check if it's undefined, since the parameter is optional
+		if (title_lines != undefined) {
 			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
 
 			//var title_lines = getLines(context, text, 300);
@@ -12248,10 +12243,9 @@ function getLines(ctx, text, maxWidth) {
 			+ labelSize + " " + labelFamily;
 		
 		//The notes
-		if (note_text != undefined && note_text != "-") {
- 			if (note_lines == undefined){
-				note_lines = " ";
-			}
+		//must check if they're undefined, since the parameter is optional
+		//console.log(note_lines);
+		if (note_lines != undefined && note_lines != " -") {
 	//		var note_lines = getLines(context, note_text, 300);
 
 			prev_vert_offset = vert_offset;
@@ -12729,18 +12723,20 @@ function getLines(ctx, text, maxWidth) {
 						//height of the title
 						var text = String(element._private.style["content"].value);
 						var title_lines = getLines(context, text, 300);
+						//console.log(title_lines);
 						new_height += title_lines.length * 24;
-						//console.log("new height after title:" + new_height);
-
+						
 						//height of the notes
 						var nt_text = String(element._private.style["notes"].value);
 						var note_lines = getLines(context, nt_text, 300);
-						//console.log(note_lines);
+						if (note_lines == undefined){
+							console.log("in the outermost:" + note_lines);
+						}
 						new_height += note_lines.length * 20;
-						//console.log("new height after notes:" + new_height);	
-
+						
 						//gap between
 						new_height += 24;
+
 						//if it's got notes showing, autofit the height
 						if (String(element._private.style["notes"].value) != "-"){
 
