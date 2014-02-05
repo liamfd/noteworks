@@ -29,22 +29,27 @@ function getLines(ctx, text, maxWidth) {
     var lines = [];
     var currentLine = "";
 
+    console.log("********");
     for (var i = 0; i < words.length; i++) {
         var word = words[i];
         var width = ctx.measureText(currentLine + " " + word).width;
-
         if (word == "//-") {
        		lines.push(currentLine);
        		currentLine = "-";
-       		console.log("width now is " + width);
+       		console.log(word + ctx.measureText(word).width);
+       	//	console.log("width now is " + width);
         } else if (width < maxWidth) {
             currentLine += " " + word;
+       		console.log(word + ctx.measureText(word).width);
+       	//	console.log("width now is " + width);
         } else {
             lines.push(currentLine);
             currentLine = word;
-            console.log("width now is " + width);
+       		console.log(word + ctx.measureText(word).width);
+       	//	console.log("width now is " + width);
         }
     }
+    console.log("7777777777");
     lines.push(currentLine);
     return lines;
 }
@@ -12108,10 +12113,6 @@ function getLines(ctx, text, maxWidth) {
 			context.textBaseline = "middle";
 			textY = node._private.position.y;
 		}
-		console.log("********");
-		console.log(title_lines);
-		console.log(note_lines);
-		console.log("--------");
 		this.drawText(context, node, textX, textY, title_lines, note_lines);
 	};
 	
@@ -12130,12 +12131,10 @@ function getLines(ctx, text, maxWidth) {
 				return;
 			}
 		}
-
 		
 		//the two texts
 		var text = String(element._private.style["content"].value);
 		var note_text = String(element._private.style["notes"].value);
-
 
 		/* THIS IS THE STYLING FOR THE TITLE (THE ORIGINAL LABEL) */
 		// Font style
@@ -12184,14 +12183,11 @@ function getLines(ctx, text, maxWidth) {
 		//in my case, the title
 		if (text != undefined) {
 			var lineWidth = 2  * element._private.style["text-outline-width"].value; // *2 b/c the stroke is drawn centred on the middle
-			console.log("8888888888888");
-			console.log(title_lines);
+
 			//var title_lines = getLines(context, text, 300);
 			if (title_lines == undefined){
 				title_lines = " ";
 			}
-			console.log(title_lines);
-			console.log("&&&&&&&&&&&&&");
 			
 			//move the title down if large node
 			if (note_text != "-") {
@@ -12253,14 +12249,11 @@ function getLines(ctx, text, maxWidth) {
 		
 		//The notes
 		if (note_text != undefined && note_text != "-") {
-			console.log("8888888888888");
-			console.log(note_lines);
-			if (note_lines == undefined){
+ 			if (note_lines == undefined){
 				note_lines = " ";
 			}
 	//		var note_lines = getLines(context, note_text, 300);
-			console.log(note_lines);
-			console.log("&&&&&&&&&&&&&");
+
 			prev_vert_offset = vert_offset;
 
 			if (lineWidth > 0) {
@@ -12742,7 +12735,7 @@ function getLines(ctx, text, maxWidth) {
 						//height of the notes
 						var nt_text = String(element._private.style["notes"].value);
 						var note_lines = getLines(context, nt_text, 300);
-						console.log(note_lines);
+						//console.log(note_lines);
 						new_height += note_lines.length * 20;
 						//console.log("new height after notes:" + new_height);	
 
@@ -12755,7 +12748,6 @@ function getLines(ctx, text, maxWidth) {
 							element._private.style["height"].strValue = new_height + "px";
 							element._private.style["height"].value = new_height;
 
-							console.log("new height:" + new_height);
 						}
 
 						//otherwise, default it back to 30

@@ -89,6 +89,12 @@ $(loadCy = function(){
           'color': '#fff',
           'font-size':"16px",
           'height':"30px",
+         
+          //this needs to be there, otherwise it doesn't draw the notes correctly the first time.
+          'note-font-size': "16px",
+          'note-font-weight': "bold",
+          'note-text-outline-width': 0,
+          
         })
       .selector('.focused')
        .css({
