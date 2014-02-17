@@ -10,6 +10,84 @@ $( document ).ready(function() {
     $( ".test" ).text(JSON.stringify(lel));
   });
 
+
+
+
+
+//GETTING THE CARET POSITION
+function getCaretCharacterOffsetWithin(element) {
+    var caretOffset = 0;
+    var doc = element.ownerDocument || element.document;
+    var win = doc.defaultView || doc.parentWindow;
+    var sel;
+    console.log("poo");
+    if (typeof win.getSelection != "undefined") {
+        var range = win.getSelection().getRangeAt(0);
+        var preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        caretOffset = preCaretRange.toString().length;
+    } else if ( (sel = doc.selection) && sel.type != "Control") {
+        var textRange = sel.createRange();
+        var preCaretTextRange = doc.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+}
+
+function showCaretPos() {
+    var el = document.getElementById("test");
+    var caretPosEl = document.getElementById("caretPos");
+    caretPosEl.innerHTML = "Caret position: " + getCaretCharacterOffsetWithin(el);
+}
+
+
+function frontParse() {
+  var el = document.getElementById("test");
+  var text = el.innerText || el.textContent;
+  alert(text);
+}
+
+//$("#test").onKeyPress(function(){
+//  alert("soup");
+//});
+
+//document.getElementById("test").onkeypress = function() {
+//document.getElementById("test").onkeypress = function() {
+//  alert("key pressed !");
+//};
+/*function myfunction(){
+    alert('hiiiii');
+}
+
+window.onload=function(){
+   document.getElementById('test').onkeypress= function(e){
+    var code = e.keyCode || e.which;
+    alert(code);
+   };
+};*/
+
+function testFunction(e){
+  var code = e.keyCode || e.which;
+  //alert(code);
+  if (code == 13){
+    alert("fun");
+  }else{
+    alert(code);
+  }
+  //alert("fut");
+}
+
+window.onload=function(){
+  document.getElementById('test').onkeypress= testFunction;
+};
+
+//$(#test).keypress(function(){
+ // alert("shoo");
+//});
+
 $(loadCy = function(){
 
   options = {
@@ -206,10 +284,6 @@ $(loadCy = function(){
   };
   $('#cy').cytoscape(options);
 });
-
-
-
-
 //THIS IS THE FORMATTING I USED IN THE VIEW
 /* 
 $('#cy').cytoscape({

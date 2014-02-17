@@ -2,7 +2,7 @@ CURRENT
 relate the offset to the font_size in cytoscape.js
 -------- working default when there're no nodes so the title isn't moved up
 -------- figure out a way to assign colors to the title/node borders
-figure out a way to show categories/titles
+figure out a way to colorize categories/titles
 --------- add autofit
 translate tab to three spaces
 
@@ -31,7 +31,7 @@ NODE AUTO-HEIGHT
 ----	randomly generate automatic?
 	long term - allow for color picker
 
-
+MAKE THE COLOR BACKGROUND FOR THE SMALL NODES WORK
 
 
 LONG TERM
