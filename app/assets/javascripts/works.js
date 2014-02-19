@@ -8,9 +8,7 @@ $( document ).ready(function() {
 
     var lel = gon.elements;
     $( ".test" ).text(JSON.stringify(lel));
-  });
-
-
+});
 
 
 
@@ -20,7 +18,6 @@ function getCaretCharacterOffsetWithin(element) {
     var doc = element.ownerDocument || element.document;
     var win = doc.defaultView || doc.parentWindow;
     var sel;
-    console.log("poo");
     if (typeof win.getSelection != "undefined") {
         var range = win.getSelection().getRangeAt(0);
         var preCaretRange = range.cloneRange();
@@ -50,9 +47,6 @@ function frontParse() {
   alert(text);
 }
 
-//$("#test").onKeyPress(function(){
-//  alert("soup");
-//});
 
 //document.getElementById("test").onkeypress = function() {
 //document.getElementById("test").onkeypress = function() {
@@ -68,21 +62,64 @@ window.onload=function(){
     alert(code);
    };
 };*/
+var lineText = "";
+var prevLine = 0;
 
-function testFunction(e){
+function pressFunction(e){
   var code = e.keyCode || e.which;
-  //alert(code);
-  if (code == 13){
-    alert("fun");
-  }else{
-    alert(code);
+  var el = $("#test")[0];
+  var lines = $("#test > *");
+
+  var text = el.innerText;
+  console.log(text);
+
+  var caretPos = getCaretCharacterOffsetWithin(el);
+  var currLine = 0;
+
+  var i;
+//  console.log(caretPos);
+ for (i = 0; i <= caretPos; i++){
+    if (text[i] == "\n"){
+      currLine++;
+      caretPos++;
+    }
   }
-  //alert("fut");
+  currLine--;
+  //console.log(i + " " + caretPos);
+ // alert(currLine);
+  console.log(currLine);
+  if (code == 13){
+    caretPos++;
+    prevLine = currLine;
+    lineText = "";
+  }
+  else{
+    lineText += String.fromCharCode(code);
+   // alert(String.fromCharCode(code));
+  }
+
+  //so, whenever I make changes to a line that's not a backspace, send its complete self to the parser, to do its best with
+    //on the parser side, I don't want to just endlessly create shit... don't change to new element unless ordered to?
+  //keep track of previous line number, so if backspace is hit, I can know whether or not a whole line is gone. 
 }
 
-window.onload=function(){
-  document.getElementById('test').onkeypress= testFunction;
-};
+function upFunction(e){
+  code = e.code || e.which;
+  
+  var el = $("#test")[0];
+
+  if ((code < 37) || (code > 40)){ //kills the function if the key pressed wasn't an arrow
+    return;
+  }
+  caretPos = getCaretCharacterOffsetWithin(el);
+  alert(caretPos);
+}
+
+$( document ).ready(function() {
+   $ ('#test').get(0).onkeypress= pressFunction;
+   $ ('#test').get(0).onkeyup= upFunction;
+});
+
 
 //$(#test).keypress(function(){
  // alert("shoo");
