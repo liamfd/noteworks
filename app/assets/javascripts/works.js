@@ -11,6 +11,23 @@ $( document ).ready(function() {
 });
 
 
+//this is for text areas
+(function ($, undefined) {
+    $.fn.getCursorPosition = function() {
+        var el = $(this).get(0);
+        var pos = 0;
+        if('selectionStart' in el) {
+            pos = el.selectionStart;
+        } else if('selection' in document) {
+            el.focus();
+            var Sel = document.selection.createRange();
+            var SelLength = document.selection.createRange().text.length;
+            Sel.moveStart('character', -el.value.length);
+            pos = Sel.text.length - SelLength;
+        }
+        return pos;
+    }
+  })(jQuery);
 
 //GETTING THE CARET POSITION
 function getCaretCharacterOffsetWithin(element) {
@@ -65,39 +82,91 @@ window.onload=function(){
 var lineText = "";
 var prevLine = 0;
 
-function pressFunction(e){
-  var code = e.keyCode || e.which;
-  var el = $("#test")[0];
-  var lines = $("#test > *");
+function checkChangedLine(currLine){
+  if (currLine != prevLine){
+    alert("moved to line"+currLine + "from" + prevLine);
+    prevLine = currLine;
+    return true;
+  }
+  return false;
+}
 
-  var text = el.innerText;
-  console.log(text);
+function getCurrentLine(el){
+ // console.log(text);
 
   var caretPos = getCaretCharacterOffsetWithin(el);
   var currLine = 0;
 
+  var text = el.innerText;
+  var text_html = el.innerHTML;
+
+ // alert(text_html);
   var i;
-//  console.log(caretPos);
- for (i = 0; i <= caretPos; i++){
+
+  /* attempts to use the way of displaying for breaking down lines
+  for (i = 0; i < caretPos; i++){
+    if (text_html[i] == "<"){
+      if (text_html.substring(i, i+5) == "<div>"){
+        caretPos += 5;
+        console.log("div found" + i);
+        currLine++;
+      }
+      else if (text_html.substring(i, i+6) == "</div>"){
+        caretPos += 6;
+    //    alert("b");
+      }
+      else if (text_html.substring(i, i+4) == "<br>"){
+        caretPos+= 4;
+    //    alert("c");
+      }
+    //  alert("okkaaay");
+    }
+  }*/
+
+ 
+  for (i = 0; i <= caretPos; i++){
+    console.log("*"+text[i]);
     if (text[i] == "\n"){
       currLine++;
       caretPos++;
     }
+    else{
+    }
   }
-  currLine--;
-  //console.log(i + " " + caretPos);
- // alert(currLine);
+
+  //for text input, fixes the issue with the extra newline at the end
+  if (currLine > 0 && text[caretPos-1] == "\n"){
+    currLine--;
+  }
+
+  //solves issue with end of line moving cursor via arrows
+  if (text[caretPos] == "\n"){
+    currLine--;
+  }
+//if it's a newline...
+  return currLine;
+}
+
+function pressFunction(e){
+  var code = e.keyCode || e.which;
+
+  var el = $("#editable")[0];
+  var lines = $("#editable > *");
+  
+  var currLine = getCurrentLine(el);
   console.log(currLine);
+  
   if (code == 13){
-    caretPos++;
-    prevLine = currLine;
-    lineText = "";
+ //   caretPos++;
+    currLine++;
+    //console.log("he"+currLine);
   }
   else{
-    lineText += String.fromCharCode(code);
+   // lineText += String.fromCharCode(code);
    // alert(String.fromCharCode(code));
   }
 
+  checkChangedLine(currLine);
   //so, whenever I make changes to a line that's not a backspace, send its complete self to the parser, to do its best with
     //on the parser side, I don't want to just endlessly create shit... don't change to new element unless ordered to?
   //keep track of previous line number, so if backspace is hit, I can know whether or not a whole line is gone. 
@@ -106,22 +175,41 @@ function pressFunction(e){
 function upFunction(e){
   code = e.code || e.which;
   
-  var el = $("#test")[0];
+  //I believe these two are equivalent
+  //var el = $("#editable")[0];
+  var el = this;
 
   if ((code < 37) || (code > 40)){ //kills the function if the key pressed wasn't an arrow
     return;
   }
-  caretPos = getCaretCharacterOffsetWithin(el);
-  alert(caretPos);
+
+  if (code == 8){//backspace
+  }
+
+  if (code == 46){//delete
+  }
+
+  var currLine = getCurrentLine(el);
+  console.log("bb"+currLine);
+
+
+  checkChangedLine(currLine);
+}
+
+function clickFunction(e){
+  var currLine = getCurrentLine(this);
+  checkChangedLine(currLine);
 }
 
 $( document ).ready(function() {
-   $ ('#test').get(0).onkeypress= pressFunction;
-   $ ('#test').get(0).onkeyup= upFunction;
+   $ ('#editable').get(0).onkeypress= pressFunction;
+   $ ('#editable').get(0).onkeyup= upFunction;
+   $ ('#editable').get(0).onclick= clickFunction;
+  // $ ('#work_markup').get(0).onkeypress= pressFunction;
 });
 
 
-//$(#test).keypress(function(){
+//$(#editable).keypress(function(){
  // alert("shoo");
 //});
 

@@ -22,4 +22,13 @@
 //= require cytoscape.js-2.0.4/jquery.cytoscape-navigator
 //= require cytoscape.js-2.0.4/jquery.cytoscape-panzoom
 
+//= require rangy-1.3alpha.804/rangy-core.js
+//= require rangy-1.3alpha.804/rangy-cssclassapplier.js
+//= require rangy-1.3alpha.804/rangy-highlighter.js
+//= require rangy-1.3alpha.804/rangy-selectionsaverestore.js
+//= require rangy-1.3alpha.804/rangy-serializer.js
+//= require rangy-1.3alpha.804/rangy-textrange.js
+
+
+
 //= require_tree .
