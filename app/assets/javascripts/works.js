@@ -59,12 +59,13 @@ function showCaretPos() {
 
 
 
-function updateElements(currLine){
-  alert("soup");
+function updateElements(){
   $.ajax({
-    type:"PUT",
-    url:"works/modelement"
-  });
+    type:"GET",
+    dataType:"json",
+    url:"modelements",
+    success: function(){alert("shoe")}
+  })
 }
 
 var lineText = "";
@@ -199,7 +200,7 @@ $( document ).ready(function() {
    $ ('#editable').get(0).onkeypress= pressFunction;
    $ ('#editable').get(0).onkeyup= upFunction;
    $ ('#editable').get(0).onclick= clickFunction;
-   $ ('ajtest').get(0).onclick= updateElements;
+   $ ('#ajtest').get(0).onclick= updateElements;
   // $ ('#work_markup').get(0).onkeypress= pressFunction;
 });
 

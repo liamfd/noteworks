@@ -89,7 +89,11 @@ class WorksController < ApplicationController
   end
 
   def modelements
-    @work.modifyElement
+    @modded_note = @work.modifyElement
+
+    respond_to do |format|
+      format.js {render :json => @modded_note}
+    end
   end
 
   def testnetwork

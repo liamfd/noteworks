@@ -24,10 +24,12 @@ class Work < ActiveRecord::Base
 	def modifyElement
 		@node = self.nodes.first
 		@note = @node.notes.first
-		@note.body = (0...8).map { (65 + rand(26)).chr }.join
+		@note.body += "*"
+		#@note.body = (0...8).map { (65 + rand(26)).chr }.join
 
 		puts @note.body
 		@note.save
+		return @note
 	end
 	
 	def parseText
