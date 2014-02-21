@@ -58,33 +58,21 @@ function showCaretPos() {
 }
 
 
-function frontParse() {
-  var el = document.getElementById("test");
-  var text = el.innerText || el.textContent;
-  alert(text);
+
+function updateElements(currLine){
+  alert("soup");
+  $.ajax({
+    type:"PUT",
+    url:"works/modelement"
+  });
 }
 
-
-//document.getElementById("test").onkeypress = function() {
-//document.getElementById("test").onkeypress = function() {
-//  alert("key pressed !");
-//};
-/*function myfunction(){
-    alert('hiiiii');
-}
-
-window.onload=function(){
-   document.getElementById('test').onkeypress= function(e){
-    var code = e.keyCode || e.which;
-    alert(code);
-   };
-};*/
 var lineText = "";
 var prevLine = 0;
 
 function checkChangedLine(currLine){
   if (currLine != prevLine){
-    alert("moved to line"+currLine + "from" + prevLine);
+   // alert("moved to line"+currLine + "from" + prevLine);
     prevLine = currLine;
     return true;
   }
@@ -101,6 +89,8 @@ function getCurrentLine(el){
   var text_html = el.innerHTML;
 
  // alert(text_html);
+
+
   var i;
 
   /* attempts to use the way of displaying for breaking down lines
@@ -178,22 +168,26 @@ function upFunction(e){
   //I believe these two are equivalent
   //var el = $("#editable")[0];
   var el = this;
+  var currLine = 0;
 
-  if ((code < 37) || (code > 40)){ //kills the function if the key pressed wasn't an arrow
-    return;
+  var sel = rangy.getSelection();
+  var range = sel.getRangeAt(0);
+  var cursorOffset = sel.focusOffset;
+  //var cursorNode = sel.focusNode;
+ // console.log("$$$"+cursorOffset);
+
+
+  //delete never changes the LINE
+  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){ //kills the function if the key pressed wasn't an arrow or a del/backsp.
+    currLine = getCurrentLine(el);
+    if (cursorOffset == 0){
+     currLine++;
+    }
+    console.log("bb"+currLine);
+    checkChangedLine(currLine);
   }
 
-  if (code == 8){//backspace
-  }
-
-  if (code == 46){//delete
-  }
-
-  var currLine = getCurrentLine(el);
-  console.log("bb"+currLine);
-
-
-  checkChangedLine(currLine);
+  return;
 }
 
 function clickFunction(e){
@@ -205,6 +199,7 @@ $( document ).ready(function() {
    $ ('#editable').get(0).onkeypress= pressFunction;
    $ ('#editable').get(0).onkeyup= upFunction;
    $ ('#editable').get(0).onclick= clickFunction;
+   $ ('ajtest').get(0).onclick= updateElements;
   // $ ('#work_markup').get(0).onkeypress= pressFunction;
 });
 

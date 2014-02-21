@@ -1,5 +1,5 @@
 class WorksController < ApplicationController
-  before_action :set_work, only: [:show, :edit, :update, :destroy, :testnetwork, :takenotes, :updatenotes]
+  before_action :set_work, only: [:show, :edit, :update, :destroy, :testnetwork, :takenotes, :updatenotes, :modelements]
 
   # GET /works
   # GET /works.json
@@ -88,6 +88,9 @@ class WorksController < ApplicationController
     end
   end
 
+  def modelements
+    @work.modifyElement
+  end
 
   def testnetwork
     @nodes = @work.nodes

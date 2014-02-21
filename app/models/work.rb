@@ -15,11 +15,20 @@ class Work < ActiveRecord::Base
    before_save :before_save_checker
 
 	#bottom, private
-   def before_save_checker 
+  	def before_save_checker 
    		if markup_changed?
    			parseText
    		end
-   end
+	end
+
+	def modifyElement
+		@node = self.nodes.first
+		@note = @node.notes.first
+		@note.body = (0...8).map { (65 + rand(26)).chr }.join
+
+		puts @note.body
+		@note.save
+	end
 	
 	def parseText
 		Node.destroy_all(work_id: self.id)
