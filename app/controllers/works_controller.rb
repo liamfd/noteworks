@@ -89,7 +89,8 @@ class WorksController < ApplicationController
   end
 
   def modelements
-    @modded_note = @work.modifyElement
+    @element_string = params[:name]
+    @modded_note = @work.modifyElement(@element_string)
 
     respond_to do |format|
       format.js {render :json => @modded_note}

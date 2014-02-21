@@ -21,12 +21,14 @@ class Work < ActiveRecord::Base
    		end
 	end
 
-	def modifyElement
+	def modifyElement(element_string)
 		@node = self.nodes.first
 		@note = @node.notes.first
-		@note.body += "*"
+		@note.body += element_string
 		#@note.body = (0...8).map { (65 + rand(26)).chr }.join
-
+		#if (@note.body = "$*****")
+		#	@note.body = "$";
+		#end
 		puts @note.body
 		@note.save
 		return @note

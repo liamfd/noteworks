@@ -60,12 +60,16 @@ function showCaretPos() {
 
 
 function updateElements(){
+  changed_line="shoe";
   $.ajax({
     type:"GET",
-    dataType:"json",
     url:"modelements",
-    success: function(){alert("shoe")}
-  })
+    data: {name: changed_line},
+    dataType:"json",
+    success: function(data){
+      alert(JSON.stringify(data));
+    }
+  });
 }
 
 var lineText = "";
@@ -210,7 +214,7 @@ $( document ).ready(function() {
 //});
 
 $(loadCy = function(){
-
+1
   options = {
     layout: {
       name: 'arbor',
