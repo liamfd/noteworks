@@ -1,18 +1,20 @@
 class Work < ActiveRecord::Base
-  belongs_to :group
+	belongs_to :group
 
-  has_many :nodes, dependent: :destroy
-  has_many :links
+	has_many :nodes, dependent: :destroy
+	has_many :links
 
-  @@types = [ "Basic",
+	@@types = [ "Basic",
          "Comparison",
          "Definition",
          "Example",
          "Key",
          "Media"
-    ]
+	]
    
-   before_save :before_save_checker
+	@lines = nil
+
+	before_save :before_save_checker
 
 	#bottom, private
   	def before_save_checker 
@@ -21,10 +23,10 @@ class Work < ActiveRecord::Base
    		end
 	end
 
-	def modifyElement(element_string)
+	def modifyElement(line_number, line_content)
 		@node = self.nodes.first
 		@note = @node.notes.first
-		@note.body += element_string
+		@note.body = line_number + line_content
 		#@note.body = (0...8).map { (65 + rand(26)).chr }.join
 		#if (@note.body = "$*****")
 		#	@note.body = "$";

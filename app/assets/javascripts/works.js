@@ -1,6 +1,12 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 // You can use CoffeeScript in this file: http://coffeescript.org/
+
+
+var i = 0;
+var lineText = "";
+var prevLine = 0;
+
 $( document ).ready(function() {
     var ele = gon.elements;
     ele = JSON.stringify(ele);
@@ -26,7 +32,7 @@ $( document ).ready(function() {
             pos = Sel.text.length - SelLength;
         }
         return pos;
-    }
+    };
   })(jQuery);
 
 //GETTING THE CARET POSITION
@@ -51,52 +57,67 @@ function getCaretCharacterOffsetWithin(element) {
     return caretOffset;
 }
 
-function showCaretPos() {
-    var el = document.getElementById("test");
-    var caretPosEl = document.getElementById("caretPos");
-    caretPosEl.innerHTML = "Caret position: " + getCaretCharacterOffsetWithin(el);
-}
-
-
-
-function updateElements(){
-  changed_line="shoe";
+function updateElements(changed_line){
+  changed_line = "#"+changed_line;
+  var text = "hey";
   $.ajax({
     type:"GET",
     url:"modelements",
-    data: {name: changed_line},
+    data: {line_number: changed_line, line_content: text},
     dataType:"json",
     success: function(data){
-      alert(JSON.stringify(data));
+      ajSuccess(data);
     }
   });
 }
 
-var lineText = "";
-var prevLine = 0;
+function ajSuccess(data){
+  $("#test_box").text(data.body);
+  i++;
+}
 
 function checkChangedLine(currLine){
+  console.log("on line" + currLine);
   if (currLine != prevLine){
    // alert("moved to line"+currLine + "from" + prevLine);
     prevLine = currLine;
+    updateElements(prevLine);
     return true;
   }
   return false;
 }
 
-function getCurrentLine(el){
- // console.log(text);
-
-  var caretPos = getCaretCharacterOffsetWithin(el);
+function getCurrentLine(el, caretPos){
+  //var caretPos = getCaretCharacterOffsetWithin(el);
+  if (caretPos == null){
+    alert("wat");
+    return 0;
+  }
   var currLine = 0;
 
   var text = el.innerText;
   var text_html = el.innerHTML;
-
- // alert(text_html);
-
-
   var i;
+
+  for (i = 0; i <= caretPos; i++){
+    if (text[i] == "\n"){
+      currLine++;
+      caretPos++;
+    }
+    else{
+    }
+  }
+
+  //for text input, fixes the issue with the extra newline at the end
+  if (currLine >= 0 && text[caretPos-1] == "\n"){
+    currLine--;
+  }
+  //solves issue with end of line moving cursor via arrows
+  if (text[caretPos] == "\n"){
+    currLine--;
+  }
+  //if it's a newline...
+  return currLine;
 
   /* attempts to use the way of displaying for breaking down lines
   for (i = 0; i < caretPos; i++){
@@ -118,28 +139,6 @@ function getCurrentLine(el){
     }
   }*/
 
- 
-  for (i = 0; i <= caretPos; i++){
-    console.log("*"+text[i]);
-    if (text[i] == "\n"){
-      currLine++;
-      caretPos++;
-    }
-    else{
-    }
-  }
-
-  //for text input, fixes the issue with the extra newline at the end
-  if (currLine > 0 && text[caretPos-1] == "\n"){
-    currLine--;
-  }
-
-  //solves issue with end of line moving cursor via arrows
-  if (text[caretPos] == "\n"){
-    currLine--;
-  }
-//if it's a newline...
-  return currLine;
 }
 
 function pressFunction(e){
@@ -147,18 +146,12 @@ function pressFunction(e){
 
   var el = $("#editable")[0];
   var lines = $("#editable > *");
-  
-  var currLine = getCurrentLine(el);
-  console.log(currLine);
+  var caretPos = getCaretCharacterOffsetWithin(el);
+
+  var currLine = getCurrentLine(el, caretPos);
   
   if (code == 13){
- //   caretPos++;
     currLine++;
-    //console.log("he"+currLine);
-  }
-  else{
-   // lineText += String.fromCharCode(code);
-   // alert(String.fromCharCode(code));
   }
 
   checkChangedLine(currLine);
@@ -173,30 +166,43 @@ function upFunction(e){
   //I believe these two are equivalent
   //var el = $("#editable")[0];
   var el = this;
+  var caretPos = getCaretCharacterOffsetWithin(el);
   var currLine = 0;
 
   var sel = rangy.getSelection();
-  var range = sel.getRangeAt(0);
   var cursorOffset = sel.focusOffset;
-  //var cursorNode = sel.focusNode;
- // console.log("$$$"+cursorOffset);
-
-
+  
   //delete never changes the LINE
-  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){ //kills the function if the key pressed wasn't an arrow or a del/backsp.
-    currLine = getCurrentLine(el);
-    if (cursorOffset == 0){
+  //if the key pressed wasn't an arrow or a del/backsp.
+  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
+    currLine = getCurrentLine(el, caretPos);
+
+    //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line
+    if (cursorOffset == 0 && caretPos != 0){
      currLine++;
     }
-    console.log("bb"+currLine);
     checkChangedLine(currLine);
   }
+  //else if (code == 13){
+  //  currLine = getCurrentLine(el, caretPos);
+  //  currLine++; //since it's an enter
+  //  checkChangedLine(currLine);
+  //}
 
   return;
 }
 
 function clickFunction(e){
-  var currLine = getCurrentLine(this);
+  var caretPos = getCaretCharacterOffsetWithin(this);
+  var currLine = getCurrentLine(this, caretPos);
+
+  var sel = rangy.getSelection();
+  var cursorOffset = sel.focusOffset;
+
+  //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line
+  if (cursorOffset == 0 && caretPos != 0){
+   currLine++;
+  }
   checkChangedLine(currLine);
 }
 
@@ -204,7 +210,6 @@ $( document ).ready(function() {
    $ ('#editable').get(0).onkeypress= pressFunction;
    $ ('#editable').get(0).onkeyup= upFunction;
    $ ('#editable').get(0).onclick= clickFunction;
-   $ ('#ajtest').get(0).onclick= updateElements;
   // $ ('#work_markup').get(0).onkeypress= pressFunction;
 });
 
@@ -214,7 +219,6 @@ $( document ).ready(function() {
 //});
 
 $(loadCy = function(){
-1
   options = {
     layout: {
       name: 'arbor',
