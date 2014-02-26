@@ -106,7 +106,77 @@ function checkChangedLine(currLine){
   return false;
 }
 
+
 function getCurrentLine(el, caretPos){
+  //var caretPos = getCaretCharacterOffsetWithin(el);
+  caretPos = $("#work_markup").getCursorPosition();
+  //alert(caretPos);
+  if (caretPos == null){
+    alert("wat");
+    return 0;
+  }
+  var currLine = 0;
+  var text = el.value;
+  var i;
+
+  for (i = 0; i < caretPos; i++){
+    if (text[i] == "\n"){
+      currLine++;
+      console.log("wat");
+    }
+  }
+  //if it's a newline...
+  console.log("$$$" + currLine);
+  return currLine;
+
+}
+
+function upFunction(e){
+  code = e.code || e.which;
+  
+  //I believe these two are equivalent
+  //var el = $("#editable")[0];
+  var el = this;
+  var caretPos = getCaretCharacterOffsetWithin(el);
+  var currLine = 0;
+
+  //delete never changes the LINE
+  //if the key pressed wasn't an arrow or a del/backsp.
+  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
+    currLine = getCurrentLine(el, caretPos);
+    checkChangedLine(currLine);
+  }
+  else{
+    currLine = getCurrentLine(el, caretPos);
+    checkChangedLine(currLine);
+  }
+
+  return;
+}
+
+function clickFunction(e){
+  var caretPos = getCaretCharacterOffsetWithin(this);
+  var currLine = getCurrentLine(this, caretPos);
+
+  var sel = rangy.getSelection();
+  var cursorOffset = sel.focusOffset;
+
+  checkChangedLine(currLine);
+}
+
+$( document ).ready(function() {
+
+//  $ ('#work_markup').get(0).onkeypress= pressFunction;
+  $ ('#work_markup').get(0).onkeyup= upFunction;
+  $ ('#work_markup').get(0).onclick= clickFunction;
+
+  // $ ('#editable').get(0).onkeypress= EDpressFunction;
+  // $ ('#editable').get(0).onkeyup= EDupFunction;
+  // $ ('#editable').get(0).onclick= EDclickFunction;
+});
+
+
+function EDgetCurrentLine(el, caretPos){
   //var caretPos = getCaretCharacterOffsetWithin(el);
   if (caretPos == null){
     alert("wat");
@@ -138,29 +208,10 @@ function getCurrentLine(el, caretPos){
   //if it's a newline...
   return currLine;
 
-  /* attempts to use the way of displaying for breaking down lines
-  for (i = 0; i < caretPos; i++){
-    if (text_html[i] == "<"){
-      if (text_html.substring(i, i+5) == "<div>"){
-        caretPos += 5;
-        console.log("div found" + i);
-        currLine++;
-      }
-      else if (text_html.substring(i, i+6) == "</div>"){
-        caretPos += 6;
-    //    alert("b");
-      }
-      else if (text_html.substring(i, i+4) == "<br>"){
-        caretPos+= 4;
-    //    alert("c");
-      }
-    //  alert("okkaaay");
-    }
-  }*/
-
 }
 
-function pressFunction(e){
+
+function EDpressFunction(e){
   var code = e.keyCode || e.which;
 
   var el = $("#editable")[0];
@@ -178,7 +229,7 @@ function pressFunction(e){
   //keep track of previous line number, so if backspace is hit, I can know whether or not a whole line is gone. 
 }
 
-function upFunction(e){
+function EDupFunction(e){
   code = e.code || e.which;
   
   //I believe these two are equivalent
@@ -210,7 +261,7 @@ function upFunction(e){
   return;
 }
 
-function clickFunction(e){
+function EDclickFunction(e){
   var caretPos = getCaretCharacterOffsetWithin(this);
   var currLine = getCurrentLine(this, caretPos);
 
@@ -223,14 +274,6 @@ function clickFunction(e){
   }
   checkChangedLine(currLine);
 }
-
-$( document ).ready(function() {
-   $ ('#editable').get(0).onkeypress= pressFunction;
-   $ ('#editable').get(0).onkeyup= upFunction;
-   $ ('#editable').get(0).onclick= clickFunction;
-  // $ ('#work_markup').get(0).onkeypress= pressFunction;
-});
-
 
 //$(#editable).keypress(function(){
  // alert("shoo");

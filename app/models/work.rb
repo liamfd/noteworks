@@ -47,10 +47,6 @@ class Work < ActiveRecord::Base
 		@ordering.each {|item| puts(item)}
 	end
 
-	def testArray
-		puts(@tester)
-	end
-
 	#find a way to avoid doing this every time, preferably using instance variables
 	def populateOrdering
 		@ordering = Array.new
