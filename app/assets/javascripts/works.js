@@ -17,7 +17,7 @@ $( document ).ready(function() {
 });
 
 
-//this is for text areas
+//gets the caret pos this is for text areas
 (function ($, undefined) {
     $.fn.getCursorPosition = function() {
         var el = $(this).get(0);
@@ -35,28 +35,8 @@ $( document ).ready(function() {
     };
   })(jQuery);
 
-//GETTING THE CARET POSITION
-function getCaretCharacterOffsetWithin(element) {
-    var caretOffset = 0;
-    var doc = element.ownerDocument || element.document;
-    var win = doc.defaultView || doc.parentWindow;
-    var sel;
-    if (typeof win.getSelection != "undefined") {
-        var range = win.getSelection().getRangeAt(0);
-        var preCaretRange = range.cloneRange();
-        preCaretRange.selectNodeContents(element);
-        preCaretRange.setEnd(range.endContainer, range.endOffset);
-        caretOffset = preCaretRange.toString().length;
-    } else if ( (sel = doc.selection) && sel.type != "Control") {
-        var textRange = sel.createRange();
-        var preCaretTextRange = doc.body.createTextRange();
-        preCaretTextRange.moveToElementText(element);
-        preCaretTextRange.setEndPoint("EndToEnd", textRange);
-        caretOffset = preCaretTextRange.text.length;
-    }
-    return caretOffset;
-}
 
+//ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
 function updateElements(changed_line, text){
   changed_line = "#"+changed_line;
   $.ajax({
@@ -70,59 +50,45 @@ function updateElements(changed_line, text){
   });
 }
 
+//function that runs if the ajax is successful, will eventually update the graph
 function ajSuccess(data){
   $("#test_box").text(data.body);
   i++;
 }
 
-function getLineText(currLine){
-  var text = $('#editable').get(0).innerText;
-  console.log(currLine);
-  if (currLine != 0){
-    var lines = $("#editable > *");
-    if (lines[currLine-1] != null)
-      return lines[currLine-1].innerText;
-    else //if the line number is not a real one
-      return "";
-  }
+//returns the text at the given line, by breaking it into an array of strings (one each line) returning last
+function getLineText(lineNum){
+  var lines = $("#work_markup").val().split('\n');
+//  console.log("888" + lines[lineNum]);
+  return lines[lineNum];
 
-  else{ //if it's line 0, there is no jquery object
-    //returns as soon as there's a newline. if it never hits one, just returns the entire thing
-    var i;
-    for (i = 0; i < text.length; i++){
-      if (text[i] == "\n")
-        return text.substring(0, i);
-    }
-    return text;
-  }
 }
 
+//figure out what you want this to do
 function checkChangedLine(currLine){
   if (currLine != prevLine){
-    updateElements(prevLine, getLineText);
+    var text = getLineText(currLine);
+    updateElements(prevLine, text);
     prevLine = currLine;
     return true;
   }
   return false;
 }
 
-
-function getCurrentLine(el, caretPos){
+//using the text and the caret position, gets the line number
+function getCurrentLine(el){
   //var caretPos = getCaretCharacterOffsetWithin(el);
-  caretPos = $("#work_markup").getCursorPosition();
-  //alert(caretPos);
-  if (caretPos == null){
-    alert("wat");
-    return 0;
-  }
+  var caretPos = $("#work_markup").getCursorPosition();
+  if (caretPos == null)
+    return -1;
+  console.log(caretPos);
+
   var currLine = 0;
   var text = el.value;
-  var i;
 
-  for (i = 0; i < caretPos; i++){
+  for (var i = 0; i < caretPos; i++){
     if (text[i] == "\n"){
       currLine++;
-      console.log("wat");
     }
   }
   //if it's a newline...
@@ -131,41 +97,36 @@ function getCurrentLine(el, caretPos){
 
 }
 
+//function called on keyup. Should fix it. Mostly just determine between deletes and insertions.
 function upFunction(e){
-  code = e.code || e.which;
+  var code = e.code || e.which;
   
   //I believe these two are equivalent
   //var el = $("#editable")[0];
   var el = this;
-  var caretPos = getCaretCharacterOffsetWithin(el);
   var currLine = 0;
 
   //delete never changes the LINE
   //if the key pressed wasn't an arrow or a del/backsp.
   if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
-    currLine = getCurrentLine(el, caretPos);
+    currLine = getCurrentLine(el);
     checkChangedLine(currLine);
   }
   else{
-    currLine = getCurrentLine(el, caretPos);
+    currLine = getCurrentLine(el);
     checkChangedLine(currLine);
   }
 
   return;
 }
 
+//function called on click. Gets the current line and sends it to checkChanged
 function clickFunction(e){
-  var caretPos = getCaretCharacterOffsetWithin(this);
-  var currLine = getCurrentLine(this, caretPos);
-
-  var sel = rangy.getSelection();
-  var cursorOffset = sel.focusOffset;
-
+  var currLine = getCurrentLine(this);
   checkChangedLine(currLine);
 }
 
 $( document ).ready(function() {
-
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
   $ ('#work_markup').get(0).onkeyup= upFunction;
   $ ('#work_markup').get(0).onclick= clickFunction;
@@ -175,109 +136,6 @@ $( document ).ready(function() {
   // $ ('#editable').get(0).onclick= EDclickFunction;
 });
 
-
-function EDgetCurrentLine(el, caretPos){
-  //var caretPos = getCaretCharacterOffsetWithin(el);
-  if (caretPos == null){
-    alert("wat");
-    return 0;
-  }
-  var currLine = 0;
-
-  var text = el.innerText;
-  var text_html = el.innerHTML;
-  var i;
-
-  for (i = 0; i <= caretPos; i++){
-    if (text[i] == "\n"){
-      currLine++;
-      caretPos++;
-    }
-    else{
-    }
-  }
-
-  //for text input, fixes the issue with the extra newline at the end
-  if (currLine >= 0 && text[caretPos-1] == "\n"){
-    currLine--;
-  }
-  //solves issue with end of line moving cursor via arrows
-  if (text[caretPos] == "\n"){
-    currLine--;
-  }
-  //if it's a newline...
-  return currLine;
-
-}
-
-
-function EDpressFunction(e){
-  var code = e.keyCode || e.which;
-
-  var el = $("#editable")[0];
-  var caretPos = getCaretCharacterOffsetWithin(el);
-
-  var currLine = getCurrentLine(el, caretPos);
-  
-  if (code == 13){
-    currLine++;
-  }
-
-  checkChangedLine(currLine);
-  //so, whenever I make changes to a line that's not a backspace, send its complete self to the parser, to do its best with
-    //on the parser side, I don't want to just endlessly create shit... don't change to new element unless ordered to?
-  //keep track of previous line number, so if backspace is hit, I can know whether or not a whole line is gone. 
-}
-
-function EDupFunction(e){
-  code = e.code || e.which;
-  
-  //I believe these two are equivalent
-  //var el = $("#editable")[0];
-  var el = this;
-  var caretPos = getCaretCharacterOffsetWithin(el);
-  var currLine = 0;
-
-  var sel = rangy.getSelection();
-  var cursorOffset = sel.focusOffset;
-  
-  //delete never changes the LINE
-  //if the key pressed wasn't an arrow or a del/backsp.
-  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
-    currLine = getCurrentLine(el, caretPos);
-
-    //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line
-    if (cursorOffset == 0 && caretPos != 0){
-     currLine++;
-    }
-    checkChangedLine(currLine);
-  }
-  //else if (code == 13){
-  //  currLine = getCurrentLine(el, caretPos);
-  //  currLine++; //since it's an enter
-  //  checkChangedLine(currLine);
-  //}
-
-  return;
-}
-
-function EDclickFunction(e){
-  var caretPos = getCaretCharacterOffsetWithin(this);
-  var currLine = getCurrentLine(this, caretPos);
-
-  var sel = rangy.getSelection();
-  var cursorOffset = sel.focusOffset;
-
-  //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line
-  if (cursorOffset == 0 && caretPos != 0){
-   currLine++;
-  }
-  checkChangedLine(currLine);
-}
-
-//$(#editable).keypress(function(){
- // alert("shoo");
-//});
 
 $(loadCy = function(){
   options = {
@@ -474,6 +332,156 @@ $(loadCy = function(){
   };
   $('#cy').cytoscape(options);
 });
+
+
+function EDgetLineText(currLine){
+  var text = $('#editable').get(0).innerText;
+  console.log("888" + currLine);
+  if (currLine != 0){
+    var lines = $("#editable > *");
+    if (lines[currLine-1] != null)
+      return lines[currLine-1].innerText;
+    else //if the line number is not a real one
+      return "";
+  }
+
+  else{ //if it's line 0, there is no jquery object
+    //returns as soon as there's a newline. if it never hits one, just returns the entire thing
+    var i;
+    for (i = 0; i < text.length; i++){
+      if (text[i] == "\n")
+        return text.substring(0, i);
+    }
+    return text;
+  }
+}
+
+function EDgetCurrentLine(el, caretPos){
+  //var caretPos = getCaretCharacterOffsetWithin(el);
+  if (caretPos == null){
+    alert("wat");
+    return 0;
+  }
+  var currLine = 0;
+
+  var text = el.innerText;
+  var text_html = el.innerHTML;
+  var i;
+
+  for (i = 0; i <= caretPos; i++){
+    if (text[i] == "\n"){
+      currLine++;
+      caretPos++;
+    }
+    else{
+    }
+  }
+
+  //for text input, fixes the issue with the extra newline at the end
+  if (currLine >= 0 && text[caretPos-1] == "\n"){
+    currLine--;
+  }
+  //solves issue with end of line moving cursor via arrows
+  if (text[caretPos] == "\n"){
+    currLine--;
+  }
+  //if it's a newline...
+  return currLine;
+
+}
+
+
+function EDpressFunction(e){
+  var code = e.keyCode || e.which;
+
+  var el = $("#editable")[0];
+  var caretPos = getCaretCharacterOffsetWithin(el);
+
+  var currLine = getCurrentLine(el, caretPos);
+  
+  if (code == 13){
+    currLine++;
+  }
+
+  checkChangedLine(currLine);
+  //so, whenever I make changes to a line that's not a backspace, send its complete self to the parser, to do its best with
+    //on the parser side, I don't want to just endlessly create shit... don't change to new element unless ordered to?
+  //keep track of previous line number, so if backspace is hit, I can know whether or not a whole line is gone. 
+}
+
+function EDupFunction(e){
+  code = e.code || e.which;
+  
+  //I believe these two are equivalent
+  //var el = $("#editable")[0];
+  var el = this;
+  var caretPos = getCaretCharacterOffsetWithin(el);
+  var currLine = 0;
+
+  var sel = rangy.getSelection();
+  var cursorOffset = sel.focusOffset;
+  
+  //delete never changes the LINE
+  //if the key pressed wasn't an arrow or a del/backsp.
+  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
+    currLine = getCurrentLine(el, caretPos);
+
+    //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line
+    if (cursorOffset == 0 && caretPos != 0){
+     currLine++;
+    }
+    checkChangedLine(currLine);
+  }
+  //else if (code == 13){
+  //  currLine = getCurrentLine(el, caretPos);
+  //  currLine++; //since it's an enter
+  //  checkChangedLine(currLine);
+  //}
+
+  return;
+}
+
+function EDclickFunction(e){
+  var caretPos = getCaretCharacterOffsetWithin(this);
+  var currLine = getCurrentLine(this, caretPos);
+
+  var sel = rangy.getSelection();
+  var cursorOffset = sel.focusOffset;
+
+  //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line
+  if (cursorOffset == 0 && caretPos != 0){
+   currLine++;
+  }
+  checkChangedLine(currLine);
+}
+
+
+//GETTING THE CARET POSITION
+function getCaretCharacterOffsetWithin(element) {
+    var caretOffset = 0;
+    var doc = element.ownerDocument || element.document;
+    var win = doc.defaultView || doc.parentWindow;
+    var sel;
+    if (typeof win.getSelection != "undefined") {
+        var range = win.getSelection().getRangeAt(0);
+        var preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        caretOffset = preCaretRange.toString().length;
+    } else if ( (sel = doc.selection) && sel.type != "Control") {
+        var textRange = sel.createRange();
+        var preCaretTextRange = doc.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+}
+
+//$(#editable).keypress(function(){
+ // alert("shoo");
+//});
+
 //THIS IS THE FORMATTING I USED IN THE VIEW
 /* 
 $('#cy').cytoscape({

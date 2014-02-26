@@ -4,6 +4,26 @@
 		"selected_items":
 		[
 			[
+				"id",
+				"id"
+			],
+			[
+				"node",
+				"node"
+			],
+			[
+				"note",
+				"note"
+			],
+			[
+				"new",
+				"new"
+			],
+			[
+				"all",
+				"all	all? { |e| .. }"
+			],
+			[
 				"currLine",
 				"currLine"
 			],
@@ -64,10 +84,6 @@
 				"measureText"
 			],
 			[
-				"note",
-				"note_lines"
-			],
-			[
 				"title",
 				"title_lines"
 			],
@@ -102,10 +118,6 @@
 			[
 				"combine",
 				"combined_notes"
-			],
-			[
-				"new",
-				"new_piece"
 			],
 			[
 				"force",
@@ -383,7 +395,7 @@
 			"file": "app/assets/javascripts/works.js",
 			"settings":
 			{
-				"buffer_size": 15619,
+				"buffer_size": 16484,
 				"line_ending": "Unix"
 			}
 		},
@@ -391,7 +403,7 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 5226,
+				"buffer_size": 5573,
 				"line_ending": "Unix"
 			}
 		},
@@ -644,6 +656,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"getCursorPo",
+			"@stack",
 			"caretPos",
 			"console",
 			"console.log",
@@ -769,9 +783,7 @@
 			"ff0000",
 			"808080",
 			".jpg",
-			"_icon",
-			"book_icon",
-			"buttonB"
+			"_icon"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -779,6 +791,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"stack",
 			"#editable",
 			"targ1",
 			"targ",
@@ -818,7 +831,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -826,15 +839,15 @@
 					"file": "app/assets/javascripts/works.js",
 					"settings":
 					{
-						"buffer_size": 15619,
+						"buffer_size": 16484,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3018,
-								3018
+								3442,
+								3442
 							]
 						],
 						"settings":
@@ -933,7 +946,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1811.0,
+						"translation.y": 2273.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -943,15 +956,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 5226,
+						"buffer_size": 5573,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								128,
-								128
+								799,
+								799
 							]
 						],
 						"settings":
@@ -1049,7 +1062,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 660.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
