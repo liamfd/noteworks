@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"currLine",
+				"currLine"
+			],
+			[
 				"id",
 				"id"
 			],
@@ -22,10 +26,6 @@
 			[
 				"all",
 				"all	all? { |e| .. }"
-			],
-			[
-				"currLine",
-				"currLine"
 			],
 			[
 				"text",
@@ -395,7 +395,7 @@
 			"file": "app/assets/javascripts/works.js",
 			"settings":
 			{
-				"buffer_size": 16484,
+				"buffer_size": 17025,
 				"line_ending": "Unix"
 			}
 		},
@@ -656,6 +656,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"getLineTe",
+			"console.log",
+			"getCursor",
 			"getCursorPo",
 			"@stack",
 			"caretPos",
@@ -780,10 +783,7 @@
 			"navColor",
 			"({\"background-color\": \"#activeNavColor\"})",
 			"({\"background-color\": \"#navColor\"})",
-			"ff0000",
-			"808080",
-			".jpg",
-			"_icon"
+			"ff0000"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -839,15 +839,15 @@
 					"file": "app/assets/javascripts/works.js",
 					"settings":
 					{
-						"buffer_size": 16484,
+						"buffer_size": 17025,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3442,
-								3442
+								3261,
+								3261
 							]
 						],
 						"settings":
@@ -946,7 +946,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2273.0,
+						"translation.y": 867.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

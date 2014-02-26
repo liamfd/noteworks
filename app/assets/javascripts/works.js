@@ -1,8 +1,6 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 // You can use CoffeeScript in this file: http://coffeescript.org/
-
-
 var i = 0;
 var lineText = "";
 var prevLine = 0;
@@ -38,7 +36,6 @@ $( document ).ready(function() {
 
 //ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
 function updateElements(changed_line, text){
-  changed_line = "#"+changed_line;
   $.ajax({
     type:"GET",
     url:"modelements",
@@ -65,9 +62,9 @@ function getLineText(lineNum){
 }
 
 //figure out what you want this to do
-function checkChangedLine(currLine){
+function updateIfLineChanged(currLine){
   if (currLine != prevLine){
-    var text = getLineText(currLine);
+    var text = getLineText(prevLine);
     updateElements(prevLine, text);
     prevLine = currLine;
     return true;
@@ -110,11 +107,11 @@ function upFunction(e){
   //if the key pressed wasn't an arrow or a del/backsp.
   if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
     currLine = getCurrentLine(el);
-    checkChangedLine(currLine);
+    updateIfLineChanged(currLine);
   }
   else{
     currLine = getCurrentLine(el);
-    checkChangedLine(currLine);
+    updateIfLineChanged(currLine);
   }
 
   return;
@@ -123,7 +120,7 @@ function upFunction(e){
 //function called on click. Gets the current line and sends it to checkChanged
 function clickFunction(e){
   var currLine = getCurrentLine(this);
-  checkChangedLine(currLine);
+  updateIfLineChanged(currLine);
 }
 
 $( document ).ready(function() {
