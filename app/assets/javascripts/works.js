@@ -57,9 +57,8 @@ function getCaretCharacterOffsetWithin(element) {
     return caretOffset;
 }
 
-function updateElements(changed_line){
+function updateElements(changed_line, text){
   changed_line = "#"+changed_line;
-  var text = "hey";
   $.ajax({
     type:"GET",
     url:"modelements",
@@ -76,12 +75,32 @@ function ajSuccess(data){
   i++;
 }
 
+function getLineText(currLine){
+  var text = $('#editable').get(0).innerText;
+  console.log(currLine);
+  if (currLine != 0){
+    var lines = $("#editable > *");
+    if (lines[currLine-1] != null)
+      return lines[currLine-1].innerText;
+    else //if the line number is not a real one
+      return "";
+  }
+
+  else{ //if it's line 0, there is no jquery object
+    //returns as soon as there's a newline. if it never hits one, just returns the entire thing
+    var i;
+    for (i = 0; i < text.length; i++){
+      if (text[i] == "\n")
+        return text.substring(0, i);
+    }
+    return text;
+  }
+}
+
 function checkChangedLine(currLine){
-  console.log("on line" + currLine);
   if (currLine != prevLine){
-   // alert("moved to line"+currLine + "from" + prevLine);
+    updateElements(prevLine, getLineText);
     prevLine = currLine;
-    updateElements(prevLine);
     return true;
   }
   return false;
@@ -145,7 +164,6 @@ function pressFunction(e){
   var code = e.keyCode || e.which;
 
   var el = $("#editable")[0];
-  var lines = $("#editable > *");
   var caretPos = getCaretCharacterOffsetWithin(el);
 
   var currLine = getCurrentLine(el, caretPos);

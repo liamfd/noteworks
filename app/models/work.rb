@@ -4,6 +4,9 @@ class Work < ActiveRecord::Base
 	has_many :nodes, dependent: :destroy
 	has_many :links
 
+	ObjectPlace = Struct.new(:model, :id)
+	NodeDepth = Struct.new(:node_idnum, :depth)
+
 	@@types = [ "Basic",
          "Comparison",
          "Definition",
@@ -11,8 +14,12 @@ class Work < ActiveRecord::Base
          "Key",
          "Media"
 	]
-   
-	@lines = nil
+
+	def initialize
+		super
+  		@tester = "shoe"
+  		@ordering = []
+ 	end
 
 	before_save :before_save_checker
 
@@ -24,23 +31,43 @@ class Work < ActiveRecord::Base
 	end
 
 	def modifyElement(line_number, line_content)
-		@node = self.nodes.first
-		@note = @node.notes.first
-		@note.body = line_number + line_content
+		my_node = self.nodes.first
+		my_note = my_node.notes.first
+		my_note.body = line_number.to_s + line_content
 		#@note.body = (0...8).map { (65 + rand(26)).chr }.join
 		#if (@note.body = "$*****")
 		#	@note.body = "$";
 		#end
-		puts @note.body
-		@note.save
-		return @note
+		puts my_note.body
+		my_note.save
+		return my_note
 	end
 	
+	def printOrdering
+		@ordering.each {|item| puts(item)}
+	end
+
+	def testArray
+		puts(@tester)
+	end
+
+	#find a way to avoid doing this every time, preferably using instance variables
+	def populateOrdering
+		@ordering = Array.new
+		self.nodes.each do |node|
+			@ordering.push(ObjectPlace.new("node", node.id))
+			#puts "node" + node.id.to_s
+			node.notes.each do |note|
+				@ordering.push(ObjectPlace.new("note", note.id))
+				#puts "note" + note.id.to_s
+			end
+		end
+	end
+	#@ordering = []
 	def parseText
 		Node.destroy_all(work_id: self.id)
-		Struct.new("NodeDepth", :node_idnum, :depth)
-		@stack = Array.new
-
+		stack = Array.new
+		@ordering = Array.new
 
 		markup.each_line do |line|
 			#puts "\n--------\n"
@@ -52,7 +79,6 @@ class Work < ActiveRecord::Base
 
 			#if a new node should be made
 			if @firstChar == '<'
-				
 				@withinBrackets = line.match(/<.*>/).to_s
 				#puts @withinBrackets
 
@@ -65,7 +91,6 @@ class Work < ActiveRecord::Base
 					@type = "BasicNode"
 				end
 				puts @type
-
 
 				@const_type = @type.constantize
 				@new_node = @const_type.new()
@@ -89,38 +114,41 @@ class Work < ActiveRecord::Base
 				@title = @title.strip	
 				#puts @title
 				@new_node.title = @title
-
 				@new_node.work_id = self.id
-
 				@new_node.save
 
+			#	@obj = ObjectPlace.new("node", @new_node.id)
+			#	@ordering.push(@obj)
+
+				@ordering.push(ObjectPlace.new("node", @new_node.id))
 
 				#get the parent.
 				@whitespace = line.match(/(.*)</).captures.first
 				#puts @whitespace.length #should round this up to the nearest 3, resave it somehow, to make it clear
-				@depth = (@whitespace.length)/3
+				@depth = (@whitespace.length)/3 #+2?
 
-				@newNodeDepth = Struct::NodeDepth.new(@new_node.id, @depth)
+				@newNodeDepth = NodeDepth.new(@new_node.id, @depth)
+				#if it's a base element
 				if @depth == 0
-					@stack.push(@newNodeDepth)
+					stack.push(@newNodeDepth)
 				else
-					@currNodeDepth = @stack.pop
+					@currNodeDepth = stack.pop
 					while @depth <= @currNodeDepth.depth do #while you're less deep, therefore it aint yo momma 
-						@currNodeDepth = @stack.pop
+						@currNodeDepth = stack.pop
 					end #at this point, @currNodeDepth is the nearest element that's not as deep as the new one, it's parent
 					@parentNode = Node.find(@currNodeDepth.node_idnum)
 
+					#creates the link, and the sets the parent and child relation
 					@relation = Link.new(child_id: @new_node.id, parent_id: @parentNode.id, work_id:self.id)
 					@relation.save
 					@new_node.parent_relationships << @relation
 					@parentNode.child_relationships << @relation
 
+					stack.push(@currNodeDepth)#push the parent back in, in case it has siblings
+					stack.push(@newNodeDepth)#push self in, in case it has children
+
 					#@new_node.parent_relationships.build(child_id: @new_node.id, parent_id:@parentNode.id)
 					#@new_node.parents << @parentNode
-					
-					@stack.push(@currNodeDepth)#push the parent back in, in case it has siblings
-					@stack.push(@newNodeDepth)#push self in, in case it has children
-
 					#@parent_node.child=
 					#make this nodes id into the parents child.
 					#make the child's parent the parentNode's id.
@@ -133,7 +161,7 @@ class Work < ActiveRecord::Base
 			elsif @firstChar == '-'
 				@content = line.match(/-(.*)/).captures.first
 				
-				@parentNodeDepth = @stack.pop
+				@parentNodeDepth = stack.pop
 				@parent = Node.find(@parentNodeDepth.node_idnum)
 
 				@new_note = Note.new()
@@ -143,27 +171,32 @@ class Work < ActiveRecord::Base
 
 				@parent.add_note_to_combined(@new_note)
 
-
-				@stack.push(@parentNodeDepth)
+				@ordering.push(ObjectPlace.new("note", @new_note.id))
+				stack.push(@parentNodeDepth)
 				
+			#for special chars
 			elsif @firstChar == ':'
 				puts "colontown!"
+
 			else
 				#this currently does the same as the dash
 				@content = line.match(/-(.*)/).captures.first
 				
-				@parentNodeDepth = @stack.pop
+				@parentNodeDepth = stack.pop
 				@parent = Node.find(@parentNodeDepth.node_idnum)
 
 				@new_note = Note.new()
 				@new_note.body = @content
 				@new_note.node_id = @parent.id
-
 				@new_note.save
 
-				@stack.push(@parentNodeDepth)
+				@parent.add_note_to_combined(@new_note)
+
+				@ordering.push(ObjectPlace.new("note", @new_note.id))
+				stack.push(@parentNodeDepth)
 			end
 		end
+		@ordering.each {|item| puts(item)}
 	end
 
 end
