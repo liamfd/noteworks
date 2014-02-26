@@ -75,7 +75,8 @@ class Work < ActiveRecord::Base
 
 			#if a new node should be made
 			if firstChar == '<'
-				new_node = buildNode(line)
+				new_node = Node.new
+				buildNode(new_node, line)
 				new_node.save
 
 				#get the parent.
@@ -112,7 +113,8 @@ class Work < ActiveRecord::Base
 
 			#if it's a note
 			elsif firstChar == '-'
-				new_note = buildNote(line)
+				new_note = Note.new()
+				buildNote(new_note, line)
 
 				parentNodeDepth = stack.pop
 				parentNode = Node.find(parentNodeDepth.node_idnum)
@@ -128,32 +130,29 @@ class Work < ActiveRecord::Base
 
 			else
 				#this currently does the same as the dash
-				@content = line.match(/-(.*)/).captures.first
+				new_note = Note.new()
+				buildNote(new_note, line)
 				
-				@parentNodeDepth = stack.pop
-				@parent = Node.find(@parentNodeDepth.node_idnum)
-
-				@new_note = Note.new()
-				@new_note.body = @content
-				@new_note.node_id = @parent.id
-				@new_note.save
-
-				@parent.add_note_to_combined(@new_note)
-
-				stack.push(@parentNodeDepth)
+				puts "#000@" + new_note.body
+				parentNodeDepth = stack.pop
+				parentNode = Node.find(parentNodeDepth.node_idnum)
+				stack.push(parentNodeDepth)
+				
+				new_note.node_id = parentNode.id
+				parentNode.add_note_to_combined(new_note)
+				new_note.save
 			end
 		end
 	end
 
 	#builds a note, getting its parent, attaching its data, and then returns the note
-	def buildNote(text)
-		new_note = Note.new()
+	def buildNote(note, text)
 		content = text.match(/-(.*)/).captures.first
-		new_note.body = content
-		return new_note
+		note.body = content
+		return note
 	end
 
-	def buildNode(text)
+	def buildNode(node, text)
 		withinBrackets = text.match(/<.*>/).to_s
 		#puts @withinBrackets
 
@@ -165,8 +164,8 @@ class Work < ActiveRecord::Base
 		else
 			type = "BasicNode"
 		end
-		const_type = type.constantize
-		new_node = const_type.new()
+		
+		node.type = type
 
 		#get the category string, use it to pull a category id
 		category = withinBrackets.match(/\.(.*)>/).captures.first
@@ -179,15 +178,15 @@ class Work < ActiveRecord::Base
 		if category_id == 0
 			category_id = (Category.where(name: "Uncategorized").first).id
 		end
-		new_node.category_id = category_id
+		node.category_id = category_id
 		#puts category_id
 
 		title = text.match(/>(.*)/).captures.first
 		title = title.strip	
 		#puts title
-		new_node.title = title
-		new_node.work_id = self.id
-		return new_node
+		node.title = title
+		node.work_id = self.id
+		return node
 	end
 
 end
