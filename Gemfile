@@ -57,3 +57,6 @@ gem 'rabl'
 gem 'oj'
 
 gem 'gon'
+
+gem 'pry', :group => :development
+gem 'pry-rails', :group => :development

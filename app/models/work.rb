@@ -82,22 +82,22 @@ class Work < ActiveRecord::Base
 			new_node.save
 			ordering.insert(line_number, ObjectPlace.new("node", new_node.id))
 
-			#now figure out the parent
+			#FIND PARENT
 			if new_node.depth != 0 #if it's not a base element
-				parent_node = findElParent(new_node.depth, line_number-1, ordering)
-				puts "444" + parent_node.to_s
+				parent_node = findElParent(new_node.depth, line_number, ordering)
 				if parent_node != nil
-					#relation = Link.new(child_id: new_node.id, parent_id: parent_node.id, work_id: self.id)
-					#relation.save
-					#new_node.parent_relationships << relation
-					#curr_node.child_relationships << relation
-					puts "&&&&" + parent_node.title
+					relation = Link.new(child_id: new_node.id, parent_id: parent_node.id, work_id: self.id)
+					relation.save
+					new_node.parent_relationships << relation
+					parent_node.child_relationships << relation
 				else
 					puts "say wwhhhaaa"
 				end
 
 			end
+
 			#FIND CHILDREN
+
 			#i = line_number
 			#curr_el = getElementInOrdering(i, ordering)
 
@@ -133,7 +133,7 @@ class Work < ActiveRecord::Base
 
 	#this could be a find parent function. even just pass it a location and the ordering. works for node and note, both have depth
 	def findElParent(el_depth, index, ordering)
-		i = index
+		i = index - 1
 		while i >= 0 #until the beginning
 			if ordering[i].model == "node" #if it's a node, not just a note
 				curr_node = Node.find(ordering[i].id)
@@ -146,7 +146,30 @@ class Work < ActiveRecord::Base
 		return nil #if no parent found
 	end
 
-	def getElementInOrdering(index,ordering)
+	def findElChildren(el_depth, index, ordering)
+		i = index + 1
+		curr_el = getElementInOrdering(i, ordering)
+		children = Array.new
+		puts "que?"
+		while (curr_el != nil && el_depth < curr_el.depth) #until you find something of equal or lesser depth
+			puts "yah"
+			if curr_el.depth == el_depth+1 #only if it's 1 greater, not diving into other people's shit
+				children.push(curr_el)
+				puts curr_el
+			end
+			#other cases. this will likely have to become more complicated if including more than just direct (1 indent) children
+			i = i+1
+			puts i
+			curr_el = getElementInOrdering(i, ordering)
+		end
+		return children
+	end
+
+	def getElementInOrdering(index, ordering)
+		if index >= ordering.length
+			return nil
+		end
+
 		if ordering[index].model == "node"
 			curr_el = Node.find(ordering[index].id)
 		else
