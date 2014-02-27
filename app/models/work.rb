@@ -31,10 +31,30 @@ class Work < ActiveRecord::Base
 	end
 
 	def modifyElement(line_number, line_content)
-		populateOrdering
+		ordering = populateOrdering()
+		firstChar = line_content.match(/[ ,\t]*(.)/).captures.first
+		
+		#if a new node should be made
+		text = "pie"
+		if firstChar == '<'
+			if ordering[line_number].model == "node"
+				node = Node.find(ordering[line_number].id)
+				puts node.title
+				node.title = "shoe"
+				buildNode(node, line_content)
+				node.title = "shoe"
+				node.save
+			else
+				text = "node"
+			end
+		elsif firstChar == '-'
+			text = "note"
+		else
+			text = "else"
+		end
 		my_node = self.nodes.first
 		my_note = my_node.notes.first
-		my_note.body = line_number.to_s + line_content
+		my_note.body = text + line_number.to_s + line_content
 		#@note.body = (0...8).map { (65 + rand(26)).chr }.join
 		#if (@note.body = "$*****")
 		#	@note.body = "$";
@@ -50,17 +70,19 @@ class Work < ActiveRecord::Base
 
 	#find a way to avoid doing this every time, preferably using instance variables
 	def populateOrdering
-		@ordering = Array.new
+		ordering = Array.new
 		self.nodes.each do |node|
-			@ordering.push(ObjectPlace.new("node", node.id))
+			ordering.push(ObjectPlace.new("node", node.id))
 			#puts "node" + node.id.to_s
 			node.notes.each do |note|
-				@ordering.push(ObjectPlace.new("note", note.id))
+				ordering.push(ObjectPlace.new("note", note.id))
 				#puts "note" + note.id.to_s
 			end
 		end
+		return ordering
 	end
-	#@ordering = []
+
+
 	def parseText
 		Node.destroy_all(work_id: self.id)
 		stack = Array.new
@@ -152,6 +174,7 @@ class Work < ActiveRecord::Base
 		return note
 	end
 
+	#builds a node (including type, title, category) and returns it
 	def buildNode(node, text)
 		withinBrackets = text.match(/<.*>/).to_s
 		#puts @withinBrackets
