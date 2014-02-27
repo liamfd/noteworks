@@ -97,6 +97,23 @@ class Work < ActiveRecord::Base
 			end
 
 			#FIND CHILDREN
+			children = findElChildren(line_number, new_node.depth, ordering)
+			children.each do |child|
+				if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
+					relation = child.parent_relationships.first #hierarchy relationship should always be first
+					relation.parent_id = new_node.id
+					relation.save
+					new_node.child_relationships << relation
+				elsif child.is_a?(Note) #if its a note, change its node_id to the current node's, fix the prev_parents combination
+					prev_parent = Node.find(child.node_id)
+					child.node_id = new_node.id
+					new_node.add_note_to_combined(child)
+					child.save
+					new_node.save
+					prev_parent.combine_notes()
+					prev_parent.save
+				end
+			end
 
 			#i = line_number
 			#curr_el = getElementInOrdering(i, ordering)
@@ -146,7 +163,8 @@ class Work < ActiveRecord::Base
 		return nil #if no parent found
 	end
 
-	def findElChildren(el_depth, index, ordering)
+	#returns a collection of all the children of an element at a line, given its line, a depth, and an ordering
+	def findElChildren(index, el_depth, ordering)
 		i = index + 1
 		curr_el = getElementInOrdering(i, ordering)
 		children = Array.new
@@ -157,7 +175,10 @@ class Work < ActiveRecord::Base
 				children.push(curr_el)
 				puts curr_el
 			end
+
 			#other cases. this will likely have to become more complicated if including more than just direct (1 indent) children
+			#basically, include it if its nested deeper (therefore in this loop,) but don't go into children of what you find)
+
 			i = i+1
 			puts i
 			curr_el = getElementInOrdering(i, ordering)
