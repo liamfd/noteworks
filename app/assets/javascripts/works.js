@@ -49,7 +49,7 @@ function updateElements(changed_line, text){
 
 //function that runs if the ajax is successful, will eventually update the graph
 function ajSuccess(data){
-  $("#test_box").text(data.body);
+  $("#test_box").text(JSON.stringify(data));
   i++;
 }
 

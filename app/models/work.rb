@@ -40,28 +40,35 @@ class Work < ActiveRecord::Base
 			if ordering[line_number].model == "node"
 				node = Node.find(ordering[line_number].id)
 				puts node.title
-				node.title = "shoe"
 				buildNode(node, line_content)
-				node.title = "shoe"
 				node.save
+				return node
 			else
-				text = "node"
+				text = "somefings wrong"
 			end
 		elsif firstChar == '-'
-			text = "note"
-		else
-			text = "else"
+			if ordering[line_number].model == "note"
+				note = Note.find(ordering[line_number].id)
+				buildNote(note, line_content)
+
+				note.save
+				#should add the Note to the parent's combined
+				return note #this should really return the parent node, for graph insertion
+			else
+				text = "note"
+			end
+		else	
+			my_node = self.nodes.first
+			my_note = my_node.notes.first
+			my_note.body = text + line_number.to_s + line_content
+			#@note.body = (0...8).map { (65 + rand(26)).chr }.join
+			#if (@note.body = "$*****")
+			#	@note.body = "$";
+			#end
+			puts my_note.body
+			my_note.save
+			return my_note
 		end
-		my_node = self.nodes.first
-		my_note = my_node.notes.first
-		my_note.body = text + line_number.to_s + line_content
-		#@note.body = (0...8).map { (65 + rand(26)).chr }.join
-		#if (@note.body = "$*****")
-		#	@note.body = "$";
-		#end
-		puts my_note.body
-		my_note.save
-		return my_note
 	end
 	
 	def printOrdering
