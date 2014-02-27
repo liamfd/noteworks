@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140125194023) do
+ActiveRecord::Schema.define(version: 20140227164353) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 20140125194023) do
     t.datetime "updated_at"
     t.string   "type"
     t.text     "combined_notes", default: ""
+    t.integer  "depth"
   end
 
   add_index "nodes", ["category_id"], name: "index_nodes_on_category_id"
@@ -49,6 +50,7 @@ ActiveRecord::Schema.define(version: 20140125194023) do
     t.text     "body"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "depth"
   end
 
   add_index "notes", ["node_id"], name: "index_notes_on_node_id"

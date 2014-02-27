@@ -1,7 +1,7 @@
 class Node < ActiveRecord::Base
   belongs_to :category
   belongs_to :work
-  has_many :notes, dependent: :destroy
+  has_many :notes, dependent: :destroy, inverse_of: :node
   has_one :position, dependent: :destroy
 
   validates :category_id, presence: true
