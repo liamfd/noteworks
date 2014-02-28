@@ -89,20 +89,21 @@ class Work < ActiveRecord::Base
 			#FIND CHILDREN
 			children = findElChildren(line_number, new_node.depth, ordering)
 			children.each do |child|
-				if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
-					relation = child.parent_relationships.first #hierarchy relationship should always be first
-					relation.parent_id = new_node.id
-					relation.save
-					new_node.child_relationships << relation
-				elsif child.is_a?(Note) #if its a note, change its node_id to the current node's, fix the prev_parents combination
-					prev_parent = Node.find(child.node_id)
-					child.node_id = new_node.id
-					new_node.add_note_to_combined(child)
-					child.save
-					new_node.save
-					prev_parent.combine_notes()
-					prev_parent.save
-				end
+				changeParent(child[:node], new_node)
+				#if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
+				#	relation = child.parent_relationships.first #hierarchy relationship should always be first
+				#	relation.parent_id = new_node.id
+				#	relation.save
+				#	new_node.child_relationships << relation
+				#elsif child.is_a?(Note) #if its a note, change its node_id to the current node's, fix the prev_parents combination
+				#	prev_parent = Node.find(child.node_id)
+				#	child.node_id = new_node.id
+				#	new_node.add_note_to_combined(child)
+				#	child.save
+				#	new_node.save
+				#	prev_parent.combine_notes()
+				#	prev_parent.save
+				#end
 			end
 
 		elsif type == "note"
@@ -118,9 +119,26 @@ class Work < ActiveRecord::Base
 				parent_node.add_note_to_combined(new_note)
 				new_note.save
 			end
+		end
+	end
 
+	def deleteElement(line_number)
+		ordering = populateOrdering
+		el = getElementInOrdering(line_number, ordering)
+		puts(el.id)
+
+		#find elements children, remove element, then have them find new parents
+		children = findElChildren(line_number, el.depth, ordering)
+		ordering.delete_at(line_number)
+		printOrdering(ordering)
+
+		#for each child, find their new parent according to the ordering, update the elements
+		children.each do |child|
+			new_parent = findElParent(child[:node].depth, child[:index], ordering)
+			changeParent(child[:node], new_parent)
 		end
 
+		el.delete
 	end
 
 	def printOrdering(ordering)
@@ -153,28 +171,42 @@ class Work < ActiveRecord::Base
 			curr_child_depth = 100000
 		end
 
-		puts "que?"
 		while (curr_el != nil && el_depth < curr_el.depth) #until you find something of equal or lesser depth
-			puts "yah"
-			#if curr_el.depth == el_depth+1 #only if it's 1 greater, not diving into other people's shit
-			#	children.push(curr_el)
-			#	puts curr_el
-			#end
 
 			#basically, include it if it's nested deeper (therefore in this loop,) but don't go into children of what you find)
 			if curr_el.depth <= curr_child_depth && curr_el.is_a?(Node)
-				children.push(curr_el)
+				node_and_index = { node: curr_el, index: i}
+				children.push(node_and_index)
 				curr_child_depth = curr_el.depth
 			elsif curr_el.depth <= curr_child_depth && curr_el.is_a?(Note)
-				children.push(curr_el)	
+				node_and_index = { node: curr_el, index: i}
+				children.push(node_and_index)
 			end
-			#other cases. this will likely have to become more complicated if including more than just direct (1 indent) children
-			
+			#if there's an indented note after some nodes, it will likely get ignored
+
 			i = i+1
 			puts i
 			curr_el = getElementInOrdering(i, ordering)
 		end
 		return children
+	end
+
+	def changeParent(child, parent)
+		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
+			relation = child.parent_relationships.first #hierarchy relationship should always be first
+			relation.parent_id = parent.id
+			relation.save
+			parent.child_relationships << relation
+		elsif child.is_a?(Note) #if its a note, change its node_id to the current node's, fix the prev_parents combination
+			prev_parent = Node.find(child.node_id)
+			child.node_id = parent.id
+			parent.add_note_to_combined(child)
+			prev_parent.combine_notes()
+			
+			child.save
+			parent.save
+			prev_parent.save
+		end
 	end
 
 	def getElementInOrdering(index, ordering)
