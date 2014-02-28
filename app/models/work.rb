@@ -30,6 +30,8 @@ class Work < ActiveRecord::Base
    		end
 	end
 
+
+	#parser shit
 	def modifyElement(line_number, line_content)
 		firstChar = line_content.match(/[ ,\t]*(.)/).captures.first
 				
@@ -45,7 +47,7 @@ class Work < ActiveRecord::Base
 			return self.nodes.first
 		end
 
-		#ordering = populateOrdering()
+		#ordering = getOrdering()
 		#if firstChar == '<'
 		#	if ordering[line_number].model == "node" #if there was a note
 		#		insertNewElement(line_number, line_content, "node")
@@ -78,7 +80,7 @@ class Work < ActiveRecord::Base
 	#shouldn't be called until the JS knows what type the new thing is
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
 	def insertNewElement(line_number, line_content)
-		ordering = populateOrdering()
+		ordering = getOrdering
 		first_char = line_content.match(/[ ,\t]*(.)/).captures.first
 
 		if first_char == "<"
@@ -86,6 +88,7 @@ class Work < ActiveRecord::Base
 			buildNode(new_node, line_content)
 			new_node.save
 			ordering.insert(line_number, ObjectPlace.new("node", new_node.id))
+			setOrder(ordering)
 
 			#FIND PARENT
 			if new_node.depth != 0 #if it's not a base element
@@ -109,6 +112,7 @@ class Work < ActiveRecord::Base
 			buildNote(new_note, line_content)
 			new_note.save
 			ordering.insert(line_number, ObjectPlace.new("note", new_note.id))
+			setOrder(ordering)
 
 			#FIND PARENT
 			parent_node = findElParent(new_note.depth, line_number, ordering)
@@ -121,14 +125,14 @@ class Work < ActiveRecord::Base
 	end
 
 	def deleteElement(line_number)
-		ordering = populateOrdering
+		ordering = getOrdering
 		el = getElementInOrdering(line_number, ordering)
 		puts(el.id)
 
 		#find elements children, remove element, then have them find new parents
 		children = findElChildren(line_number, el.depth, ordering)
 		ordering.delete_at(line_number)
-		printOrdering(ordering)
+		setOrder(ordering)
 
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
@@ -137,10 +141,6 @@ class Work < ActiveRecord::Base
 		end
 
 		el.delete
-	end
-
-	def printOrdering(ordering)
-		ordering.each {|item| puts(item)}
 	end
 
 	#this could be a find parent function. even just pass it a location and the ordering. works for node and note, both have depth
@@ -207,6 +207,33 @@ class Work < ActiveRecord::Base
 		end
 	end
 
+	#takes an array ordering, converts it to the order string and saves
+	def setOrder(ordering)
+		o = ""
+		ordering.each do |obj_place|
+			o << (obj_place.model + "_" + obj_place.id.to_s + "///,")
+		end
+		self.order = o
+		self.save
+	end
+
+	#returns the order string, NOT THE ORDERING ARRAY
+	def getOrder
+		return self.order
+	end
+
+	#returns ordering array (elements of type ObjectPlace), based on the self.order string
+	def getOrdering
+		order_a = self.order.split("///,") #o is the array of strings
+		ordering = []
+		order_a.each do |o|
+			model = o.match(/([a-z]*)_/).captures.first #gets everything before underscore (only letters)
+			id = o.match(/_([0-9]*)/).captures.first.to_i #gets everything after underscore (only digits)
+			ordering.push(ObjectPlace.new(model, id))
+		end
+		return ordering
+	end
+
 	def getElementInOrdering(index, ordering)
 		if index >= ordering.length
 			return nil
@@ -220,20 +247,9 @@ class Work < ActiveRecord::Base
 		return curr_el
 	end
 
-	#find a way to avoid doing this every time, preferably using instance variables
-	def populateOrdering
-		ordering = Array.new
-		self.nodes.each do |node|
-			ordering.push(ObjectPlace.new("node", node.id))
-			#puts "node" + node.id.to_s
-			node.notes.each do |note|
-				ordering.push(ObjectPlace.new("note", note.id))
-				#puts "note" + note.id.to_s
-			end
-		end
-		return ordering
+	def printOrdering(ordering)
+		ordering.each {|item| puts(item)}
 	end
-
 
 	def parseText
 		Node.destroy_all(work_id: self.id)
@@ -307,7 +323,6 @@ class Work < ActiveRecord::Base
 				new_note = Note.new()
 				buildNote(new_note, line)
 				
-				puts "#000@" + new_note.body
 				parentNodeDepth = stack.pop
 				parentNode = Node.find(parentNodeDepth.node_idnum)
 				stack.push(parentNodeDepth)
@@ -317,7 +332,12 @@ class Work < ActiveRecord::Base
 				new_note.save
 			end
 		end
+
+		#should fix this so I can get rid of populateOrdering, only works here because things are produced in order, can do it as I go
+		o = populateOrdering
+		setOrder(o)
 	end
+
 
 	#builds a note, getting its parent, attaching its data, and then returns the note
 	def buildNote(note, text)
@@ -370,4 +390,20 @@ class Work < ActiveRecord::Base
 		return node
 	end
 
+	#fills ordering according to stored nodes and notes. OUTDATED, KEEPING FOR PARSETEXT, USE getOrdering
+	#this only works if the node ids line up to the order, so not if any inserted
+	def populateOrdering
+		ordering = Array.new
+		self.nodes.each do |node|
+			ordering.push(ObjectPlace.new("node", node.id))
+			#puts "node" + node.id.to_s
+			node.notes.each do |note|
+				ordering.push(ObjectPlace.new("note", note.id))
+				#puts "note" + note.id.to_s
+			end
+		end
+		return ordering
+	end
+
 end
+

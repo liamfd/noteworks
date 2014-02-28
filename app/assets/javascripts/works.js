@@ -109,6 +109,10 @@ function upFunction(e){
     currLine = getCurrentLine(el);
     updateIfLineChanged(currLine);
   }
+  else if (code == 13){
+    
+  }
+
   else{
     currLine = getCurrentLine(el);
     updateIfLineChanged(currLine);
