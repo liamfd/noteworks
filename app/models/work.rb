@@ -137,6 +137,7 @@ class Work < ActiveRecord::Base
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
 			new_parent = findElParent(child[:node].depth, child[:index], ordering)
+			puts "yaaaaaaah"
 			changeParent(child[:node], new_parent)
 		end
 
@@ -179,6 +180,7 @@ class Work < ActiveRecord::Base
 			elsif curr_el.depth <= curr_child_depth && curr_el.is_a?(Note)
 				node_and_index = { node: curr_el, index: i}
 				children.push(node_and_index)
+				#this might solve the bug below curr_child_depth = 100000 
 			end
 			#if there's an indented note after some nodes, it will likely get ignored
 
@@ -190,21 +192,77 @@ class Work < ActiveRecord::Base
 	end
 
 	def changeParent(child, parent)
+
 		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
 			relation = child.parent_relationships.first #hierarchy relationship should always be first
-			relation.parent_id = parent.id
-			relation.save
-			parent.child_relationships << relation
-		elsif child.is_a?(Note) #if its a note, change its node_id to the current node's, fix the prev_parents combination
-			prev_parent = Node.find(child.node_id)
-			child.node_id = parent.id
-			parent.add_note_to_combined(child)
-			prev_parent.combine_notes()
+			if (parent != nil)
+				relation.parent_id = parent.id
+				relation.save
+				parent.child_relationships << relation
+			else
+				relation.parent_id = nil
+				relation.save
+			end
 			
-			child.save
-			parent.save
-			prev_parent.save
+		elsif child.is_a?(Note)
+			prev_parent_id = child.node_id
+			if (parent != nil)
+				child.node_id = parent.id
+				child.save
+				parent.add_note_to_combined(child)
+				parent.save
+			else
+				child.node_id = nil
+				child.save			
+			end
+
+			if prev_parent_id != nil #only make changes to the previous parent if there is one
+				prev_parent = Node.find(prev_parent_id)
+				prev_parent.combine_notes()
+				prev_parent.save
+			end
 		end
+
+
+
+
+	#	if parent != nil
+	#		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
+	#			relation = child.parent_relationships.first #hierarchy relationship should always be first
+	#			relation.parent_id = parent.id
+	#			relation.save
+	#			parent.child_relationships << relation
+	#		elsif child.is_a?(Note) #if its a note, change its node_id to the current node's, fix the prev_parents combination
+	#			prev_parent_id = child.node_id
+	#			child.node_id = parent.id
+	#			child.save
+#
+	#			parent.add_note_to_combined(child)
+	#			parent.save
+#				if prev_parent_id != nil #only make changes to the previous parent if there is one
+#					prev_parent = Node.find(prev_parent_id)
+#					prev_parent.combine_notes()
+#					prev_parent.save
+#				end
+#			end
+#		else #if no possible parent was found
+#			if child.is_a?(Node)
+#				relation = child.parent_relationships.first
+#				relation.parent_id = nil
+#				relation.save
+#			elsif child.is_a?(Note)
+#				prev_parent_id = child.node_id
+#				child.node_id = nil
+#				child.save
+#
+#				if prev_parent_id != nil #only make changes to the previous parent if there is one
+#					prev_parent = Node.find(prev_parent_id)
+#					prev_parent.combine_notes()
+#					prev_parent.save
+#				end
+#
+#			end
+#		end
 	end
 
 	#takes an array ordering, converts it to the order string and saves
