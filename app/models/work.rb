@@ -58,16 +58,7 @@ class Work < ActiveRecord::Base
 				text = "note"
 			end
 		else	
-			my_node = self.nodes.first
-			my_note = my_node.notes.first
-			my_note.body = text + line_number.to_s + line_content
-			#@note.body = (0...8).map { (65 + rand(26)).chr }.join
-			#if (@note.body = "$*****")
-			#	@note.body = "$";
-			#end
-			puts my_note.body
-			my_note.save
-			return my_note
+			return "goofed"
 		end
 	end
 	
@@ -93,7 +84,6 @@ class Work < ActiveRecord::Base
 				else
 					puts "say wwhhhaaa"
 				end
-
 			end
 
 			#FIND CHILDREN
@@ -115,30 +105,19 @@ class Work < ActiveRecord::Base
 				end
 			end
 
-			#i = line_number
-			#curr_el = getElementInOrdering(i, ordering)
-
-			#while new_node.depth < curr_el.depth #until you find something of equal or lesser depth
-			#	if curr_el.depth = new_node.depth+1 #only if it's 1 greater, not diving into other people's shit
-			#		if ordering[i].model == "node"
-			#			relation = Link.new(child_id: curr_el.id, parent_id: new_node.id, work_id: self.id)
-			#			relation.save
-			#			new_node.parent_relationships << relation
-			#			curr_el.child_relationships << relation
-			#		else #if it's a note
-			#			prev_parent = curr_el.node_id
-			#			curr_el.node_id = new_node.id
-			#			new_node.add_note_to_combined(new_note)
-			#			prev_parent.combine_notes()
-			#		end
-			#	end
-
-			#	i += 1
-			#	curr_el = getElementInOrdering(i, ordering)
-			#end
-
 		elsif type == "note"
-			puts "waa"
+			new_note = Note.new
+			buildNote(new_note, line_content)
+			new_note.save
+			ordering.insert(line_number, ObjectPlace.new("note", new_note.id))
+
+			#FIND PARENT
+			parent_node = findElParent(new_note.depth, line_number, ordering)
+			if parent_node != nil
+				new_note.node_id = parent_node.id
+				parent_node.add_note_to_combined(new_note)
+				new_note.save
+			end
 
 		end
 
@@ -165,20 +144,32 @@ class Work < ActiveRecord::Base
 
 	#returns a collection of all the children of an element at a line, given its line, a depth, and an ordering
 	def findElChildren(index, el_depth, ordering)
+		children = Array.new
 		i = index + 1
 		curr_el = getElementInOrdering(i, ordering)
-		children = Array.new
+		if curr_el.is_a?(Node)
+			curr_child_depth = curr_el.depth
+		else #if it's a note, it can't have children, so arbitrary big depth that'll get rest on the first node
+			curr_child_depth = 100000
+		end
+
 		puts "que?"
 		while (curr_el != nil && el_depth < curr_el.depth) #until you find something of equal or lesser depth
 			puts "yah"
-			if curr_el.depth == el_depth+1 #only if it's 1 greater, not diving into other people's shit
+			#if curr_el.depth == el_depth+1 #only if it's 1 greater, not diving into other people's shit
+			#	children.push(curr_el)
+			#	puts curr_el
+			#end
+
+			#basically, include it if it's nested deeper (therefore in this loop,) but don't go into children of what you find)
+			if curr_el.depth <= curr_child_depth && curr_el.is_a?(Node)
 				children.push(curr_el)
-				puts curr_el
+				curr_child_depth = curr_el.depth
+			elsif curr_el.depth <= curr_child_depth && curr_el.is_a?(Note)
+				children.push(curr_el)	
 			end
-
 			#other cases. this will likely have to become more complicated if including more than just direct (1 indent) children
-			#basically, include it if its nested deeper (therefore in this loop,) but don't go into children of what you find)
-
+			
 			i = i+1
 			puts i
 			curr_el = getElementInOrdering(i, ordering)
