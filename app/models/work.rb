@@ -31,43 +31,57 @@ class Work < ActiveRecord::Base
 	end
 
 	def modifyElement(line_number, line_content)
-		ordering = populateOrdering()
 		firstChar = line_content.match(/[ ,\t]*(.)/).captures.first
-		
-		#if a new node should be made
-		text = "pie"
+				
 		if firstChar == '<'
-			if ordering[line_number].model == "node"
-				node = Node.find(ordering[line_number].id)
-				puts node.title
-				buildNode(node, line_content)
-				node.save
-				return node
-			else
-				text = "somefings wrong"
-			end
+			deleteElement(line_number)
+			insertNewElement(line_number, line_content)
+			return self.nodes.first
 		elsif firstChar == '-'
-			if ordering[line_number].model == "note"
-				note = Note.find(ordering[line_number].id)
-				buildNote(note, line_content)
-
-				note.save
-				#should add the Note to the parent's combined
-				return note #this should really return the parent node, for graph insertion
-			else
-				text = "note"
-			end
+			deleteElement(line_number)
+			insertNewElement(line_number, line_content)
+			return self.nodes.first
 		else	
-			return "goofed"
+			return self.nodes.first
 		end
+
+		#ordering = populateOrdering()
+		#if firstChar == '<'
+		#	if ordering[line_number].model == "node" #if there was a note
+		#		insertNewElement(line_number, line_content, "node")
+		#		node = Node.find(ordering[line_number].id)
+		#		puts node.title
+		#		buildNode(node, line_content)
+		#		node.save
+		#		return node
+		#	elsif ordering[line_number].model == "note" #if it's the other type, delete what was there, insert a new thing
+		#		deleteElement(line_number)
+		#		insertNewElement(line_number, line_content, "note")
+		#	end
+		#elsif firstChar == '-'
+		#	if ordering[line_number].model == "note"
+		#		note = Note.find(ordering[line_number].id)
+		#		buildNote(note, line_content)
+#
+#				note.save
+#				#should add the Note to the parent's combined
+#				return note #this should really return the parent node, for graph insertion
+#			elsif ordering[line_number].model == "node" #if it's the other type, delete what was there, insert a new thing
+#				deleteElement(line_number)
+#				insertNewElement(line_number, line_content, "node")
+#			end
+#		else	
+#			return "goofed"
+#		end
 	end
 	
 	#shouldn't be called until the JS knows what type the new thing is
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
-	def insertNewElement(line_number, line_content, type)
+	def insertNewElement(line_number, line_content)
 		ordering = populateOrdering()
+		first_char = line_content.match(/[ ,\t]*(.)/).captures.first
 
-		if type == "node"
+		if first_char == "<"
 			new_node = Node.new
 			buildNode(new_node, line_content)
 			new_node.save
@@ -81,8 +95,6 @@ class Work < ActiveRecord::Base
 					relation.save
 					new_node.parent_relationships << relation
 					parent_node.child_relationships << relation
-				else
-					puts "say wwhhhaaa"
 				end
 			end
 
@@ -90,23 +102,9 @@ class Work < ActiveRecord::Base
 			children = findElChildren(line_number, new_node.depth, ordering)
 			children.each do |child|
 				changeParent(child[:node], new_node)
-				#if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
-				#	relation = child.parent_relationships.first #hierarchy relationship should always be first
-				#	relation.parent_id = new_node.id
-				#	relation.save
-				#	new_node.child_relationships << relation
-				#elsif child.is_a?(Note) #if its a note, change its node_id to the current node's, fix the prev_parents combination
-				#	prev_parent = Node.find(child.node_id)
-				#	child.node_id = new_node.id
-				#	new_node.add_note_to_combined(child)
-				#	child.save
-				#	new_node.save
-				#	prev_parent.combine_notes()
-				#	prev_parent.save
-				#end
 			end
 
-		elsif type == "note"
+		else
 			new_note = Note.new
 			buildNote(new_note, line_content)
 			new_note.save
@@ -172,7 +170,7 @@ class Work < ActiveRecord::Base
 		end
 
 		while (curr_el != nil && el_depth < curr_el.depth) #until you find something of equal or lesser depth
-
+			puts curr_el
 			#basically, include it if it's nested deeper (therefore in this loop,) but don't go into children of what you find)
 			if curr_el.depth <= curr_child_depth && curr_el.is_a?(Node)
 				node_and_index = { node: curr_el, index: i}
