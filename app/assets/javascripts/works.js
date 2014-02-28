@@ -4,6 +4,21 @@
 var i = 0;
 var lineText = "";
 var prevLine = 0;
+var num_lines = 0;
+
+
+$( document ).ready(function() {
+  num_lines = getNumLines();
+
+//  $ ('#work_markup').get(0).onkeypress= pressFunction;
+  $ ('#work_markup').get(0).onkeyup= upFunction;
+  $ ('#work_markup').get(0).onclick= clickFunction;
+  console.log(gon.elements);
+  // $ ('#editable').get(0).onkeypress= EDpressFunction;
+  // $ ('#editable').get(0).onkeyup= EDupFunction;
+  // $ ('#editable').get(0).onclick= EDclickFunction;
+});
+
 
 $( document ).ready(function() {
     var ele = gon.elements;
@@ -55,10 +70,15 @@ function ajSuccess(data){
 
 //returns the text at the given line, by breaking it into an array of strings (one each line) returning last
 function getLineText(lineNum){
-  var lines = $("#work_markup").val().split('\n');
+  var lines = $("#work_markup").val().split(/\r\n|\r|\n/);
 //  console.log("888" + lines[lineNum]);
   return lines[lineNum];
 
+}
+//returns the number of lines in the work_markup's text, by splitting with a regexp and taking length
+function getNumLines(){
+  var num_lines = $("#work_markup").val().split(/\r\n|\r|\n/).length;
+  return num_lines;
 }
 
 //figure out what you want this to do
@@ -83,7 +103,7 @@ function getCurrentLine(el){
   var currLine = 0;
   var text = "";
   if (el != undefined){
-    var text = el.value;
+    text = el.value;
   }
   //var text = "soup"
   for (var i = 0; i < caretPos; i++){
@@ -105,9 +125,23 @@ function upFunction(e){
   //var el = $("#editable")[0];
   var el = this;
   if (el == undefined)
-    return
-  var currLine = 0;
+    return;
+  var curr_num_lines = getNumLines();
+  console.log("curr_num_lines" + curr_num_lines);
+  console.log("num_lines" + num_lines);
 
+  //checks if the number of lines has changed
+  if (curr_num_lines < num_lines){
+    console.log("deleted!");
+    num_lines = curr_num_lines;
+  }
+  else if (curr_num_lines > num_lines){
+    console.log("added!");
+    num_lines = curr_num_lines;
+  }
+  else
+    console.log("same");
+  
   //delete never changes the LINE
   //if the key pressed wasn't an arrow or a del/backsp.
   if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
@@ -133,16 +167,6 @@ function clickFunction(e){
   if (this == undefined)
     return;
 }
-
-$( document ).ready(function() {
-//  $ ('#work_markup').get(0).onkeypress= pressFunction;
-  $ ('#work_markup').get(0).onkeyup= upFunction;
-  $ ('#work_markup').get(0).onclick= clickFunction;
-  console.log(gon.elements);
-  // $ ('#editable').get(0).onkeypress= EDpressFunction;
-  // $ ('#editable').get(0).onkeyup= EDupFunction;
-  // $ ('#editable').get(0).onclick= EDclickFunction;
-});
 
 
 $(loadCy = function(){
