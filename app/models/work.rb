@@ -152,7 +152,11 @@ class Work < ActiveRecord::Base
 			changeParent(child[:node], new_parent)
 		end
 
+		if el.is_a?(Node)
+			el.parent_relationships.delete_all
+		end
 		el.delete
+
 	end
 
 	#this could be a find parent function. even just pass it a location and the ordering. works for node and note, both have depth
@@ -203,7 +207,6 @@ class Work < ActiveRecord::Base
 	end
 
 	def changeParent(child, parent)
-
 		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
 			relation = child.parent_relationships.first #hierarchy relationship should always be first
 			if (parent != nil)

@@ -4,6 +4,34 @@
 		"selected_items":
 		[
 			[
+				"new",
+				"new_note"
+			],
+			[
+				"node",
+				"node_id"
+			],
+			[
+				"work",
+				"work_id"
+			],
+			[
+				"parent",
+				"parent_id"
+			],
+			[
+				"node_id",
+				"node_id"
+			],
+			[
+				"curr",
+				"curr_child_depth"
+			],
+			[
+				"paren",
+				"parent_relationships"
+			],
+			[
 				"line",
 				"line_number"
 			],
@@ -16,20 +44,8 @@
 				"insertNewElement"
 			],
 			[
-				"curr",
-				"curr_node"
-			],
-			[
-				"new",
-				"new_node"
-			],
-			[
 				"change",
 				"changeParent"
-			],
-			[
-				"node",
-				"node"
 			],
 			[
 				"is",
@@ -54,10 +70,6 @@
 			[
 				"findEl",
 				"findElChildren"
-			],
-			[
-				"parent",
-				"parent_node"
 			],
 			[
 				"find",
@@ -376,10 +388,6 @@
 				"firstChar"
 			],
 			[
-				"work",
-				"work_groups"
-			],
-			[
 				"clas",
 				"class_name"
 			],
@@ -436,13 +444,10 @@
 	"buffers":
 	[
 		{
-			"contents": "// Place all the behaviors and hooks related to the matching controller here.\n// All this logic will automatically be available in application.js.\n// You can use CoffeeScript in this file: http://coffeescript.org/\nvar i = 0;\nvar lineText = \"\";\nvar prevLine = 0;\n\n$( document ).ready(function() {\n    var ele = gon.elements;\n    ele = JSON.stringify(ele);\n    $( \".test\" ).text(ele);\n\n    var lel = gon.elements;\n    $( \".test\" ).text(JSON.stringify(lel));\n});\n\n\n//gets the caret pos this is for text areas\n(function ($, undefined) {\n    $.fn.getCursorPosition = function() {\n        var el = $(this).get(0);\n        var pos = 0;\n        if('selectionStart' in el) {\n            pos = el.selectionStart;\n        } else if('selection' in document) {\n            el.focus();\n            var Sel = document.selection.createRange();\n            var SelLength = document.selection.createRange().text.length;\n            Sel.moveStart('character', -el.value.length);\n            pos = Sel.text.length - SelLength;\n        }\n        return pos;\n    };\n  })(jQuery);\n\n\n//ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller\nfunction updateElements(changed_line, text){\n  $.ajax({\n    type:\"GET\",\n    url:\"modelements\",\n    data: {line_number: changed_line, line_content: text},\n    dataType:\"json\",\n    success: function(data){\n      ajSuccess(data);\n    }\n  });\n}\n\n//function that runs if the ajax is successful, will eventually update the graph\nfunction ajSuccess(data){\n  $(\"#test_box\").text(JSON.stringify(data));\n  i++;\n}\n\n//returns the text at the given line, by breaking it into an array of strings (one each line) returning last\nfunction getLineText(lineNum){\n  var lines = $(\"#work_markup\").val().split('\\n');\n//  console.log(\"888\" + lines[lineNum]);\n  return lines[lineNum];\n\n}\n\n//figure out what you want this to do\nfunction updateIfLineChanged(currLine){\n  if (currLine != prevLine){\n    var text = getLineText(prevLine);\n    updateElements(prevLine, text);\n    prevLine = currLine;\n    return true;\n  }\n  return false;\n}\n\n//using the text and the caret position, gets the line number\nfunction getCurrentLine(el){\n  //var caretPos = getCaretCharacterOffsetWithin(el);\n  var caretPos = $(\"#work_markup\").getCursorPosition();\n  if (caretPos == null)\n    return -1;\n  console.log(caretPos);\n\n  var currLine = 0;\n  var text = el.value;\n\n  for (var i = 0; i < caretPos; i++){\n    if (text[i] == \"\\n\"){\n      currLine++;\n    }\n  }\n  //if it's a newline...\n  console.log(\"$$$\" + currLine);\n  return currLine;\n\n}\n\n//function called on keyup. Should fix it. Mostly just determine between deletes and insertions.\nfunction upFunction(e){\n  var code = e.code || e.which;\n  \n  //I believe these two are equivalent\n  //var el = $(\"#editable\")[0];\n  var el = this;\n  var currLine = 0;\n\n  //delete never changes the LINE\n  //if the key pressed wasn't an arrow or a del/backsp.\n  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){\n    currLine = getCurrentLine(el);\n    updateIfLineChanged(currLine);\n  }\n  else if (code == 13){\n    \n  }\n\n  else{\n    currLine = getCurrentLine(el);\n    updateIfLineChanged(currLine);\n  }\n\n  return;\n}\n\n//function called on click. Gets the current line and sends it to checkChanged\nfunction clickFunction(e){\n  var currLine = getCurrentLine(this);\n  updateIfLineChanged(currLine);\n}\n\n$( document ).ready(function() {\n//  $ ('#work_markup').get(0).onkeypress= pressFunction;\n  $ ('#work_markup').get(0).onkeyup= upFunction;\n  $ ('#work_markup').get(0).onclick= clickFunction;\n\n  // $ ('#editable').get(0).onkeypress= EDpressFunction;\n  // $ ('#editable').get(0).onkeyup= EDupFunction;\n  // $ ('#editable').get(0).onclick= EDclickFunction;\n});\n\n\n$(loadCy = function(){\n  options = {\n    layout: {\n      name: 'arbor',\n      liveUpdate: true, // whether to show the layout as it's running\n      ready: undefined, // callback on layoutready \n      stop: undefined, // callback on layoutstop\n      maxSimulationTime: 4000, // max length in ms to run the layout\n      fit: true, // reset viewport to fit defaualt simulationBounds\n      padding: [ 50, 50, 50, 50 ], // top, right, bottom, left\n      simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by defaualt\n      ungrabifyWhileSimulating: true, // so you can't drag nodes during layout\n\n      // forces used by arbor (use arbor defaualt on undefined)\n      repulsion: undefined,\n      stiffness: undefined,\n      friction: undefined,\n      gravity: true,\n      fps: undefined,\n      precision: undefined,\n\n      // static numbers or functions that dynamically return what these\n      // values should be for each element\n      nodeMass: undefined,\n      edgeLength: undefined,\n\n      stepSize: 1, // size of timestep in simulation\n\n      // function that returns true if the system is stable to indicate\n      // that the layout can be stopped\n      stableEnergy: function( energy ){\n          var e = energy;\n          return (e.max <= 0.5) || (e.mean <= 0.3);\n      }\n    },\n\n    showOverlay: false,\n    panningEnabled: true,\n    boxSelectionEnabled: false,\n    minZoom: 0.5,\n    maxZoom: 2,\n\n    style: cytoscape.stylesheet()\n      .selector('node')\n        .css({\n          'content': 'data(title)',\n          'font-family': 'helvetica',\n          'font-size': 14,\n          \n          'width': 'mapData(weight, 30, 80, 20, 50)',\n          'height': 'mapData(height, 0, 200, 10, 45)',\n          'z-index' : 1\n        })\n    \n      .selector(':selected')\n        .css({\n          'background-color': '#000',\n          'line-color': '#000',\n          'target-arrow-color': '#000',\n          'text-outline-color': '#000'\n        })\n      .selector('edge')\n        .css({\n          'width': 3,\n          'target-arrow-shape': 'none'\n        })\n      .selector('.starting')\n        .css({\n          'text-outline-width': 3,\n          'text-outline-color': 'data(color)',\n          'border-color':'data(color)',\n          'border-width':3,\n          'background-color': '#fff',\n          'text-valign': 'center',\n          'text-halign' : 'center',\n          'color': '#fff',\n          'font-size':\"16px\",\n          'height':\"30px\",\n         \n          //this needs to be there, otherwise it doesn't draw the notes correctly the first time.\n          'note-font-size': \"16px\",\n          'note-font-weight': \"bold\",\n          'note-text-outline-width': 0,\n          \n        })\n      .selector('.focused')\n       .css({\n          'width' : '300px',\n          'height' : 'auto',\n          'shape' : 'roundrectangle',\n          'border-width' : \"3px\",\n          'border-color' : \"data(color)\",\n          'background-color' : '#fff',\n          'background-opacity' : 1,\n          \"opacity\" : 1,\n          \"z-index\" : 5,\n\n          'content' : 'data(title)',\n          'text-outline-width': 3,\n          'text-outline-color': 'data(color)',\n          'color': '#fff',\n          'text-valign' : \"top\",\n          'font-size':\"18px\",\n\n          'notes': 'data(notes)',\n          'note-text-outline-width': 0,\n          'note-text-outline-color':\"#fff\",\n          'note-color': '#444',\n          'note-font-size': \"16px\",\n          'note-font-weight': \"bold\",\n        })\n      .selector('.less-focused')\n        .css({\n          'z-index' : 3,\n          'background-color':\"#dddddd\"\n        })\n\n      .selector('.faded')\n        .css({\n          'opacity': 0.9,\n          'text-opacity': 0.9,\n          'z-index': 1,\n       }),\n\n\n\n    \n    elements:gon.elements,\n\n    ready: function(){\n      window.cy = this;\n      cy.elements().unselectify();\n\n      //centers the node further from the middle when clicking edge\n      cy.on('tap', 'edge', function(e){\n        var edge = e.cyTarget;\n        var src = edge.source();\n        var targ = edge.target();\n\n        //center of canvas\n        var cont = $('#cy')[0];\n        //var cont = document.getElementById(cy);\n        var cent_x = (cont.offsetWidth)/2;\n        var cent_y = (cont.offsetHeight)/2;\n     \n        //x and y of the two nodes\n        var src_x = src.renderedPosition(\"x\");\n        var src_y = src.renderedPosition(\"y\");\n        var targ_x = targ.renderedPosition(\"x\");\n        var targ_y = targ.renderedPosition(\"y\");\n       \n        //distance function, sans sqrt\n        var src_dist = (cent_x - src_x) * (cent_x - src_x) + (cent_y - src_y) * (cent_y - src_y);\n        var targ_dist = (cent_x - targ_x) * (cent_x - targ_x) + (cent_y - targ_y) * (cent_y - targ_y);\n\n        //whichever node is further away, center it\n        if (src_dist >= targ_dist){\n          cy.center(src);\n        } else {\n          cy.center(targ);\n        }\n\n      });\n      \n      //bring focus to the element as they're clicked, prioritizing the most recent click\n      cy.on('tap', 'node', function(e){\n        var curr_node = e.cyTarget; \n        var prev_foci = cy.elements('node.focused');\n\n        prev_foci.not(curr_node).addClass('less-focused'); //middleground all focused nodes except current\n\n        if (curr_node.hasClass('less-focused')){ //if it's been middlegrounded, foreground\n          curr_node.removeClass('less-focused');\n        } \n        else { //otherwise, swap between foreground and background\n          curr_node.toggleClass('focused');\n        }\n      });\n\n      //resets the nodes when background is clicked\n      cy.on('tap', function(e){\n        if( e.cyTarget === cy ){\n          cy.elements().removeClass('focused');\n          cy.elements().removeClass('less-focused');\n        }\n      });\n\n      cy.on('load', function(e) {\n        cy.elements().addClass(\"starting\");\n      });\n\n    }\n  };\n  $('#cy').cytoscape(options);\n});\n\n\nfunction EDgetLineText(currLine){\n  var text = $('#editable').get(0).innerText;\n  console.log(\"888\" + currLine);\n  if (currLine != 0){\n    var lines = $(\"#editable > *\");\n    if (lines[currLine-1] != null)\n      return lines[currLine-1].innerText;\n    else //if the line number is not a real one\n      return \"\";\n  }\n\n  else{ //if it's line 0, there is no jquery object\n    //returns as soon as there's a newline. if it never hits one, just returns the entire thing\n    var i;\n    for (i = 0; i < text.length; i++){\n      if (text[i] == \"\\n\")\n        return text.substring(0, i);\n    }\n    return text;\n  }\n}\n\nfunction EDgetCurrentLine(el, caretPos){\n  //var caretPos = getCaretCharacterOffsetWithin(el);\n  if (caretPos == null){\n    alert(\"wat\");\n    return 0;\n  }\n  var currLine = 0;\n\n  var text = el.innerText;\n  var text_html = el.innerHTML;\n  var i;\n\n  for (i = 0; i <= caretPos; i++){\n    if (text[i] == \"\\n\"){\n      currLine++;\n      caretPos++;\n    }\n    else{\n    }\n  }\n\n  //for text input, fixes the issue with the extra newline at the end\n  if (currLine >= 0 && text[caretPos-1] == \"\\n\"){\n    currLine--;\n  }\n  //solves issue with end of line moving cursor via arrows\n  if (text[caretPos] == \"\\n\"){\n    currLine--;\n  }\n  //if it's a newline...\n  return currLine;\n\n}\n\n\nfunction EDpressFunction(e){\n  var code = e.keyCode || e.which;\n\n  var el = $(\"#editable\")[0];\n  var caretPos = getCaretCharacterOffsetWithin(el);\n\n  var currLine = getCurrentLine(el, caretPos);\n  \n  if (code == 13){\n    currLine++;\n  }\n\n  checkChangedLine(currLine);\n  //so, whenever I make changes to a line that's not a backspace, send its complete self to the parser, to do its best with\n    //on the parser side, I don't want to just endlessly create shit... don't change to new element unless ordered to?\n  //keep track of previous line number, so if backspace is hit, I can know whether or not a whole line is gone. \n}\n\nfunction EDupFunction(e){\n  code = e.code || e.which;\n  \n  //I believe these two are equivalent\n  //var el = $(\"#editable\")[0];\n  var el = this;\n  var caretPos = getCaretCharacterOffsetWithin(el);\n  var currLine = 0;\n\n  var sel = rangy.getSelection();\n  var cursorOffset = sel.focusOffset;\n  \n  //delete never changes the LINE\n  //if the key pressed wasn't an arrow or a del/backsp.\n  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){\n    currLine = getCurrentLine(el, caretPos);\n\n    //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line\n    if (cursorOffset == 0 && caretPos != 0){\n     currLine++;\n    }\n    checkChangedLine(currLine);\n  }\n  //else if (code == 13){\n  //  currLine = getCurrentLine(el, caretPos);\n  //  currLine++; //since it's an enter\n  //  checkChangedLine(currLine);\n  //}\n\n  return;\n}\n\nfunction EDclickFunction(e){\n  var caretPos = getCaretCharacterOffsetWithin(this);\n  var currLine = getCurrentLine(this, caretPos);\n\n  var sel = rangy.getSelection();\n  var cursorOffset = sel.focusOffset;\n\n  //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line\n  if (cursorOffset == 0 && caretPos != 0){\n   currLine++;\n  }\n  checkChangedLine(currLine);\n}\n\n\n//GETTING THE CARET POSITION\nfunction getCaretCharacterOffsetWithin(element) {\n    var caretOffset = 0;\n    var doc = element.ownerDocument || element.document;\n    var win = doc.defaultView || doc.parentWindow;\n    var sel;\n    if (typeof win.getSelection != \"undefined\") {\n        var range = win.getSelection().getRangeAt(0);\n        var preCaretRange = range.cloneRange();\n        preCaretRange.selectNodeContents(element);\n        preCaretRange.setEnd(range.endContainer, range.endOffset);\n        caretOffset = preCaretRange.toString().length;\n    } else if ( (sel = doc.selection) && sel.type != \"Control\") {\n        var textRange = sel.createRange();\n        var preCaretTextRange = doc.body.createTextRange();\n        preCaretTextRange.moveToElementText(element);\n        preCaretTextRange.setEndPoint(\"EndToEnd\", textRange);\n        caretOffset = preCaretTextRange.text.length;\n    }\n    return caretOffset;\n}\n\n//$(#editable).keypress(function(){\n // alert(\"shoo\");\n//});\n\n//THIS IS THE FORMATTING I USED IN THE VIEW\n/* \n$('#cy').cytoscape({\n  layout: {\n    name: 'arbor',\n    liveUpdate: false, // whether to show the layout as it's running\n    ready: undefined, // callback on layoutready \n    stop: undefined, // callback on layoutstop\n    maxSimulationTime: 4000, // max length in ms to run the layout\n    fit: true, // reset viewport to fit defaualt simulationBounds\n    padding: [ 50, 50, 50, 50 ], // top, right, bottom, left\n    simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by defaualt\n    ungrabifyWhileSimulating: true, // so you can't drag nodes during layout\n\n    // forces used by arbor (use arbor defaualt on undefined)\n    repulsion: undefined,\n    stiffness: undefined,\n    friction: undefined,\n    gravity: true,\n    fps: undefined,\n    precision: undefined,\n\n    // static numbers or functions that dynamically return what these\n    // values should be for each element\n    nodeMass: undefined,\n    edgeLength: undefined,\n\n    stepSize: 1, // size of timestep in simulation\n\n    // function that returns true if the system is stable to indicate\n    // that the layout can be stopped\n    stableEnergy: function( energy ){\n        var e = energy;\n        return (e.max <= 0.5) || (e.mean <= 0.3);\n    }\n  },\n\n  style: cytoscape.stylesheet()\n    .selector('node')\n      .css({\n        'content': 'data(title)',\n        'text-valign': 'center',\n        'color': 'white',\n        'text-outline-width': 2,\n        'text-outline-color': '//888'\n      })\n    .selector('edge')\n      .css({\n        'target-arrow-shape': 'triangle'\n      })\n    .selector(':selected')\n      .css({\n        'background-color': 'black',\n        'line-color': 'black',\n        'target-arrow-color': 'black',\n        'source-arrow-color': 'black'\n\n      })\n\n    .selector('.faded')\n      .css({\n        'opacity': 0.25,\n        'text-opacity': 0\n      })\n\n    .selector('.largeNode')\n      .css({\n        'width' : '100px',\n        'height' : '100px'\n      }),\n\n  elements: {\n    nodes: [\n      { data: { id: 'j', title: 'Jerry' } },\n      { data: { id: 'e', title: 'Elaine' } },\n      { data: { id: 'k', title: 'Kramer' } },\n      { data: { id: 'g', title: 'George' } }\n    ],\n    edges: [\n      { data: { source: 'j', target: 'e' } },\n      { data: { source: 'j', target: 'k' } },\n      { data: { source: 'j', target: 'g' } },\n      { data: { source: 'e', target: 'j' } },\n      { data: { source: 'e', target: 'k' } },\n      { data: { source: 'k', target: 'j' } },\n      { data: { source: 'k', target: 'e' } },\n      { data: { source: 'k', target: 'g' } },\n      { data: { source: 'g', target: 'j' } }\n    ]\n  },\n  \n    ready: function(){\n      window.cy = this;\n      \n      cy.elements().unselectify();\n      \n      cy.on('tap', 'node', function(e){\n        var node = e.cyTarget;\n        var neighborhood = node.neighborhood().add(node);\n        \n        cy.nodes().addClass('faded');\n        cy.nodes().removeClass('faded');\n        node.toggleClass('largeNode');\n      });\n      \n      cy.on('tap', function(e){\n        if( e.cyTarget === cy ){\n          cy.nodes().removeClass('faded');\n          cy.nodes().removeClass('largeNode');\n        }\n      });\n\n  }\n\n}); */",
 			"file": "app/assets/javascripts/works.js",
-			"file_size": 17011,
-			"file_write_time": 1393516595000000,
 			"settings":
 			{
-				"buffer_size": 17045,
+				"buffer_size": 17208,
 				"line_ending": "Unix"
 			}
 		},
@@ -450,7 +455,7 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 11219,
+				"buffer_size": 12875,
 				"line_ending": "Unix"
 			}
 		},
@@ -575,6 +580,7 @@
 	},
 	"file_history":
 	[
+		"/home/liam/projs/noteworks/db/migrate/20140228162704_change_ordering_to_order.rb",
 		"/home/liam/projs/noteworks/config/environment.rb",
 		"/home/liam/projs/noteworks/Gemfile",
 		"/home/liam/projs/noteworks/db/migrate/20140227164353_add_depth_to_notes.rb",
@@ -701,8 +707,7 @@
 		"/home/liam/projs/tffproto/views/components/stickynav.jade",
 		"/home/liam/projs/tffproto/pages/sticknavpage.jade",
 		"/home/liam/projs/tffproto/pages/index.jade",
-		"/home/liam/projs/tffproto/config.json",
-		"/home/liam/projs/tffproto/resources/sass/modules/_layout.scss"
+		"/home/liam/projs/tffproto/config.json"
 	],
 	"find":
 	{
@@ -720,6 +725,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"<<",
+			"value",
+			"setOrder",
+			"ordering.delete_at",
+			"ordering.ins",
+			"changeParent",
+			"populateOrdering",
+			"populateOrder",
+			"populateOrdering",
 			"changeParent",
 			"findElParent",
 			"insertNewEl",
@@ -838,16 +852,7 @@
 			"#ffffff",
 			"tff-grey",
 			"#ffffff",
-			"#000000",
-			"tffRed",
-			"tffWhite",
-			"border",
-			"border-style",
-			"mainAward",
-			"\n	",
-			";\n",
-			"%;\n",
-			"value"
+			"#000000"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -855,6 +860,9 @@
 		"regex": false,
 		"replace_history":
 		[
+			"getOrdering",
+			"populateOrdering",
+			"populateOrder",
 			"firstChar",
 			"stack",
 			"#editable",
@@ -896,7 +904,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 7,
 			"sheets":
 			[
 				{
@@ -904,15 +912,15 @@
 					"file": "app/assets/javascripts/works.js",
 					"settings":
 					{
-						"buffer_size": 17045,
+						"buffer_size": 17208,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3098,
-								3098
+								3739,
+								3739
 							]
 						],
 						"settings":
@@ -1011,7 +1019,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1386.0,
+						"translation.y": 2380.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1021,15 +1029,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 11219,
+						"buffer_size": 12875,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6446,
-								6446
+								6960,
+								6960
 							]
 						],
 						"settings":
@@ -1127,7 +1135,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4470.0,
+						"translation.y": 2794.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1610,8 +1618,8 @@
 						"selection":
 						[
 							[
-								24,
-								24
+								31,
+								31
 							]
 						],
 						"settings":
@@ -1825,7 +1833,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 814.0,
+						"translation.y": 22.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -2125,6 +2133,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 180.0,
+	"side_bar_width": 259.0,
 	"status_bar_visible": true
 }
