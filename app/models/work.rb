@@ -37,12 +37,12 @@ class Work < ActiveRecord::Base
 				
 		if firstChar == '<'
 			deleteElement(line_number)
-			insertNewElement(line_number, line_content)
-			return self.nodes.first
+			node = insertNewElement(line_number, line_content)
+			return node
 		elsif firstChar == '-'
 			deleteElement(line_number)
-			insertNewElement(line_number, line_content)
-			return self.nodes.first
+			node = insertNewElement(line_number, line_content)
+			return node
 		else	
 			return self.nodes.first
 		end
@@ -96,9 +96,14 @@ class Work < ActiveRecord::Base
 				if parent_node != nil
 					relation = Link.new(child_id: new_node.id, parent_id: parent_node.id, work_id: self.id)
 					relation.save
-					new_node.parent_relationships << relation
-					parent_node.child_relationships << relation
+				#	new_node.parent_relationships << relation
+				#	parent_node.child_relationships << relation
+				else
+					relation = Link.new(child_id: new_node.id, parent_id: nil, work_id: self.id)
+					relation.save
+				#	new_node.parent_relationships << relation
 				end
+
 			end
 
 			#FIND CHILDREN
@@ -106,6 +111,8 @@ class Work < ActiveRecord::Base
 			children.each do |child|
 				changeParent(child[:node], new_node)
 			end
+
+			return new_node
 
 		else
 			new_note = Note.new
@@ -120,7 +127,11 @@ class Work < ActiveRecord::Base
 				new_note.node_id = parent_node.id
 				parent_node.add_note_to_combined(new_note)
 				new_note.save
+			else
+				new_note.node_id = nil
+				new_note.save
 			end
+			return parent_node
 		end
 	end
 
@@ -198,7 +209,7 @@ class Work < ActiveRecord::Base
 			if (parent != nil)
 				relation.parent_id = parent.id
 				relation.save
-				parent.child_relationships << relation
+				#parent.child_relationships << relation
 			else
 				relation.parent_id = nil
 				relation.save
@@ -222,47 +233,6 @@ class Work < ActiveRecord::Base
 				prev_parent.save
 			end
 		end
-
-
-
-
-	#	if parent != nil
-	#		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
-	#			relation = child.parent_relationships.first #hierarchy relationship should always be first
-	#			relation.parent_id = parent.id
-	#			relation.save
-	#			parent.child_relationships << relation
-	#		elsif child.is_a?(Note) #if its a note, change its node_id to the current node's, fix the prev_parents combination
-	#			prev_parent_id = child.node_id
-	#			child.node_id = parent.id
-	#			child.save
-#
-	#			parent.add_note_to_combined(child)
-	#			parent.save
-#				if prev_parent_id != nil #only make changes to the previous parent if there is one
-#					prev_parent = Node.find(prev_parent_id)
-#					prev_parent.combine_notes()
-#					prev_parent.save
-#				end
-#			end
-#		else #if no possible parent was found
-#			if child.is_a?(Node)
-#				relation = child.parent_relationships.first
-#				relation.parent_id = nil
-#				relation.save
-#			elsif child.is_a?(Note)
-#				prev_parent_id = child.node_id
-#				child.node_id = nil
-#				child.save
-#
-#				if prev_parent_id != nil #only make changes to the previous parent if there is one
-#					prev_parent = Node.find(prev_parent_id)
-#					prev_parent.combine_notes()
-#					prev_parent.save
-#				end
-#
-#			end
-#		end
 	end
 
 	#takes an array ordering, converts it to the order string and saves
@@ -311,6 +281,8 @@ class Work < ActiveRecord::Base
 
 	def parseText
 		Node.destroy_all(work_id: self.id)
+		Link.destroy_all(work_id: self.id)
+
 		stack = Array.new
 		
 		markup.each_line do |line|

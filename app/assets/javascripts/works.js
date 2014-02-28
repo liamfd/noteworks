@@ -81,8 +81,11 @@ function getCurrentLine(el){
   console.log(caretPos);
 
   var currLine = 0;
-  var text = el.value;
-
+  var text = "";
+  if (el != undefined){
+    var text = el.value;
+  }
+  //var text = "soup"
   for (var i = 0; i < caretPos; i++){
     if (text[i] == "\n"){
       currLine++;
@@ -101,6 +104,8 @@ function upFunction(e){
   //I believe these two are equivalent
   //var el = $("#editable")[0];
   var el = this;
+  if (el == undefined)
+    return
   var currLine = 0;
 
   //delete never changes the LINE
@@ -125,13 +130,15 @@ function upFunction(e){
 function clickFunction(e){
   var currLine = getCurrentLine(this);
   updateIfLineChanged(currLine);
+  if (this == undefined)
+    return;
 }
 
 $( document ).ready(function() {
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
   $ ('#work_markup').get(0).onkeyup= upFunction;
   $ ('#work_markup').get(0).onclick= clickFunction;
-
+  console.log(gon.elements);
   // $ ('#editable').get(0).onkeypress= EDpressFunction;
   // $ ('#editable').get(0).onkeyup= EDupFunction;
   // $ ('#editable').get(0).onclick= EDclickFunction;
@@ -261,10 +268,7 @@ $(loadCy = function(){
           'text-opacity': 0.9,
           'z-index': 1,
        }),
-
-
-
-    
+   
     elements:gon.elements,
 
     ready: function(){
