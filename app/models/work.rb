@@ -144,7 +144,6 @@ class Work < ActiveRecord::Base
 	def deleteElement(line_number)
 		ordering = getOrdering
 		el = getElementInOrdering(line_number, ordering)
-		puts(el.id)
 
 		#find elements children, remove element, then have them find new parents
 		children = findElChildren(line_number, el.depth, ordering)
@@ -154,7 +153,6 @@ class Work < ActiveRecord::Base
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
 			new_parent = findElParent(child[:node].depth, child[:index], ordering)
-			puts "yaaaaaaah"
 			changeParent(child[:node], new_parent)
 		end
 
@@ -264,8 +262,10 @@ class Work < ActiveRecord::Base
 		order_a = self.order.split("///,") #o is the array of strings
 		ordering = []
 		order_a.each do |o|
-			model = o.match(/([a-z]*)_/).captures.first #gets everything before underscore (only letters)
-			id = o.match(/_([0-9]*)/).captures.first.to_i #gets everything after underscore (only digits)
+			model = getTextFromRegexp(o, /([a-z]*)_/) #gets everything before underscore (only letters)
+			#model = o.match(/([a-z]*)_/).captures.first #gets everything before underscore (only letters)
+			id = getTextFromRegexp(o, /_([0-9]*)/) #gets everything after underscore (only digits)
+			#id = o.match(/_([0-9]*)/).captures.first.to_i #gets everything after underscore (only digits)
 			ordering.push(ObjectPlace.new(model, id))
 		end
 		return ordering
@@ -287,9 +287,9 @@ class Work < ActiveRecord::Base
 	def printOrdering(ordering)
 		ordering.each do |item|
 			if item.model == "node"
-				puts "<" + Node.find(item.id).title
+				puts "< " + Node.find(item.id).title
 			elsif item.model == "note"
-				puts "-" + Note.find(item.id).body
+				puts "- " + Note.find(item.id).body
 			end
 		end
 	end
@@ -301,19 +301,15 @@ class Work < ActiveRecord::Base
 		stack = Array.new
 		
 		markup.each_line do |line|
-			#puts "\n--------\n"
 			#parser rules: any amount of whitespace followed immediately by < means new node. Otherwise, new note.
 			#<TYPE.CATEGORY>TITLE
 			#if the occurence of <*> is before the first occurence of " then it's a new
 			#@angleBracketLocation = line.index(/[ ,\t]*<.*>/)
-			firstChar = ""
-			matched = line.match(/[ ,\t]*(.)/)
-			if matched != nil
-				firstChar = matched.captures.first
-			end
-
+		
+			first_char = getTextFromRegexp(line, /[ ,\t]*(.)/)
+		
 			#if a new node should be made
-			if firstChar == '<'
+			if first_char == '<'
 				new_node = Node.new
 				buildNode(new_node, line)
 				new_node.save
@@ -350,7 +346,7 @@ class Work < ActiveRecord::Base
 				new_node.save
 
 			#if it's a note
-			elsif firstChar == '-'
+			elsif first_char == '-'
 				new_note = Note.new()
 				buildNote(new_note, line)
 
@@ -364,7 +360,7 @@ class Work < ActiveRecord::Base
 				new_note.save
 				
 			#for special chars
-			elsif firstChar == ':'
+			elsif first_char == ':'
 				puts "colontown!"
 
 			else
