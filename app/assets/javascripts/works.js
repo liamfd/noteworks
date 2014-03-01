@@ -181,14 +181,19 @@ function ajSuccess(data){
   console.log("data=" + data);
   i++;
   test_data = data;
-  some_dat = { "color":"#880022"};
   some_other_dat = data.nodes[0].data;
   cy.add({
     group: "nodes",
-    data: some_other_dat,
-    position: { x: 200, y: 200 }
+    data: some_other_dat
+    //position: random? arbor?
   }).addClass("starting");
- 
+
+  if (data.edges[0] != undefined){
+    cy.add({
+      group: "edges",
+      data: data.edges[0].data
+    });
+  }
 }
 
 

@@ -36,7 +36,19 @@ class Work < ActiveRecord::Base
 		output << '"title":"' + node.title + '",'
 		output << '"combined_notes":"' + node.combined_notes + '",'
 		output << '"color":"' + node.category.color + '"'
-		output << '}}]}'
+		output << '}}]'
+
+		output << ',"edges":['
+		node.parent_relationships.each do |link|
+			output << '{"data":{'
+			output << '"source":"' + link.parent_id.to_s + '",'
+			output << '"target":"' + link.child_id.to_s + '"'
+			output << '}}'
+		end
+		output << ']'
+
+		output << '}'
+
 		out_JSON = JSON.parse(output)
 		return out_JSON
 	end
