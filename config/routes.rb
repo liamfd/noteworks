@@ -1,7 +1,11 @@
 Noteweb::Application.routes.draw do
   get "works/:id/takenotes", to: "works#takenotes"
   get "works/:id/testnetwork", to: "works#testnetwork"
-  get "works/:id/modelements", to: "works#modelements"
+  
+  get "works/:id/mod_element", to: "works#mod_element"
+  get "works/:id/add_element", to: "works#add_element"
+  get "works/:id/del_element", to:"works#del_element"
+
 
   patch "works/:id", to: "works#updatenotes"
   resources :works

@@ -1,5 +1,6 @@
 class WorksController < ApplicationController
-  before_action :set_work, only: [:show, :edit, :update, :destroy, :testnetwork, :takenotes, :updatenotes, :modelements]
+  before_action :set_work, only: [:show, :edit, :update, :destroy, :testnetwork, :takenotes, :updatenotes, 
+    :mod_element, :add_element, :del_element]
 
   # GET /works
   # GET /works.json
@@ -88,7 +89,7 @@ class WorksController < ApplicationController
     end
   end
 
-  def modelements
+  def mod_element
     @line_number = params[:line_number]
     @line_content = params[:line_content]
     @modded_element = @work.modifyElement(@line_number.to_i, @line_content.to_s)
@@ -97,6 +98,26 @@ class WorksController < ApplicationController
       format.js {render :json => @modded_element}
     end
   end
+
+  def add_element
+    line_number = params[:line_number]
+    line_content = params[:line_content]
+    @modded_element = @work.insertNewElement(line_number.to_i, line_content.to_s)
+
+    respond_to do |format|
+      format.js {render :json => @modded_element}
+    end
+  end
+
+  def del_element
+    line_number = params[:line_number]
+    @modded_element = @work.deleteElement(line_number.to_i)
+
+    respond_to do |format|
+      format.js {render :json => @modded_element}
+    end
+  end
+
 
   def testnetwork
     @nodes = @work.nodes

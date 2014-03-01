@@ -13,109 +13,11 @@ $( document ).ready(function() {
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
   $ ('#work_markup').get(0).onkeyup= upFunction;
   $ ('#work_markup').get(0).onclick= clickFunction;
-  console.log(gon.elements);
   // $ ('#editable').get(0).onkeypress= EDpressFunction;
   // $ ('#editable').get(0).onkeyup= EDupFunction;
   // $ ('#editable').get(0).onclick= EDclickFunction;
 });
 
-
-$( document ).ready(function() {
-    var ele = gon.elements;
-    ele = JSON.stringify(ele);
-    $( ".test" ).text(ele);
-
-    var lel = gon.elements;
-    $( ".test" ).text(JSON.stringify(lel));
-});
-
-
-//gets the caret pos this is for text areas
-(function ($, undefined) {
-    $.fn.getCursorPosition = function() {
-        var el = $(this).get(0);
-        var pos = 0;
-        if('selectionStart' in el) {
-            pos = el.selectionStart;
-        } else if('selection' in document) {
-            el.focus();
-            var Sel = document.selection.createRange();
-            var SelLength = document.selection.createRange().text.length;
-            Sel.moveStart('character', -el.value.length);
-            pos = Sel.text.length - SelLength;
-        }
-        return pos;
-    };
-  })(jQuery);
-
-
-//ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
-function updateElements(changed_line, text){
-  $.ajax({
-    type:"GET",
-    url:"modelements",
-    data: {line_number: changed_line, line_content: text},
-    dataType:"json",
-    success: function(data){
-      ajSuccess(data);
-    }
-  });
-}
-
-//function that runs if the ajax is successful, will eventually update the graph
-function ajSuccess(data){
-  $("#test_box").text(JSON.stringify(data));
-  i++;
-}
-
-//returns the text at the given line, by breaking it into an array of strings (one each line) returning last
-function getLineText(lineNum){
-  var lines = $("#work_markup").val().split(/\r\n|\r|\n/);
-//  console.log("888" + lines[lineNum]);
-  return lines[lineNum];
-
-}
-//returns the number of lines in the work_markup's text, by splitting with a regexp and taking length
-function getNumLines(){
-  var num_lines = $("#work_markup").val().split(/\r\n|\r|\n/).length;
-  return num_lines;
-}
-
-//figure out what you want this to do
-function updateIfLineChanged(currLine){
-  if (currLine != prevLine){
-    var text = getLineText(prevLine);
-    updateElements(prevLine, text);
-    prevLine = currLine;
-    return true;
-  }
-  return false;
-}
-
-//using the text and the caret position, gets the line number
-function getCurrentLine(el){
-  //var caretPos = getCaretCharacterOffsetWithin(el);
-  var caretPos = $("#work_markup").getCursorPosition();
-  if (caretPos == null)
-    return -1;
-  console.log(caretPos);
-
-  var currLine = 0;
-  var text = "";
-  if (el != undefined){
-    text = el.value;
-  }
-  //var text = "soup"
-  for (var i = 0; i < caretPos; i++){
-    if (text[i] == "\n"){
-      currLine++;
-    }
-  }
-  //if it's a newline...
-  console.log("$$$" + currLine);
-  return currLine;
-
-}
 
 //function called on keyup. Should fix it. Mostly just determine between deletes and insertions.
 function upFunction(e){
@@ -168,7 +70,138 @@ function clickFunction(e){
     return;
 }
 
+/*
+$( document ).ready(function() {
+    var ele = gon.elements;
+    ele = JSON.stringify(ele);
+    $( ".test" ).text(ele);
 
+    var lel = gon.elements;
+    $( ".test" ).text(JSON.stringify(lel));
+});
+*/
+
+//ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
+function updateElement(line_num, text){
+  $.ajax({
+    type:"GET",
+    url:"mod_element",
+    data: {line_number: line_num, line_content: text},
+    dataType:"json",
+    success: function(data){
+      ajSuccess(data);
+    }
+  });
+}
+
+//ajax call that takes in a line number and its text, and sends them to the addelement function in the works controller
+function addElement(line_num, text){
+  $.ajax({
+    type:"GET",
+    url:"add_element",
+    data: {line_number: line_num, line_content: text},
+    dataType:"json",
+    success: function(data){
+      ajSuccess(data);
+    }
+  });
+}
+
+//ajax call that takes in a line number and sends it to the delelement function in the works controller
+function delElement(line_num){
+  $.ajax({
+    type:"GET",
+    url:"del_element",
+    data: {line_number: line_num},
+    dataType:"json",
+    success: function(data){
+      ajSuccess(data);
+    }
+  });
+}
+
+//function that runs if the ajax is successful, will eventually update the graph
+function ajSuccess(data){
+  $("#test_box").text(JSON.stringify(data));
+  i++;
+}
+
+
+//gets the caret pos this is for text areas
+(function ($, undefined) {
+    $.fn.getCursorPosition = function() {
+        var el = $(this).get(0);
+        var pos = 0;
+        if('selectionStart' in el) {
+            pos = el.selectionStart;
+        } else if('selection' in document) {
+            el.focus();
+            var Sel = document.selection.createRange();
+            var SelLength = document.selection.createRange().text.length;
+            Sel.moveStart('character', -el.value.length);
+            pos = Sel.text.length - SelLength;
+        }
+        return pos;
+    };
+  })(jQuery);
+
+//using the text and the caret position, gets the line number
+function getCurrentLine(el){
+  //var caretPos = getCaretCharacterOffsetWithin(el);
+  var caretPos = $("#work_markup").getCursorPosition();
+  if (caretPos == null)
+    return -1;
+  console.log(caretPos);
+
+  var currLine = 0;
+  var text = "";
+  if (el != undefined){
+    text = el.value;
+  }
+  //var text = "soup"
+  for (var i = 0; i < caretPos; i++){
+    if (text[i] == "\n"){
+      currLine++;
+    }
+  }
+  //if it's a newline...
+  console.log("$$$" + currLine);
+  return currLine;
+}
+
+//returns the text at the given line, by breaking it into an array of strings (one each line) returning the one at lineNum
+function getLineText(lineNum){
+  var lines = $("#work_markup").val().split(/\r\n|\r|\n/);
+//  console.log("888" + lines[lineNum]);
+  return lines[lineNum];
+
+}
+
+//figure out what you want this to do
+function updateIfLineChanged(currLine){
+  if (currLine != prevLine){
+    var text = getLineText(prevLine);
+    updateElement(prevLine, text);
+    prevLine = currLine;
+    console.log("DID THE SHIT");
+    return true;
+  }
+  return false;
+}
+
+//returns the number of lines in work_markup's text, by splitting with a regexp and taking length
+function getNumLines(){
+  var num_lines = $("#work_markup").val().split(/\r\n|\r|\n/).length;
+  return num_lines;
+}
+
+
+
+
+
+
+
+/* CYTOSCAPE STUFF */
 $(loadCy = function(){
   options = {
     layout: {
