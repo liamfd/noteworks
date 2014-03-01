@@ -22,7 +22,7 @@ $( document ).ready(function() {
 //function called on keyup. Should fix it. Mostly just determine between deletes and insertions.
 function upFunction(e){
   var code = e.code || e.which;
-  
+  //alert(code);
   //I believe these two are equivalent
   //var el = $("#editable")[0];
   var el = this;
@@ -32,23 +32,64 @@ function upFunction(e){
   console.log("curr_num_lines" + curr_num_lines);
   console.log("num_lines" + num_lines);
 
+/*
   //checks if the number of lines has changed
   if (curr_num_lines < num_lines){
-    console.log("deleted!");
+ //   console.log("deleted!");
     num_lines = curr_num_lines;
   }
   else if (curr_num_lines > num_lines){
-    console.log("added!");
+ //   console.log("added!");
     num_lines = curr_num_lines;
   }
   else
     console.log("same");
+*/
+  var text;
+  currLine = getCurrentLine(el);
+
+
+  if (code == 13){ //if it's an enter, the line changed will take care of the old line, add a new one
+    //the new line is always the current line. even if entering at the beginning, your generating a new line, 
+    //and moving shit to it
+    text = getLineText(currLine);
+    console.log("inserted line" + currLine);
+    console.log("updating line" + prevLine);
+    num_lines++;
+    prevLine = currLine; //The this doesn't get updated auto on enter
+  //  addElement(currLine, text);
+      //updateElement(prevLine, text);
+  }
+  else if ((code == 8) && (curr_num_lines < num_lines)){ //if it's backspace and a whole line gone
+    //delElement(prevLine);
+    console.log("backspaced line" + prevLine);
+    num_lines--;
+    prevLine = currLine;
+  }
+  else if ((code == 46) && (curr_num_lines < num_lines)){ //if it's a del and a whole line gone
+    //delElement(currLine); //the server still thinks an extra thing is there
+    console.log("deleted line" + currLine);
+    num_lines--;
+    prevLine = currLine; //probably unnecessary
+  }
+  else if (checkLineChanged(currLine)){ //otherwise, if I've just changed lines
+    text = getLineText(prevLine);
+    console.log("switched from " + prevLine + "to " + currLine);
+    //updateElement(prevLine, text);
+    prevLine = currLine;
+  }
+
   
   //delete never changes the LINE
   //if the key pressed wasn't an arrow or a del/backsp.
-  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
+  /*if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
     currLine = getCurrentLine(el);
-    updateIfLineChanged(currLine);
+    if (checkLineChanged(currLine)){
+      var text = getLineText(prevLine);
+      updateElement(prevLine, text);
+      prevLine = currLine;
+    }
+
   }
   else if (code == 13){
     
@@ -56,8 +97,10 @@ function upFunction(e){
 
   else{
     currLine = getCurrentLine(el);
-    updateIfLineChanged(currLine);
+    checkLineChanged(currLine);
   }
+*/
+
 
   return;
 }
@@ -65,7 +108,7 @@ function upFunction(e){
 //function called on click. Gets the current line and sends it to checkChanged
 function clickFunction(e){
   var currLine = getCurrentLine(this);
-  updateIfLineChanged(currLine);
+  checkLineChanged(currLine);
   if (this == undefined)
     return;
 }
@@ -178,11 +221,8 @@ function getLineText(lineNum){
 }
 
 //figure out what you want this to do
-function updateIfLineChanged(currLine){
+function checkLineChanged(currLine){
   if (currLine != prevLine){
-    var text = getLineText(prevLine);
-    updateElement(prevLine, text);
-    prevLine = currLine;
     console.log("DID THE SHIT");
     return true;
   }
