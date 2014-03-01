@@ -49,34 +49,41 @@ function upFunction(e){
   currLine = getCurrentLine(el);
 
 
-  if (code == 13){ //if it's an enter, the line changed will take care of the old line, add a new one
+  if (code == 13){ //if it's an enter, update old line, add new (can hit enter anywhere in line)
     //the new line is always the current line. even if entering at the beginning, your generating a new line, 
     //and moving shit to it
     text = getLineText(currLine);
-    console.log("inserted line" + currLine);
-    console.log("updating line" + prevLine);
+    addElement(currLine, text);
+    updateElement(prevLine, text);
+
     num_lines++;
     prevLine = currLine; //The this doesn't get updated auto on enter
-  //  addElement(currLine, text);
-      //updateElement(prevLine, text);
+    //console.log("inserted line" + currLine);
+    //console.log("updating line" + prevLine);
   }
+
   else if ((code == 8) && (curr_num_lines < num_lines)){ //if it's backspace and a whole line gone
-    //delElement(prevLine);
-    console.log("backspaced line" + prevLine);
+    delElement(prevLine);
     num_lines--;
     prevLine = currLine;
+    
+    //console.log("backspaced line" + prevLine);
   }
+
   else if ((code == 46) && (curr_num_lines < num_lines)){ //if it's a del and a whole line gone
+    /* FOR NOW, DELETE DISABLED, UNTIL I SOLVE THE END OF LINE VS BEGINNING OF LINE ISSUE */
     //delElement(currLine); //the server still thinks an extra thing is there
-    console.log("deleted line" + currLine);
     num_lines--;
     prevLine = currLine; //probably unnecessary
+   // console.log("deleted line" + currLine);
   }
+
   else if (checkLineChanged(currLine)){ //otherwise, if I've just changed lines
     text = getLineText(prevLine);
-    console.log("switched from " + prevLine + "to " + currLine);
-    //updateElement(prevLine, text);
+    updateElement(prevLine, text);
+    
     prevLine = currLine;
+   // console.log("switched from " + prevLine + "to " + currLine);
   }
 
   

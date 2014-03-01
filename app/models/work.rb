@@ -33,13 +33,13 @@ class Work < ActiveRecord::Base
 
 	#parser shit
 	def modifyElement(line_number, line_content)
-		firstChar = line_content.match(/[ ,\t]*(.)/).captures.first
+		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 				
-		if firstChar == '<'
+		if first_char == '<'
 			deleteElement(line_number)
 			node = insertNewElement(line_number, line_content)
 			return node
-		elsif firstChar == '-'
+		elsif first_char == '-'
 			deleteElement(line_number)
 			node = insertNewElement(line_number, line_content)
 			return node
@@ -81,7 +81,13 @@ class Work < ActiveRecord::Base
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
 	def insertNewElement(line_number, line_content)
 		ordering = getOrdering
-		first_char = line_content.match(/[ ,\t]*(.)/).captures.first
+		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
+		#first_char = ""
+		#matched = line_content.match(/[ ,\t]*(.)/)
+		#if matched != nil
+		#	first_char = matched.captures.first
+		#end
+
 
 		if first_char == "<"
 			new_node = Node.new
@@ -279,7 +285,13 @@ class Work < ActiveRecord::Base
 	end
 
 	def printOrdering(ordering)
-		ordering.each {|item| puts(item)}
+		ordering.each do |item|
+			if item.model == "node"
+				puts "<" + Node.find(item.id).title
+			elsif item.model == "note"
+				puts "-" + Note.find(item.id).body
+			end
+		end
 	end
 
 	def parseText
@@ -294,7 +306,11 @@ class Work < ActiveRecord::Base
 			#<TYPE.CATEGORY>TITLE
 			#if the occurence of <*> is before the first occurence of " then it's a new
 			#@angleBracketLocation = line.index(/[ ,\t]*<.*>/)
-			firstChar = line.match(/[ ,\t]*(.)/).captures.first
+			firstChar = ""
+			matched = line.match(/[ ,\t]*(.)/)
+			if matched != nil
+				firstChar = matched.captures.first
+			end
 
 			#if a new node should be made
 			if firstChar == '<'
@@ -371,13 +387,14 @@ class Work < ActiveRecord::Base
 		setOrder(o)
 	end
 
-
 	#builds a note, getting its parent, attaching its data, and then returns the note
 	def buildNote(note, text)
-		content = text.match(/-(.*)/).captures.first
+		content = getTextFromRegexp(text, /-(.*)/)
+		#content = text.match(/-(.*)/).captures.first
 		note.body = content
 
-		whitespace = text.match(/(.*)-/).captures.first
+		whitespace = getTextFromRegexp(text, /(.*)-/)
+		#whitespace = text.match(/(.*)-/).captures.first
 		note.depth = (whitespace.length)/3 #+2?
 
 		return note
@@ -385,10 +402,13 @@ class Work < ActiveRecord::Base
 
 	#builds a node (including type, title, category) and returns it
 	def buildNode(node, text)
-		withinBrackets = text.match(/<.*>/).to_s
-
+		withinBrackets = getTextFromRegexp(text, /(<.*>)/)
+		#withinBrackets = text.match(/<.*>/).to_s
+		
 		#get type, convert it to a constant, and makes a new node of that type
-		type = withinBrackets.match(/<(.*)\./).captures.first
+		type = getTextFromRegexp(withinBrackets, /<(.*)\./)
+		#type = withinBrackets.match(/<(.*)\./).captures.first
+		
 		type[0] = type[0].capitalize
 		if @@types.include? type
 			type = (type + "Node")
@@ -399,7 +419,8 @@ class Work < ActiveRecord::Base
 		node.type = type
 
 		#get the category string, use it to pull a category id
-		category = withinBrackets.match(/\.(.*)>/).captures.first
+		category = getTextFromRegexp(withinBrackets, /\.(.*)>/)
+		#category = withinBrackets.match(/\.(.*)>/).captures.first
 		category_id = 0
 		Category.all.each do |cat|
 			if (category.downcase) == (cat.name).downcase
@@ -412,10 +433,12 @@ class Work < ActiveRecord::Base
 		node.category_id = category_id
 		#puts category_id
 
-		title = text.match(/>(.*)/).captures.first
+		title = getTextFromRegexp(text, />(.*)/)
+		#title = text.match(/>(.*)/).captures.first
 		title = title.strip	
 
-		whitespace = text.match(/(.*)</).captures.first
+		whitespace = getTextFromRegexp(text, /(.*)</)
+		#whitespace = text.match(/(.*)</).captures.first
 		node.depth = (whitespace.length)/3 #+2?
 		#puts title
 		node.title = title
@@ -440,3 +463,13 @@ class Work < ActiveRecord::Base
 
 end
 
+def getTextFromRegexp(text, expression)
+	wanted = ""
+	if text != nil
+		matched = text.match(expression)
+		if matched != nil
+			wanted = matched.captures.first
+		end
+	end
+	return wanted
+end
