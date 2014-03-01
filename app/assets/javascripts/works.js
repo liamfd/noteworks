@@ -181,12 +181,13 @@ function ajSuccess(data){
   console.log("data=" + data);
   i++;
   test_data = data;
-  //console.log(data);
-  /*cy.add({
+  some_dat = { "color":"#880022"};
+  some_other_dat = data.nodes[0].data;
+  cy.add({
     group: "nodes",
-    data: { weight: 75 },
+    data: some_other_dat,
     position: { x: 200, y: 200 }
-  });*/
+  }).addClass("starting");
  
 }
 
