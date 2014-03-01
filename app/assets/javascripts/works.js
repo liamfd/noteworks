@@ -52,9 +52,12 @@ function upFunction(e){
   if (code == 13){ //if it's an enter, update old line, add new (can hit enter anywhere in line)
     //the new line is always the current line. even if entering at the beginning, your generating a new line, 
     //and moving shit to it
-    text = getLineText(currLine);
-    addElement(currLine, text);
-    updateElement(prevLine, text);
+    prev_text = getLineText(prevLine);
+    curr_text = getLineText(currLine);
+    //console.log("previous: " + prev_text);
+   // console.log("crrent: " + curr_text);
+    addElement(currLine, curr_text);
+    updateElement(prevLine, prev_text);
 
     num_lines++;
     prevLine = currLine; //The this doesn't get updated auto on enter
