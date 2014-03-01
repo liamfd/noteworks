@@ -5,10 +5,12 @@ var i = 0;
 var lineText = "";
 var prevLine = 0;
 var num_lines = 0;
+var test_data;
 
 
 $( document ).ready(function() {
   num_lines = getNumLines();
+  test_data = {};
 
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
   $ ('#work_markup').get(0).onkeyup= upFunction;
@@ -123,7 +125,7 @@ function clickFunction(e){
     return;
 }
 
-/*
+
 $( document ).ready(function() {
     var ele = gon.elements;
     ele = JSON.stringify(ele);
@@ -132,7 +134,7 @@ $( document ).ready(function() {
     var lel = gon.elements;
     $( ".test" ).text(JSON.stringify(lel));
 });
-*/
+
 
 //ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
 function updateElement(line_num, text){
@@ -176,7 +178,16 @@ function delElement(line_num){
 //function that runs if the ajax is successful, will eventually update the graph
 function ajSuccess(data){
   $("#test_box").text(JSON.stringify(data));
+  console.log("data=" + data);
   i++;
+  test_data = data;
+  //console.log(data);
+  /*cy.add({
+    group: "nodes",
+    data: { weight: 75 },
+    position: { x: 200, y: 200 }
+  });*/
+ 
 }
 
 
@@ -204,7 +215,7 @@ function getCurrentLine(el){
   var caretPos = $("#work_markup").getCursorPosition();
   if (caretPos == null)
     return -1;
-  console.log(caretPos);
+  //console.log(caretPos);
 
   var currLine = 0;
   var text = "";
@@ -218,7 +229,7 @@ function getCurrentLine(el){
     }
   }
   //if it's a newline...
-  console.log("$$$" + currLine);
+  console.log("currLine: " + currLine);
   return currLine;
 }
 
@@ -233,7 +244,6 @@ function getLineText(lineNum){
 //figure out what you want this to do
 function checkLineChanged(currLine){
   if (currLine != prevLine){
-    console.log("DID THE SHIT");
     return true;
   }
   return false;
@@ -448,7 +458,7 @@ $(loadCy = function(){
 
 function EDgetLineText(currLine){
   var text = $('#editable').get(0).innerText;
-  console.log("888" + currLine);
+  console.log("currLine: " + currLine);
   if (currLine != 0){
     var lines = $("#editable > *");
     if (lines[currLine-1] != null)

@@ -30,6 +30,16 @@ class Work < ActiveRecord::Base
    		end
 	end
 
+	def toJSONOutput(node)
+		output = '{"nodes":[{"data":{'
+		output << '"id":"' + node.id.to_s + '",'
+		output << '"title":"' + node.title + '",'
+		output << '"combined_notes":"' + node.combined_notes + '",'
+		output << '"color":"' + node.category.color + '"'
+		output << '}}]}'
+		out_JSON = JSON.parse(output)
+		return out_JSON
+	end
 
 	#parser shit
 	def modifyElement(line_number, line_content)
@@ -38,13 +48,15 @@ class Work < ActiveRecord::Base
 		if first_char == '<'
 			deleteElement(line_number)
 			node = insertNewElement(line_number, line_content)
-			return node
+			#return node
+			return toJSONOutput(node)
 		elsif first_char == '-'
 			deleteElement(line_number)
 			node = insertNewElement(line_number, line_content)
-			return node
+		#	return node
+			return toJSONOutput(node)
 		else	
-			return self.nodes.first
+			return toJSONOutput(self.nodes.first)
 		end
 
 		#ordering = getOrdering()

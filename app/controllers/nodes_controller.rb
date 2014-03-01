@@ -1,5 +1,6 @@
 class NodesController < ApplicationController
   before_action :set_node, only: [:show, :edit, :update, :destroy]
+  respond_to :html, :json
 
   # GET /nodes
   # GET /nodes.json

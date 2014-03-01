@@ -90,18 +90,21 @@ class WorksController < ApplicationController
   end
 
   def mod_element
-    @line_number = params[:line_number]
-    @line_content = params[:line_content]
-    @modded_element = @work.modifyElement(@line_number.to_i, @line_content.to_s)
+    line_number = params[:line_number]
+    line_content = params[:line_content]
 
+   # gon.changed = @modded_element.to_json
+    modded_element_json = @work.modifyElement(line_number.to_i, line_content.to_s)
     respond_to do |format|
-      format.js {render :json => @modded_element}
+      format.json {render :json => modded_element_json}
     end
   end
 
   def add_element
     line_number = params[:line_number]
     line_content = params[:line_content]
+
+    gon.changed = @modded_element.to_json
     @modded_element = @work.insertNewElement(line_number.to_i, line_content.to_s)
 
     respond_to do |format|
@@ -111,6 +114,8 @@ class WorksController < ApplicationController
 
   def del_element
     line_number = params[:line_number]
+
+    gon.changed = @modded_element.to_json
     @modded_element = @work.deleteElement(line_number.to_i)
 
     respond_to do |format|
