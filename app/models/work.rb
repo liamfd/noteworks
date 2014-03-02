@@ -30,6 +30,7 @@ class Work < ActiveRecord::Base
    		end
 	end
 
+	#look up how to do this with JSON objects in ruby
 	def toJSONOutput(node)
 		output = '{"nodes":[{"data":{'
 		output << '"id":"' + node.id.to_s + '",'
@@ -53,18 +54,21 @@ class Work < ActiveRecord::Base
 		return out_JSON
 	end
 
+
 	#parser shit
 	def modifyElement(line_number, line_content)
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
-				
+		ordering = getOrdering
 		if first_char == '<'
-			deleteElement(line_number)
-			node = insertNewElement(line_number, line_content)
+			curr_node = getElementInOrdering(line_number, ordering)
+			deleteElement(line_number, false)
+			node = insertNewElement(line_number, line_content, curr_node)
 			#return node
 			return toJSONOutput(node)
 		elsif first_char == '-'
-			deleteElement(line_number)
-			node = insertNewElement(line_number, line_content)
+			curr_note = getElementInOrdering(line_number, ordering)
+			deleteElement(line_number, false)
+			node = insertNewElement(line_number, line_content, curr_note)
 		#	return node
 			return toJSONOutput(node)
 		else	
@@ -100,10 +104,10 @@ class Work < ActiveRecord::Base
 #			return "goofed"
 #		end
 	end
-	
+
 	#shouldn't be called until the JS knows what type the new thing is
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
-	def insertNewElement(line_number, line_content)
+	def insertNewElement(line_number, line_content, in_element=nil)
 		ordering = getOrdering
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 		#first_char = ""
@@ -114,7 +118,11 @@ class Work < ActiveRecord::Base
 
 
 		if first_char == "<"
-			new_node = Node.new
+			if in_element != nil && in_element.is_a?(Node) #only use the in_el if it's not nil and the right type
+				new_node = in_element
+			else #to be safe, generally do a new one.
+				new_node = Node.new
+			end
 			buildNode(new_node, line_content)
 			new_node.save
 			ordering.insert(line_number, ObjectPlace.new("node", new_node.id))
@@ -145,7 +153,12 @@ class Work < ActiveRecord::Base
 			return new_node
 
 		else
-			new_note = Note.new
+			if in_element != nil && in_element.is_a?(Note) #only use the in_el if it's not nil and the right type
+				new_note = in_element
+			else
+				new_note = Note.new
+			end
+		#	new_note = Note.new
 			buildNote(new_note, line_content)
 			new_note.save
 			ordering.insert(line_number, ObjectPlace.new("note", new_note.id))
@@ -165,11 +178,11 @@ class Work < ActiveRecord::Base
 		end
 	end
 
-	def deleteElement(line_number)
+	def deleteElement(line_number, del_obj=true)
 		ordering = getOrdering
 		el = getElementInOrdering(line_number, ordering)
 
-		#find elements children, remove element, then have them find new parents
+		#find elements children, remove element, then redo the order
 		children = findElChildren(line_number, el.depth, ordering)
 		ordering.delete_at(line_number)
 		setOrder(ordering)
@@ -183,8 +196,10 @@ class Work < ActiveRecord::Base
 		if el.is_a?(Node)
 			el.parent_relationships.delete_all
 		end
-		el.delete
 
+		if del_obj
+			el.delete
+		end
 	end
 
 	#this could be a find parent function. even just pass it a location and the ordering. works for node and note, both have depth
@@ -311,9 +326,11 @@ class Work < ActiveRecord::Base
 	def printOrdering(ordering)
 		ordering.each do |item|
 			if item.model == "node"
-				puts "< " + Node.find(item.id).title
+				node = Node.find(item.id)
+				puts "<" + node.depth.to_s + node.title
 			elsif item.model == "note"
-				puts "- " + Note.find(item.id).body
+				note = Note.find(item.id)
+				puts "-" + note.depth.to_s + note.body
 			end
 		end
 	end

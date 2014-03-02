@@ -194,6 +194,8 @@ function ajSuccess(data){
       data: data.edges[0].data
     });
   }
+  
+  $('#cy').cytoscape(options);
 }
 
 
