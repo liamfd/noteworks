@@ -178,6 +178,7 @@ function delElement(line_num){
 //function that runs if the ajax is successful, will eventually update the graph
 function ajSuccess(data){
   $("#test_box").text(JSON.stringify(data));
+  /*
   console.log("data=" + data);
   i++;
   test_data = data;
@@ -190,10 +191,11 @@ function ajSuccess(data){
     el.data = data.nodes[0].data;
     console.log(el.data);
 
+
     //fix the edges
   }
   console.log("neeeeerd");
-  
+  */
 
   /*cy.batchData({
     '1646': {

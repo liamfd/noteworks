@@ -25,9 +25,9 @@ class Work < ActiveRecord::Base
 
 	#bottom, private
   	def before_save_checker 
-   	#	if markup_changed?
-   	#		parseText
-   	#	end
+   		#if markup_changed?
+   		#	parseText
+   		#end
    	#fix the infinite loop, then you can have this back
 	end
 
@@ -166,7 +166,7 @@ class Work < ActiveRecord::Base
 			else
 				new_note = Note.new
 			end
-		#	new_note = Note.new
+
 			buildNote(new_note, line_content)
 			new_note.save
 			ordering.insert(line_number, ObjectPlace.new("note", new_note.id))
@@ -176,7 +176,7 @@ class Work < ActiveRecord::Base
 			parent_node = findElParent(new_note.depth, line_number, ordering)
 			if parent_node != nil
 				new_note.node_id = parent_node.id
-				parent_node.add_note_to_combined(new_note)
+				parent_node.combine_notes
 				new_note.save
 			else
 				new_note.node_id = nil
@@ -281,7 +281,7 @@ class Work < ActiveRecord::Base
 			if (parent != nil)
 				child.node_id = parent.id
 				child.save
-				parent.add_note_to_combined(child)
+				parent.combine_notes
 				parent.save
 			else
 				child.node_id = nil
@@ -296,21 +296,25 @@ class Work < ActiveRecord::Base
 		end
 	end
 
+
+	def getMarkupLines
+		return markup.split(/\r\n|[\r\n]/) #match \r\n if present, if not either works
+	end
+
+	def setMarkup(markup_lines)
+		m = markup_lines.join("\r\n") #join with \r\n
+		self.update_attribute :markup, m
+	end
+
 	#takes an array ordering, converts it to the order string and saves
 	def setOrder(ordering)
 		o = ""
 		ordering.each do |obj_place|
 			o << (obj_place.model + "_" + obj_place.id.to_s + "///,")
 		end
-		self.order = o
-		self.save
+		self.update_attribute :order, o
 	end
-
-	#returns the order string, NOT THE ORDERING ARRAY
-	def getOrder
-		return self.order
-	end
-
+	
 	#returns ordering array (elements of type ObjectPlace), based on the self.order string
 	def getOrdering
 		order_a = self.order.split("///,") #o is the array of strings
@@ -323,15 +327,6 @@ class Work < ActiveRecord::Base
 			ordering.push(ObjectPlace.new(model, id))
 		end
 		return ordering
-	end
-
-	def getMarkupLines
-		return markup.split(/\r\n|[\r\n]/) #match \r\n if present, if not either works
-	end
-
-	def setMarkup(markup_lines)
-		m = markup_lines.join("\r\n") #join with \r\n
-		self.update_attribute :markup, m
 	end
 
 	def getElementInOrdering(index, ordering)
