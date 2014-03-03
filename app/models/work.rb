@@ -326,13 +326,11 @@ class Work < ActiveRecord::Base
 	end
 
 	def getMarkupLines
-		puts "about to split!"
 		return markup.split(/\r\n|[\r\n]/) #match \r\n if present, if not either works
 	end
 
 	def setMarkup(markup_lines)
 		m = markup_lines.join("\r\n") #join with \r\n
-		puts "M: " + m
 		self.update_attribute :markup, m
 	end
 
