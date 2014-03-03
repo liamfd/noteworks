@@ -4,16 +4,36 @@
 		"selected_items":
 		[
 			[
+				"cob",
+				"combined_notes"
+			],
+			[
+				"updat",
+				"update_attribute"
+			],
+			[
+				"combine",
+				"combine_notes"
+			],
+			[
+				"line",
+				"line_number"
+			],
+			[
+				"delete",
+				"delete_at"
+			],
+			[
+				"markup",
+				"markup_lines"
+			],
+			[
 				"get",
 				"getElementInOrdering"
 			],
 			[
 				"curr",
 				"curr_node"
-			],
-			[
-				"line",
-				"line_number"
 			],
 			[
 				"Node",
@@ -78,10 +98,6 @@
 			[
 				"paren",
 				"parent_relationships"
-			],
-			[
-				"delete",
-				"deleteElement"
 			],
 			[
 				"insert",
@@ -198,10 +214,6 @@
 			[
 				"top",
 				"top_node"
-			],
-			[
-				"combine",
-				"combined_notes"
 			],
 			[
 				"force",
@@ -463,7 +475,7 @@
 			"file": "app/assets/javascripts/works.js",
 			"settings":
 			{
-				"buffer_size": 20678,
+				"buffer_size": 22238,
 				"line_ending": "Unix"
 			}
 		},
@@ -479,7 +491,7 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 15246,
+				"buffer_size": 15692,
 				"line_ending": "Unix"
 			}
 		},
@@ -520,6 +532,21 @@
 			"settings":
 			{
 				"buffer_size": 1780,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/models/node.rb",
+			"settings":
+			{
+				"buffer_size": 1408,
 				"line_ending": "Unix"
 			}
 		}
@@ -725,6 +752,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"add_note",
+			"combine",
+			"update",
+			"save",
+			"getOrder",
+			"\\n",
+			"\\r",
+			"split",
+			"\\r\\n",
 			"cons",
 			"\\\"",
 			"respond",
@@ -843,16 +879,7 @@
 			"drag",
 			"select",
 			"container",
-			"canvas",
-			"x1",
-			"center",
-			"content",
-			"text-outline-width",
-			"node_title",
-			"content",
-			"element",
-			"title",
-			"context.strokeText"
+			"canvas"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -914,15 +941,15 @@
 					"file": "app/assets/javascripts/works.js",
 					"settings":
 					{
-						"buffer_size": 20678,
+						"buffer_size": 22238,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5347,
-								5347
+								5053,
+								5053
 							]
 						],
 						"settings":
@@ -1021,7 +1048,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3846.0,
+						"translation.y": 3774.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1138,7 +1165,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1782.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1148,15 +1175,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 15246,
+						"buffer_size": 15692,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6337,
-								6337
+								8441,
+								8441
 							]
 						],
 						"settings":
@@ -1254,7 +1281,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3674.0,
+						"translation.y": 5822.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1737,6 +1764,148 @@
 							[
 								65,
 								65
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "app/models/node.rb",
+					"settings":
+					{
+						"buffer_size": 1408,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
 							]
 						],
 						"settings":

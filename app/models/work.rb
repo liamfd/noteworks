@@ -32,27 +32,65 @@ class Work < ActiveRecord::Base
 	end
 
 	#look up how to do this with JSON objects in ruby
-	def toJSONOutput(node)
-		output = '{"nodes":[{"data":{'
-		output << '"id":"' + node.id.to_s + '",'
-		output << '"title":"' + node.title + '",'
-		output << '"combined_notes":"' + node.combined_notes + '",'
-		output << '"color":"' + node.category.color + '"'
-		output << '}}]'
+	def toJSONOutput(add_node, remove_node)
 
-		output << ',"edges":['
-		node.parent_relationships.each do |link|
-			output << '{"data":{'
-			output << '"source":"' + link.parent_id.to_s + '",'
-			output << '"target":"' + link.child_id.to_s + '"'
-			output << '}}'
+		toModify = {};
+		
+		toAddNode = {};
+		toAddNode[:id] = add_node.id
+		toAddNode[:title] = add_node.title
+		toAddNode[:id] = add_node.id
+		toAddNode[:title] = add_node.title
+
+		toAddEdges = []
+		relations = (add_node.parent_relationships << add_node.child_relationships).flatten
+		toAddEdges = relations.map do |r|
+			{source: r.parent_id.to_s, target: r.child_id.to_s}
 		end
-		output << ']'
+		toAdd = {}
+		toAdd[:node] = toAddNode
+		toAdd[:edges] = toAddEdges
 
-		output << '}'
+		toModify[:add] = toAdd
 
-		out_JSON = JSON.parse(output)
-		return out_JSON
+		toRemoveNode = {};
+		toRemoveNode[:id] = remove_node.id
+		toRemoveNode[:title] = remove_node.title
+		toRemoveNode[:id] = remove_node.id
+		toRemoveNode[:title] = remove_node.title
+
+		toRemoveEdges = []
+		relations = (remove_node.parent_relationships << remove_node.child_relationships).flatten
+		toRemoveEdges = relations.map do |r|
+			{source: r.parent_id.to_s, target: r.child_id.to_s}
+		end
+		toRemove = {}
+		toRemove[:node] = toRemoveNode
+		toRemove[:edges] = toRemoveEdges
+
+		toModify[:remove] = toRemove
+		modify_JSON = toModify.to_json
+
+#		output = '{"nodes":[{"data":{'
+#		output << '"id":"' + node.id.to_s + '",'
+#		output << '"title":"' + node.title + '",'
+#		output << '"combined_notes":"' + node.combined_notes + '",'
+#		output << '"color":"' + node.category.color + '"'
+#		output << '}}]'
+#
+#		output << ',"edges":['
+#		node.parent_relationships.each do |link|
+#			output << '{"data":{'
+#			output << '"source":"' + link.parent_id.to_s + '",'
+#			output << '"target":"' + link.child_id.to_s + '"'
+#			output << '}}'
+#		end
+#		output << ']'
+#
+#		output << '}'
+#
+#		out_JSON = JSON.parse(output)
+		return modify_JSON
 	end
 
 
