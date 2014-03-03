@@ -182,11 +182,35 @@ function ajSuccess(data){
   i++;
   test_data = data;
   some_other_dat = data.nodes[0].data;
+  var id_string = "#" + data.nodes[0].data.id;
+ // console.log(id_string);
+
+  el = cy.$(id_string);
+  if (el != undefined){ //if it's a preexisting node
+    el.data = data.nodes[0].data;
+    console.log(el.data);
+
+    //fix the edges
+  }
+  console.log("neeeeerd");
+  
+
+  /*cy.batchData({
+    '1646': {
+      height: 400
+    }
+  });*/
+
+/*
+
+  var pos = cy.$(id_string).position();
+  console.log(pos.x, pos.y);
+
   cy.add({
     group: "nodes",
-    data: some_other_dat
-    //position: random? arbor?
-  }).addClass("starting");
+    data: some_other_dat,
+    position: pos
+    }).addClass("starting");
 
   if (data.edges[0] != undefined){
     cy.add({
@@ -194,8 +218,42 @@ function ajSuccess(data){
       data: data.edges[0].data
     });
   }
-  
-  $('#cy').cytoscape(options);
+
+  options = {
+      name: 'arbor',
+      liveUpdate: true, // whether to show the layout as it's running
+      ready: undefined, // callback on layoutready 
+      stop: undefined, // callback on layoutstop
+      maxSimulationTime: 4000, // max length in ms to run the layout
+      fit: true, // reset viewport to fit defaualt simulationBounds
+      padding: [ 50, 50, 50, 50 ], // top, right, bottom, left
+      simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by defaualt
+      ungrabifyWhileSimulating: true, // so you can't drag nodes during layout
+
+      // forces used by arbor (use arbor defaualt on undefined)
+      repulsion: undefined,
+      stiffness: undefined,
+      friction: undefined,
+      gravity: true,
+      fps: undefined,
+      precision: undefined,
+
+      // static numbers or functions that dynamically return what these
+      // values should be for each element
+      nodeMass: undefined,
+      edgeLength: undefined,
+
+      stepSize: 1, // size of timestep in simulation
+
+      // function that returns true if the system is stable to indicate
+      // that the layout can be stopped
+      stableEnergy: function( energy ){
+          var e = energy;
+          return (e.max <= 0.5) || (e.mean <= 0.3);
+      }
+  };
+  cy.layout( options );*/
+ // $('#cy').cytoscape(options);
 }
 
 

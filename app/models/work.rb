@@ -25,9 +25,10 @@ class Work < ActiveRecord::Base
 
 	#bottom, private
   	def before_save_checker 
-   		if markup_changed?
-   			parseText
-   		end
+   	#	if markup_changed?
+   	#		parseText
+   	#	end
+   	#fix the infinite loop, then you can have this back
 	end
 
 	#look up how to do this with JSON objects in ruby
@@ -116,6 +117,11 @@ class Work < ActiveRecord::Base
 		#	first_char = matched.captures.first
 		#end
 
+		#update the markup
+		markup_lines = getMarkupLines
+		markup_lines.insert(line_number, line_content);
+		setMarkup(markup_lines);
+
 
 		if first_char == "<"
 			if in_element != nil && in_element.is_a?(Node) #only use the in_el if it's not nil and the right type
@@ -125,6 +131,8 @@ class Work < ActiveRecord::Base
 			end
 			buildNode(new_node, line_content)
 			new_node.save
+
+			#update the ordering
 			ordering.insert(line_number, ObjectPlace.new("node", new_node.id))
 			setOrder(ordering)
 
@@ -184,8 +192,15 @@ class Work < ActiveRecord::Base
 
 		#find elements children, remove element, then redo the order
 		children = findElChildren(line_number, el.depth, ordering)
+
+		#update the ordering
 		ordering.delete_at(line_number)
 		setOrder(ordering)
+
+		#update the markup
+		markup_lines = getMarkupLines
+		markup_lines.delete_at(line_number);
+		setMarkup(markup_lines);
 
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
@@ -308,6 +323,17 @@ class Work < ActiveRecord::Base
 			ordering.push(ObjectPlace.new(model, id))
 		end
 		return ordering
+	end
+
+	def getMarkupLines
+		puts "about to split!"
+		return markup.split(/\r\n|[\r\n]/) #match \r\n if present, if not either works
+	end
+
+	def setMarkup(markup_lines)
+		m = markup_lines.join("\r\n") #join with \r\n
+		puts "M: " + m
+		self.update_attribute :markup, m
 	end
 
 	def getElementInOrdering(index, ordering)

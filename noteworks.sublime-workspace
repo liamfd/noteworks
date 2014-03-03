@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"get",
+				"getElementInOrdering"
+			],
+			[
+				"curr",
+				"curr_node"
+			],
+			[
+				"line",
+				"line_number"
+			],
+			[
+				"Node",
+				"Node"
+			],
+			[
 				"data",
 				"data"
 			],
@@ -24,16 +40,8 @@
 				"title"
 			],
 			[
-				"curr",
-				"curr_text"
-			],
-			[
 				"wih",
 				"withinBrackets"
-			],
-			[
-				"line",
-				"line_content"
 			],
 			[
 				"match",
@@ -108,10 +116,6 @@
 				"findElParent"
 			],
 			[
-				"Node",
-				"Node"
-			],
-			[
 				"text",
 				"text"
 			],
@@ -158,10 +162,6 @@
 			[
 				"yo",
 				"You"
-			],
-			[
-				"get",
-				"getElementById"
 			],
 			[
 				"icon",
@@ -463,7 +463,7 @@
 			"file": "app/assets/javascripts/works.js",
 			"settings":
 			{
-				"buffer_size": 20541,
+				"buffer_size": 20678,
 				"line_ending": "Unix"
 			}
 		},
@@ -479,7 +479,7 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 14562,
+				"buffer_size": 15246,
 				"line_ending": "Unix"
 			}
 		},
@@ -914,15 +914,15 @@
 					"file": "app/assets/javascripts/works.js",
 					"settings":
 					{
-						"buffer_size": 20541,
+						"buffer_size": 20678,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5051,
-								5058
+								5347,
+								5347
 							]
 						],
 						"settings":
@@ -1148,15 +1148,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 14562,
+						"buffer_size": 15246,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1041,
-								1041
+								6337,
+								6337
 							]
 						],
 						"settings":
@@ -1254,7 +1254,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 638.0,
+						"translation.y": 3674.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
