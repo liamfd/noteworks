@@ -180,6 +180,8 @@ function ajSuccess(data){
   $("#test_box").text(JSON.stringify(data));
   
   console.log("data=" + data);
+  
+  /*
   i++;
   test_data = data;
   some_other_dat = data.nodes[0].data;
@@ -195,7 +197,7 @@ function ajSuccess(data){
     //fix the edges
   }
   console.log("neeeeerd");
-  
+  */
 
   /*cy.batchData({
     '1646': {

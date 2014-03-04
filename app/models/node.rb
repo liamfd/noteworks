@@ -44,4 +44,25 @@ class Node < ActiveRecord::Base
     self.save 
   end
 
+    #look up how to do this with JSON objects in ruby
+  def toCytoscapeHash
+    #add section
+    toNode = {};
+    toNode[:id] = self.id
+    toNode[:title] = self.title
+    toNode[:id] = self.id
+    toNode[:title] = self.title
+
+    toEdges = []
+    relations = (self.parent_relationships << self.child_relationships).flatten
+    toEdges = relations.map do |r|
+      {source: r.parent_id.to_s, target: r.child_id.to_s}
+    end
+    
+    toReturn = {}
+    toReturn[:node] = toNode
+    toReturn[:edges] = toEdges
+    return toReturn
+  end
+
 end

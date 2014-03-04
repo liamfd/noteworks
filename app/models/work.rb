@@ -31,89 +31,39 @@ class Work < ActiveRecord::Base
    	#fix the infinite loop, then you can have this back
 	end
 
-	#look up how to do this with JSON objects in ruby
-	def toJSONOutput(add_node, remove_node)
-
-		toModify = {};
-		
-		toAddNode = {};
-		toAddNode[:id] = add_node.id
-		toAddNode[:title] = add_node.title
-		toAddNode[:id] = add_node.id
-		toAddNode[:title] = add_node.title
-
-		toAddEdges = []
-		relations = (add_node.parent_relationships << add_node.child_relationships).flatten
-		toAddEdges = relations.map do |r|
-			{source: r.parent_id.to_s, target: r.child_id.to_s}
-		end
-		toAdd = {}
-		toAdd[:node] = toAddNode
-		toAdd[:edges] = toAddEdges
-
-		toModify[:add] = toAdd
-
-		toRemoveNode = {};
-		toRemoveNode[:id] = remove_node.id
-		toRemoveNode[:title] = remove_node.title
-		toRemoveNode[:id] = remove_node.id
-		toRemoveNode[:title] = remove_node.title
-
-		toRemoveEdges = []
-		relations = (remove_node.parent_relationships << remove_node.child_relationships).flatten
-		toRemoveEdges = relations.map do |r|
-			{source: r.parent_id.to_s, target: r.child_id.to_s}
-		end
-		toRemove = {}
-		toRemove[:node] = toRemoveNode
-		toRemove[:edges] = toRemoveEdges
-
-		toModify[:remove] = toRemove
-		modify_JSON = toModify.to_json
-
-#		output = '{"nodes":[{"data":{'
-#		output << '"id":"' + node.id.to_s + '",'
-#		output << '"title":"' + node.title + '",'
-#		output << '"combined_notes":"' + node.combined_notes + '",'
-#		output << '"color":"' + node.category.color + '"'
-#		output << '}}]'
-#
-#		output << ',"edges":['
-#		node.parent_relationships.each do |link|
-#			output << '{"data":{'
-#			output << '"source":"' + link.parent_id.to_s + '",'
-#			output << '"target":"' + link.child_id.to_s + '"'
-#			output << '}}'
-#		end
-#		output << ']'
-#
-#		output << '}'
-#
-#		out_JSON = JSON.parse(output)
-		return modify_JSON
-	end
 
 
 	#parser shit
 	def modifyElement(line_number, line_content)
+		to_add = {}
+		to_remove = {}
+		to_modify = {}
+
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 		ordering = getOrdering
+
 		if first_char == '<'
 			curr_node = getElementInOrdering(line_number, ordering)
-			deleteElement(line_number, false)
-			node = insertNewElement(line_number, line_content, curr_node)
-			#return node
-			return toJSONOutput(node)
+			#to_remove = nodeToCytoscapeHash(curr_node)
+			
+			to_remove = deleteElement(line_number, false)
+			to_add = insertNewElement(line_number, line_content, curr_node)
+			#to_add = nodeToCytoscapeHash(node)
 		elsif first_char == '-'
 			curr_note = getElementInOrdering(line_number, ordering)
-			deleteElement(line_number, false)
-			node = insertNewElement(line_number, line_content, curr_note)
-		#	return node
-			return toJSONOutput(node)
+			#to_remove = nodeToCytoscapeHash(curr_note.node)
+			
+			to_remove = deleteElement(line_number, false)
+			to_add = insertNewElement(line_number, line_content, curr_note)
+			#to_add = nodeToCytoscapeHash(node)	
 		else	
 			return toJSONOutput(self.nodes.first)
 		end
-
+		
+		to_modify[:add] = to_add
+		to_modify[:remove] = to_remove
+		#return node
+		return to_modify.to_json
 		#ordering = getOrdering()
 		#if firstChar == '<'
 		#	if ordering[line_number].model == "node" #if there was a note
@@ -196,7 +146,7 @@ class Work < ActiveRecord::Base
 				changeParent(child[:node], new_node)
 			end
 
-			return new_node
+			return new_node.toCytoscapeHash
 
 		else
 			if in_element != nil && in_element.is_a?(Note) #only use the in_el if it's not nil and the right type
@@ -220,13 +170,20 @@ class Work < ActiveRecord::Base
 				new_note.node_id = nil
 				new_note.save
 			end
-			return parent_node
+			return parent_node.toCytoscapeHash
 		end
 	end
 
 	def deleteElement(line_number, del_obj=true)
 		ordering = getOrdering
 		el = getElementInOrdering(line_number, ordering)
+		if (el.is_a?(Node))
+			node_hash = el.toCytoscapeHash
+		elsif (el.is_a?(Note))
+			node_hash = el.node.toCytoscapeHash
+		else
+			node_hash = {}
+		end
 
 		#find elements children, remove element, then redo the order
 		children = findElChildren(line_number, el.depth, ordering)
@@ -253,6 +210,7 @@ class Work < ActiveRecord::Base
 		if del_obj
 			el.delete
 		end
+		return node_hash
 	end
 
 	#this could be a find parent function. even just pass it a location and the ordering. works for node and note, both have depth
