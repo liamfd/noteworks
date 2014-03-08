@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"node",
+				"node_hash"
+			],
+			[
+				"to",
+				"to_modify"
+			],
+			[
+				"out",
+				"out_JSON"
+			],
+			[
 				"toAdd",
 				"toAddEdges"
 			],
@@ -78,10 +90,6 @@
 			[
 				"test",
 				"test_data"
-			],
-			[
-				"node",
-				"node"
 			],
 			[
 				"combin",
@@ -508,13 +516,10 @@
 			}
 		},
 		{
-			"contents": "class Work < ActiveRecord::Base\n	belongs_to :group\n\n	has_many :nodes, dependent: :destroy\n	has_many :links\n\n	ObjectPlace = Struct.new(:model, :id)\n	NodeDepth = Struct.new(:node_idnum, :depth)\n\n	@@types = [ \"Basic\",\n         \"Comparison\",\n         \"Definition\",\n         \"Example\",\n         \"Key\",\n         \"Media\"\n	]\n\n	def initialize\n		super\n  		@tester = \"shoe\"\n  		@ordering = []\n 	end\n\n	before_save :before_save_checker\n\n	#bottom, private\n  	def before_save_checker \n   		#if markup_changed?\n   		#	parseText\n   		#end\n   	#fix the infinite loop, then you can have this back\n	end\n\n	#look up how to do this with JSON objects in ruby\n	def toJSONOutput(add_node, remove_node)\n\n		toModify = {};\n		\n		#add section\n		toAddNode = {};\n		toAddNode[:id] = add_node.id\n		toAddNode[:title] = add_node.title\n		toAddNode[:id] = add_node.id\n		toAddNode[:title] = add_node.title\n\n		toAddEdges = []\n		relations = (add_node.parent_relationships << add_node.child_relationships).flatten\n		toAddEdges = relations.map do |r|\n			{source: r.parent_id.to_s, target: r.child_id.to_s}\n		end\n		\n		toAdd = {}\n		toAdd[:node] = toAddNode\n		toAdd[:edges] = toAddEdges\n		toModify[:add] = toAdd\n\n		#remove section\n		toRemoveNode = {};\n		toRemoveNode[:id] = remove_node.id\n		toRemoveNode[:title] = remove_node.title\n		toRemoveNode[:id] = remove_node.id\n		toRemoveNode[:title] = remove_node.title\n\n		toRemoveEdges = []\n		relations = (remove_node.parent_relationships << remove_node.child_relationships).flatten\n		toRemoveEdges = relations.map do |r|\n			{source: r.parent_id.to_s, target: r.child_id.to_s}\n		end\n\n		toRemove = {}\n		toRemove[:node] = toRemoveNode\n		toRemove[:edges] = toRemoveEdges\n		toModify[:remove] = toRemove\n\n\n		modify_JSON = toModify.to_json\n\n#		output = '{\"nodes\":[{\"data\":{'\n#		output << '\"id\":\"' + node.id.to_s + '\",'\n#		output << '\"title\":\"' + node.title + '\",'\n#		output << '\"combined_notes\":\"' + node.combined_notes + '\",'\n#		output << '\"color\":\"' + node.category.color + '\"'\n#		output << '}}]'\n#\n#		output << ',\"edges\":['\n#		node.parent_relationships.each do |link|\n#			output << '{\"data\":{'\n#			output << '\"source\":\"' + link.parent_id.to_s + '\",'\n#			output << '\"target\":\"' + link.child_id.to_s + '\"'\n#			output << '}}'\n#		end\n#		output << ']'\n#\n#		output << '}'\n#\n#		out_JSON = JSON.parse(output)\n		return modify_JSON\n	end\n\n\n	#parser shit\n	def modifyElement(line_number, line_content)\n		first_char = getTextFromRegexp(line_content, /[ ,\\t]*(.)/)\n		ordering = getOrdering\n		if first_char == '<'\n			curr_node = getElementInOrdering(line_number, ordering)\n			deleteElement(line_number, false)\n			node = insertNewElement(line_number, line_content, curr_node)\n			#return node\n			return toJSONOutput(node)\n		elsif first_char == '-'\n			curr_note = getElementInOrdering(line_number, ordering)\n			deleteElement(line_number, false)\n			node = insertNewElement(line_number, line_content, curr_note)\n		#	return node\n			return toJSONOutput(node)\n		else	\n			return toJSONOutput(self.nodes.first)\n		end\n\n		#ordering = getOrdering()\n		#if firstChar == '<'\n		#	if ordering[line_number].model == \"node\" #if there was a note\n		#		insertNewElement(line_number, line_content, \"node\")\n		#		node = Node.find(ordering[line_number].id)\n		#		puts node.title\n		#		buildNode(node, line_content)\n		#		node.save\n		#		return node\n		#	elsif ordering[line_number].model == \"note\" #if it's the other type, delete what was there, insert a new thing\n		#		deleteElement(line_number)\n		#		insertNewElement(line_number, line_content, \"note\")\n		#	end\n		#elsif firstChar == '-'\n		#	if ordering[line_number].model == \"note\"\n		#		note = Note.find(ordering[line_number].id)\n		#		buildNote(note, line_content)\n#\n#				note.save\n#				#should add the Note to the parent's combined\n#				return note #this should really return the parent node, for graph insertion\n#			elsif ordering[line_number].model == \"node\" #if it's the other type, delete what was there, insert a new thing\n#				deleteElement(line_number)\n#				insertNewElement(line_number, line_content, \"node\")\n#			end\n#		else	\n#			return \"goofed\"\n#		end\n	end\n\n	#shouldn't be called until the JS knows what type the new thing is\n	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?\n	def insertNewElement(line_number, line_content, in_element=nil)\n		ordering = getOrdering\n		first_char = getTextFromRegexp(line_content, /[ ,\\t]*(.)/)\n		#first_char = \"\"\n		#matched = line_content.match(/[ ,\\t]*(.)/)\n		#if matched != nil\n		#	first_char = matched.captures.first\n		#end\n\n		#update the markup\n		markup_lines = getMarkupLines\n		markup_lines.insert(line_number, line_content);\n		setMarkup(markup_lines);\n\n\n		if first_char == \"<\"\n			if in_element != nil && in_element.is_a?(Node) #only use the in_el if it's not nil and the right type\n				new_node = in_element\n			else #to be safe, generally do a new one.\n				new_node = Node.new\n			end\n			buildNode(new_node, line_content)\n			new_node.save\n\n			#update the ordering\n			ordering.insert(line_number, ObjectPlace.new(\"node\", new_node.id))\n			setOrder(ordering)\n\n			#FIND PARENT\n			if new_node.depth != 0 #if it's not a base element\n				parent_node = findElParent(new_node.depth, line_number, ordering)\n				if parent_node != nil\n					relation = Link.new(child_id: new_node.id, parent_id: parent_node.id, work_id: self.id)\n					relation.save\n				#	new_node.parent_relationships << relation\n				#	parent_node.child_relationships << relation\n				else\n					relation = Link.new(child_id: new_node.id, parent_id: nil, work_id: self.id)\n					relation.save\n				#	new_node.parent_relationships << relation\n				end\n\n			end\n\n			#FIND CHILDREN\n			children = findElChildren(line_number, new_node.depth, ordering)\n			children.each do |child|\n				changeParent(child[:node], new_node)\n			end\n\n			return new_node\n\n		else\n			if in_element != nil && in_element.is_a?(Note) #only use the in_el if it's not nil and the right type\n				new_note = in_element\n			else\n				new_note = Note.new\n			end\n\n			buildNote(new_note, line_content)\n			new_note.save\n			ordering.insert(line_number, ObjectPlace.new(\"note\", new_note.id))\n			setOrder(ordering)\n\n			#FIND PARENT\n			parent_node = findElParent(new_note.depth, line_number, ordering)\n			if parent_node != nil\n				new_note.node_id = parent_node.id\n				parent_node.combine_notes\n				new_note.save\n			else\n				new_note.node_id = nil\n				new_note.save\n			end\n			return parent_node\n		end\n	end\n\n	def deleteElement(line_number, del_obj=true)\n		ordering = getOrdering\n		el = getElementInOrdering(line_number, ordering)\n\n		#find elements children, remove element, then redo the order\n		children = findElChildren(line_number, el.depth, ordering)\n\n		#update the ordering\n		ordering.delete_at(line_number)\n		setOrder(ordering)\n\n		#update the markup\n		markup_lines = getMarkupLines\n		markup_lines.delete_at(line_number);\n		setMarkup(markup_lines);\n\n		#for each child, find their new parent according to the ordering, update the elements\n		children.each do |child|\n			new_parent = findElParent(child[:node].depth, child[:index], ordering)\n			changeParent(child[:node], new_parent)\n		end\n\n		if el.is_a?(Node)\n			el.parent_relationships.delete_all\n		end\n\n		if del_obj\n			el.delete\n		end\n	end\n\n	#this could be a find parent function. even just pass it a location and the ordering. works for node and note, both have depth\n	def findElParent(el_depth, index, ordering)\n		i = index - 1\n		while i >= 0 #until the beginning\n			if ordering[i].model == \"node\" #if it's a node, not just a note\n				curr_node = Node.find(ordering[i].id)\n				if el_depth > curr_node.depth #if curr_node has a lesser depth, it's its parent\n					return curr_node\n				end\n			end\n			i = i-1\n		end\n		return nil #if no parent found\n	end\n\n	#returns a collection of all the children of an element at a line, given its line, a depth, and an ordering\n	def findElChildren(index, el_depth, ordering)\n		children = Array.new\n		i = index + 1\n		curr_el = getElementInOrdering(i, ordering)\n		if curr_el.is_a?(Node)\n			curr_child_depth = curr_el.depth\n		else #if it's a note, it can't have children, so arbitrary big depth that'll get rest on the first node\n			curr_child_depth = 100000\n		end\n\n		while (curr_el != nil && el_depth < curr_el.depth) #until you find something of equal or lesser depth\n			puts curr_el\n			#basically, include it if it's nested deeper (therefore in this loop,) but don't go into children of what you find)\n			if curr_el.depth <= curr_child_depth && curr_el.is_a?(Node)\n				node_and_index = { node: curr_el, index: i}\n				children.push(node_and_index)\n				curr_child_depth = curr_el.depth\n			elsif curr_el.depth <= curr_child_depth && curr_el.is_a?(Note)\n				node_and_index = { node: curr_el, index: i}\n				children.push(node_and_index)\n				#this might solve the bug below curr_child_depth = 100000 \n			end\n			#if there's an indented note after some nodes, it will likely get ignored\n\n			i = i+1\n			puts i\n			curr_el = getElementInOrdering(i, ordering)\n		end\n		return children\n	end\n\n	def changeParent(child, parent)\n		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node\n			relation = child.parent_relationships.first #hierarchy relationship should always be first\n			if (parent != nil)\n				relation.parent_id = parent.id\n				relation.save\n				#parent.child_relationships << relation\n			else\n				relation.parent_id = nil\n				relation.save\n			end\n			\n		elsif child.is_a?(Note)\n			prev_parent_id = child.node_id\n			if (parent != nil)\n				child.node_id = parent.id\n				child.save\n				parent.combine_notes\n				parent.save\n			else\n				child.node_id = nil\n				child.save			\n			end\n\n			if prev_parent_id != nil #only make changes to the previous parent if there is one\n				prev_parent = Node.find(prev_parent_id)\n				prev_parent.combine_notes()\n				prev_parent.save\n			end\n		end\n	end\n\n\n	def getMarkupLines\n		return markup.split(/\\r\\n|[\\r\\n]/) #match \\r\\n if present, if not either works\n	end\n\n	def setMarkup(markup_lines)\n		m = markup_lines.join(\"\\r\\n\") #join with \\r\\n\n		self.update_attribute :markup, m\n	end\n\n	#takes an array ordering, converts it to the order string and saves\n	def setOrder(ordering)\n		o = \"\"\n		ordering.each do |obj_place|\n			o << (obj_place.model + \"_\" + obj_place.id.to_s + \"///,\")\n		end\n		self.update_attribute :order, o\n	end\n	\n	#returns ordering array (elements of type ObjectPlace), based on the self.order string\n	def getOrdering\n		order_a = self.order.split(\"///,\") #o is the array of strings\n		ordering = []\n		order_a.each do |o|\n			model = getTextFromRegexp(o, /([a-z]*)_/) #gets everything before underscore (only letters)\n			#model = o.match(/([a-z]*)_/).captures.first #gets everything before underscore (only letters)\n			id = getTextFromRegexp(o, /_([0-9]*)/) #gets everything after underscore (only digits)\n			#id = o.match(/_([0-9]*)/).captures.first.to_i #gets everything after underscore (only digits)\n			ordering.push(ObjectPlace.new(model, id))\n		end\n		return ordering\n	end\n\n	def getElementInOrdering(index, ordering)\n		if index >= ordering.length\n			return nil\n		end\n\n		if ordering[index].model == \"node\"\n			curr_el = Node.find(ordering[index].id)\n		else\n			curr_el = Note.find(ordering[index].id)\n		end #this should be a function. have to do it over and over\n		return curr_el\n	end\n\n	def printOrdering(ordering)\n		ordering.each do |item|\n			if item.model == \"node\"\n				node = Node.find(item.id)\n				puts \"<\" + node.depth.to_s + node.title\n			elsif item.model == \"note\"\n				note = Note.find(item.id)\n				puts \"-\" + note.depth.to_s + note.body\n			end\n		end\n	end\n\n	def parseText\n		Node.destroy_all(work_id: self.id)\n		Link.destroy_all(work_id: self.id)\n\n		stack = Array.new\n		\n		markup.each_line do |line|\n			#parser rules: any amount of whitespace followed immediately by < means new node. Otherwise, new note.\n			#<TYPE.CATEGORY>TITLE\n			#if the occurence of <*> is before the first occurence of \" then it's a new\n			#@angleBracketLocation = line.index(/[ ,\\t]*<.*>/)\n		\n			first_char = getTextFromRegexp(line, /[ ,\\t]*(.)/)\n		\n			#if a new node should be made\n			if first_char == '<'\n				new_node = Node.new\n				buildNode(new_node, line)\n				new_node.save\n\n				#get the parent.\n				depth = new_node.depth\n\n				newNodeDepth = NodeDepth.new(new_node.id, depth)\n				\n				if depth == 0 #if it's a base element\n					stack.push(newNodeDepth)\n				else\n					currNodeDepth = stack.pop\n					while depth <= currNodeDepth.depth do #while you're less deep, therefore it aint yo momma \n						currNodeDepth = stack.pop\n					end #at this point, @currNodeDepth is the nearest element that's not as deep as the new one, it's parent\n					parentNode = Node.find(currNodeDepth.node_idnum)\n\n					#creates the link, and the sets the parent and child relation\n					relation = Link.new(child_id: new_node.id, parent_id: parentNode.id, work_id: self.id)\n					relation.save\n					new_node.parent_relationships << relation\n					parentNode.child_relationships << relation\n\n					stack.push(currNodeDepth)#push the parent back in, in case it has siblings\n					stack.push(newNodeDepth)#push self in, in case it has children\n\n					#@new_node.parent_relationships.build(child_id: @new_node.id, parent_id:@parentNode.id)\n					#@new_node.parents << @parentNode\n					#@parent_node.child=\n					#make this nodes id into the parents child.\n					#make the child's parent the parentNode's id.\n				end\n				new_node.save\n\n			#if it's a note\n			elsif first_char == '-'\n				new_note = Note.new()\n				buildNote(new_note, line)\n\n				#this is a bug. it just gets attached to the previous node without regard for depth\n				parentNodeDepth = stack.pop\n				parentNode = Node.find(parentNodeDepth.node_idnum)\n				stack.push(parentNodeDepth)\n				\n				new_note.node_id = parentNode.id\n				parentNode.add_note_to_combined(new_note)\n				new_note.save\n				\n			#for special chars\n			elsif first_char == ':'\n				puts \"colontown!\"\n\n			else\n				#this currently does the same as the dash\n				new_note = Note.new()\n				buildNote(new_note, line)\n				\n				parentNodeDepth = stack.pop\n				parentNode = Node.find(parentNodeDepth.node_idnum)\n				stack.push(parentNodeDepth)\n				\n				new_note.node_id = parentNode.id\n				parentNode.add_note_to_combined(new_note)\n				new_note.save\n			end\n		end\n\n		#should fix this so I can get rid of populateOrdering, only works here because things are produced in order, can do it as I go\n		o = populateOrdering\n		setOrder(o)\n	end\n\n	#builds a note, getting its parent, attaching its data, and then returns the note\n	def buildNote(note, text)\n		content = getTextFromRegexp(text, /-(.*)/)\n		#content = text.match(/-(.*)/).captures.first\n		note.body = content\n\n		whitespace = getTextFromRegexp(text, /(.*)-/)\n		#whitespace = text.match(/(.*)-/).captures.first\n		note.depth = (whitespace.length)/3 #+2?\n\n		return note\n	end\n\n	#builds a node (including type, title, category) and returns it\n	def buildNode(node, text)\n		withinBrackets = getTextFromRegexp(text, /(<.*>)/)\n		#withinBrackets = text.match(/<.*>/).to_s\n		\n		#get type, convert it to a constant, and makes a new node of that type\n		type = getTextFromRegexp(withinBrackets, /<(.*)\\./)\n		#type = withinBrackets.match(/<(.*)\\./).captures.first\n		\n		type[0] = type[0].capitalize\n		if @@types.include? type\n			type = (type + \"Node\")\n		else\n			type = \"BasicNode\"\n		end\n		\n		node.type = type\n\n		#get the category string, use it to pull a category id\n		category = getTextFromRegexp(withinBrackets, /\\.(.*)>/)\n		#category = withinBrackets.match(/\\.(.*)>/).captures.first\n		category_id = 0\n		Category.all.each do |cat|\n			if (category.downcase) == (cat.name).downcase\n				category_id = (Category.where(\"name = ?\", cat.name).first).id\n			end\n		end\n		if category_id == 0\n			category_id = (Category.where(name: \"Uncategorized\").first).id\n		end\n		node.category_id = category_id\n		#puts category_id\n\n		title = getTextFromRegexp(text, />(.*)/)\n		#title = text.match(/>(.*)/).captures.first\n		title = title.strip	\n\n		whitespace = getTextFromRegexp(text, /(.*)</)\n		#whitespace = text.match(/(.*)</).captures.first\n		node.depth = (whitespace.length)/3 #+2?\n		#puts title\n		node.title = title\n		node.work_id = self.id\n		return node\n	end\n\n	#fills ordering according to stored nodes and notes. OUTDATED, KEEPING FOR PARSETEXT, USE getOrdering\n	#this only works if the node ids line up to the order, so not if any inserted\n	def populateOrdering\n		ordering = Array.new\n		self.nodes.each do |node|\n			ordering.push(ObjectPlace.new(\"node\", node.id))\n			#puts \"node\" + node.id.to_s\n			node.notes.each do |note|\n				ordering.push(ObjectPlace.new(\"note\", note.id))\n				#puts \"note\" + note.id.to_s\n			end\n		end\n		return ordering\n	end\n\nend\n\ndef getTextFromRegexp(text, expression)\n	wanted = \"\"\n	if text != nil\n		matched = text.match(expression)\n		if matched != nil\n			wanted = matched.captures.first\n		end\n	end\n	return wanted\nend",
 			"file": "app/models/work.rb",
-			"file_size": 16749,
-			"file_write_time": 1393885984000000,
 			"settings":
 			{
-				"buffer_size": 16786,
+				"buffer_size": 15530,
 				"line_ending": "Unix"
 			}
 		},
@@ -569,7 +574,7 @@
 			"file": "app/models/node.rb",
 			"settings":
 			{
-				"buffer_size": 1408,
+				"buffer_size": 1943,
 				"line_ending": "Unix"
 			}
 		}
@@ -775,6 +780,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"node.",
 			"Add",
 			"add_note",
 			"combine",
@@ -901,8 +907,7 @@
 			"drag",
 			"pan",
 			"drag",
-			"select",
-			"container"
+			"select"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -910,6 +915,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"self.",
 			"Remove",
 			"\"",
 			"checkLineChanged",
@@ -972,8 +978,8 @@
 						"selection":
 						[
 							[
-								5090,
-								5090
+								298,
+								298
 							]
 						],
 						"settings":
@@ -1072,7 +1078,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3774.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1199,15 +1205,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 16786,
+						"buffer_size": 15530,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1139,
-								1139
+								781,
+								781
 							]
 						],
 						"settings":
@@ -1305,7 +1311,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 748.0,
+						"translation.y": 594.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -2010,15 +2016,15 @@
 					"file": "app/models/node.rb",
 					"settings":
 					{
-						"buffer_size": 1408,
+						"buffer_size": 1943,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								632,
-								632
+								1700,
+								1700
 							]
 						],
 						"settings":
@@ -2117,7 +2123,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 66.0,
+						"translation.y": 660.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
