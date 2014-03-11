@@ -181,9 +181,28 @@ function ajSuccess(data){
   
   console.log("data=" + data);
   
-  /*
-  i++;
   test_data = data;
+
+  //gets the location of the original node
+  var node_id_string = "#" + data.remove.node.id;
+  
+  //removes it
+  var mod_node = cy.$("#" + data.remove.node.id);
+  if (mod_node != undefined) {
+    var pos = mod_node.position();
+    console.log(pos.x, pos.y);
+   //   cy.remove(node_id_string);
+
+   //adds the changed alternative to the same position, with the new information
+    cy.add({
+      group: "nodes",
+      data: { data: data.add.node },
+      position:{ x: pos.x, y: pos.y}
+    }).addClass("starting");
+  }
+
+
+/*
   some_other_dat = data.nodes[0].data;
   var id_string = "#" + data.nodes[0].data.id;
  // console.log(id_string);
@@ -192,8 +211,6 @@ function ajSuccess(data){
   if (el != undefined){ //if it's a preexisting node
     el.data = data.nodes[0].data;
     console.log(el.data);
-
-
     //fix the edges
   }
   console.log("neeeeerd");
