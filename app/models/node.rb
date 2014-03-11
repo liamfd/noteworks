@@ -54,8 +54,15 @@ class Node < ActiveRecord::Base
     toNode[:title] = self.title
 
     toEdges = []
-    relations = (self.parent_relationships << self.child_relationships).flatten
-    toEdges = relations.map do |r|
+
+    pars = []
+    pars << self.parent_relationships
+    kids = []
+    kids << self.child_relationships
+    rels = (pars << kids).flatten
+        #this is where the error is coming from. was resetting parent_relationships to null. ask why.
+    #relations = (self.parent_relationships << self.child_relationships).flatten
+    toEdges = rels.map do |r|
       {source: r.parent_id.to_s, target: r.child_id.to_s}
     end
     

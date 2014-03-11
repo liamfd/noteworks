@@ -137,7 +137,8 @@ class Work < ActiveRecord::Base
 					relation.save
 				#	new_node.parent_relationships << relation
 				end
-
+			else
+				relation = Link.new(child_id: new_node.id, parent_id: nil, work_id:self.id) #empty initial relationship
 			end
 
 			#FIND CHILDREN
@@ -187,11 +188,11 @@ class Work < ActiveRecord::Base
 
 		#find elements children, remove element, then redo the order
 		children = findElChildren(line_number, el.depth, ordering)
-
+		
 		#update the ordering
 		ordering.delete_at(line_number)
 		setOrder(ordering)
-
+		
 		#update the markup
 		markup_lines = getMarkupLines
 		markup_lines.delete_at(line_number);
@@ -199,7 +200,13 @@ class Work < ActiveRecord::Base
 
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
+			if child[:node].is_a?(Node)
+				rents = child[:node].parents.first
+			end
 			new_parent = findElParent(child[:node].depth, child[:index], ordering)
+			if child[:node].is_a?(Node)
+				new_rents = child[:node].parents.first
+			end
 			changeParent(child[:node], new_parent)
 		end
 
@@ -383,9 +390,14 @@ class Work < ActiveRecord::Base
 						currNodeDepth = stack.pop
 					end #at this point, @currNodeDepth is the nearest element that's not as deep as the new one, it's parent
 					parentNode = Node.find(currNodeDepth.node_idnum)
+					if parentNode.id == new_node.id #if it didn't find any parent
+						parent_id = nil
+					else
+						parent_id = parentNode.id
+					end
 
 					#creates the link, and the sets the parent and child relation
-					relation = Link.new(child_id: new_node.id, parent_id: parentNode.id, work_id: self.id)
+					relation = Link.new(child_id: new_node.id, parent_id: parent_id, work_id: self.id)
 					relation.save
 					new_node.parent_relationships << relation
 					parentNode.child_relationships << relation
