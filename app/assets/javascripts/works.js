@@ -191,14 +191,24 @@ function ajSuccess(data){
   if (mod_node != undefined) {
     var pos = mod_node.position();
     console.log(pos.x, pos.y);
-   //   cy.remove(node_id_string);
+      cy.remove(node_id_string);
+  //    var rem_edges = cy.elements
+   //   cy.remove(data.remove.edges);
 
    //adds the changed alternative to the same position, with the new information
-    cy.add({
+
+   // console.log(cy.eles.hasClass("starting").length);
+   data.add.node.id = "#" + data.add.node.id;
+   el = cy.add({
       group: "nodes",
-      data: { data: data.add.node },
+      data: data.add.node,
       position:{ x: pos.x, y: pos.y}
     }).addClass("starting");
+
+  //  cy.eles.hasClass("starting").length;
+
+   // console.log(cy.eles.hasClass("starting").length);
+
   }
 
 

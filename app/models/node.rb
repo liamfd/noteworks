@@ -50,8 +50,10 @@ class Node < ActiveRecord::Base
     toNode = {};
     toNode[:id] = self.id
     toNode[:title] = self.title
-    toNode[:id] = self.id
-    toNode[:title] = self.title
+    toNode[:notes] = self.combine_notes
+    toNode[:color] = self.category.color
+   # toNode[:id] = self.id
+    #toNode[:title] = self.title
 
     toEdges = []
 
