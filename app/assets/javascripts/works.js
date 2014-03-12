@@ -144,7 +144,7 @@ function updateElement(line_num, text){
     data: {line_number: line_num, line_content: text},
     dataType:"json",
     success: function(data){
-      ajSuccess(data);
+      modElement(data);
     }
   });
 }
@@ -157,7 +157,7 @@ function addElement(line_num, text){
     data: {line_number: line_num, line_content: text},
     dataType:"json",
     success: function(data){
-      ajSuccess(data);
+      modElement(data);
     }
   });
 }
@@ -170,146 +170,58 @@ function delElement(line_num){
     data: {line_number: line_num},
     dataType:"json",
     success: function(data){
-      ajSuccess(data);
+      modElement(data);
     }
   });
 }
 
 //function that runs if the ajax is successful, will eventually update the graph
-function ajSuccess(data){
+function modElement(data){
   $("#test_box").text(JSON.stringify(data));
   
-  console.log("data=" + data);
-  
-  test_data = data;
+  //console.log("data=" + data);
+  //test_data = data;
 
-  //gets the location of the original node
-  var node_id_string = "#" + data.remove.node.id;
-  
-  //removes it
-  var mod_node = cy.$("#" + data.remove.node.id);
-  if (mod_node != undefined) {
-    var pos = mod_node.position();
-    console.log(pos.x, pos.y);
-    
+  //gets the identifier of the original node
+  var rem_node = cy.$("#" + data.remove.node.id);
 
+  if (rem_node != undefined) {
+  
+    //save the position, so the replacement can be set at it
+    var pos = rem_node.position();
+  
+    //delete the edges, then the node
     var edge_id_string;
     for (i = 0; i < data.remove.edges.length; i++){
       edge_id_string = "#" + data.remove.edges[i].id;
       cy.remove(edge_id_string);
     }
-
-    cy.remove(node_id_string);
+    cy.remove(rem_node);
  
-   //adds the changed alternative to the same position, with the new information
-
-   // console.log(cy.eles.hasClass("starting").length);
-    data.add.node.id = data.add.node.id.toString();
+   
+    //add the new node
+    data.add.node.id = data.add.node.id.toString(); //convert the id to a string
     cy.add({
       group: "nodes",
       data: data.add.node,
       position:{ x: pos.x, y: pos.y}
     }).addClass("starting");
 
+    //add the new edges, first converting their values to strings
     for (i = 0; i < data.add.edges.length; i++){
-      console.log("id: " + data.add.edges[i].id);
-      console.log("source: " + data.add.edges[i].source);
-      console.log("target: " + data.add.edges[i].target);
-     // details = {id: };
       data.add.edges[i].id = data.add.edges[i].id.toString();
       data.add.edges[i].source = data.add.edges[i].source.toString();
       data.add.edges[i].target = data.add.edges[i].target.toString();
-      console.log("id: " + data.add.edges[i].id);
-      console.log("source: " + data.add.edges[i].source);
-      console.log("target: " + data.add.edges[i].target);
-      if ((data.add.edges[i].source != undefined) && (data.add.edges[i].target != undefined)){
-        console.log("yeah!");
+     
+      if ((data.add.edges[i].source != undefined) && (data.add.edges[i].target != undefined)){ //ignore if edge goes nowhere
         cy.add({
           group: "edges",
           data: data.add.edges[i]
         });
       }
     }
-  //  cy.eles.hasClass("starting").length;
-
-   // console.log(cy.eles.hasClass("starting").length);
 
   }
-
-
-/*
-  some_other_dat = data.nodes[0].data;
-  var id_string = "#" + data.nodes[0].data.id;
- // console.log(id_string);
-
-  el = cy.$(id_string);
-  if (el != undefined){ //if it's a preexisting node
-    el.data = data.nodes[0].data;
-    console.log(el.data);
-    //fix the edges
-  }
-  console.log("neeeeerd");
-  */
-
-  /*cy.batchData({
-    '1646': {
-      height: 400
-    }
-  });*/
-
-/*
-
-  var pos = cy.$(id_string).position();
-  console.log(pos.x, pos.y);
-
-  cy.add({
-    group: "nodes",
-    data: some_other_dat,
-    position: pos
-    }).addClass("starting");
-
-  if (data.edges[0] != undefined){
-    cy.add({
-      group: "edges",
-      data: data.edges[0].data
-    });
-  }
-
-  options = {
-      name: 'arbor',
-      liveUpdate: true, // whether to show the layout as it's running
-      ready: undefined, // callback on layoutready 
-      stop: undefined, // callback on layoutstop
-      maxSimulationTime: 4000, // max length in ms to run the layout
-      fit: true, // reset viewport to fit defaualt simulationBounds
-      padding: [ 50, 50, 50, 50 ], // top, right, bottom, left
-      simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by defaualt
-      ungrabifyWhileSimulating: true, // so you can't drag nodes during layout
-
-      // forces used by arbor (use arbor defaualt on undefined)
-      repulsion: undefined,
-      stiffness: undefined,
-      friction: undefined,
-      gravity: true,
-      fps: undefined,
-      precision: undefined,
-
-      // static numbers or functions that dynamically return what these
-      // values should be for each element
-      nodeMass: undefined,
-      edgeLength: undefined,
-
-      stepSize: 1, // size of timestep in simulation
-
-      // function that returns true if the system is stable to indicate
-      // that the layout can be stopped
-      stableEnergy: function( energy ){
-          var e = energy;
-          return (e.max <= 0.5) || (e.mean <= 0.3);
-      }
-  };
-  cy.layout( options );*/
- // $('#cy').cytoscape(options);
 }
 
 
