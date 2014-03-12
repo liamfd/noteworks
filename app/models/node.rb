@@ -65,7 +65,7 @@ class Node < ActiveRecord::Base
         #this is where the error is coming from. was resetting parent_relationships to null. ask why.
     #relations = (self.parent_relationships << self.child_relationships).flatten
     toEdges = rels.map do |r|
-      {source: r.parent_id.to_s, target: r.child_id.to_s}
+      {id: r.id, source: r.parent_id.to_s, target: r.child_id.to_s}
     end
     
     toReturn = {}

@@ -8,6 +8,7 @@ child :nodes, :root => :nodes, :object_root => :datas do
 end
 
 child :links, :root => :edges, :object_root => :datas do
+	node(:id) { |link| link.id.to_s() }
 	node(:source) { |link| link.parent_id.to_s() }
 	node(:target) { |link| link.child_id.to_s() }
 end

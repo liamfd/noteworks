@@ -191,20 +191,45 @@ function ajSuccess(data){
   if (mod_node != undefined) {
     var pos = mod_node.position();
     console.log(pos.x, pos.y);
-      cy.remove(node_id_string);
-  //    var rem_edges = cy.elements
-   //   cy.remove(data.remove.edges);
+    
 
+    var edge_id_string;
+    for (i = 0; i < data.remove.edges.length; i++){
+      edge_id_string = "#" + data.remove.edges[i].id;
+      cy.remove(edge_id_string);
+    }
+
+    cy.remove(node_id_string);
+ 
    //adds the changed alternative to the same position, with the new information
 
    // console.log(cy.eles.hasClass("starting").length);
-   data.add.node.id = "#" + data.add.node.id;
-   el = cy.add({
+    data.add.node.id = data.add.node.id.toString();
+    cy.add({
       group: "nodes",
       data: data.add.node,
       position:{ x: pos.x, y: pos.y}
     }).addClass("starting");
 
+    for (i = 0; i < data.add.edges.length; i++){
+      console.log("id: " + data.add.edges[i].id);
+      console.log("source: " + data.add.edges[i].source);
+      console.log("target: " + data.add.edges[i].target);
+     // details = {id: };
+      data.add.edges[i].id = data.add.edges[i].id.toString();
+      data.add.edges[i].source = data.add.edges[i].source.toString();
+      data.add.edges[i].target = data.add.edges[i].target.toString();
+      console.log("id: " + data.add.edges[i].id);
+      console.log("source: " + data.add.edges[i].source);
+      console.log("target: " + data.add.edges[i].target);
+      if ((data.add.edges[i].source != undefined) && (data.add.edges[i].target != undefined)){
+        console.log("yeah!");
+        cy.add({
+          group: "edges",
+          data: data.add.edges[i]
+        });
+      }
+    }
   //  cy.eles.hasClass("starting").length;
 
    // console.log(cy.eles.hasClass("starting").length);
