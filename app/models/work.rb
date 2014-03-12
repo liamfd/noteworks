@@ -35,8 +35,8 @@ class Work < ActiveRecord::Base
 
 	#parser shit
 	def modifyElement(line_number, line_content)
-		to_add = {}
-		to_remove = {}
+		from_insert = {}
+		from_remove = {}
 		to_modify = {}
 
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
@@ -46,57 +46,65 @@ class Work < ActiveRecord::Base
 			curr_node = getElementInOrdering(line_number, ordering)
 			#to_remove = nodeToCytoscapeHash(curr_node)
 			
-			to_remove = deleteElement(line_number, false)
-			to_add = insertNewElement(line_number, line_content, curr_node)
+			from_remove = removeElement(line_number, false)
+			from_insert = insertElement(line_number, line_content, curr_node)
 			#to_add = nodeToCytoscapeHash(node)
 		elsif first_char == '-'
 			curr_note = getElementInOrdering(line_number, ordering)
 			#to_remove = nodeToCytoscapeHash(curr_note.node)
 			
-			to_remove = deleteElement(line_number, false)
-			to_add = insertNewElement(line_number, line_content, curr_note)
+			from_remove = removeElement(line_number, false)
+			from_insert = insertElement(line_number, line_content, curr_note)
 			#to_add = nodeToCytoscapeHash(node)	
 		else	
 			return toJSONOutput(self.nodes.first)
 		end
-		
-		to_modify[:add] = to_add
-		to_modify[:remove] = to_remove
+		insert_add = from_insert[:add]
+		insert_remove = from_insert[:remove]
+
+		remove_add = from_remove[:add]
+		remove_remove = from_remove[:remove]
+
+		#this use of remove is confusing here. switch it to delete where it's opposed to add (not insert)
+
+		add_nodes = insert_add[:node] + remove_add[:node]
+		remove_nodes = insert_remove[:node] + remove_remove[:node]
+
+		add_edges =  insert_add[:edges] + remove_add[:edges]
+		remove_edges = insert_remove[:edges] + remove_remove[:edges] 
+
+		to_modify[:add] = [ add_nodes, add_edges ]
+		to_modify[:remove] = [ remove_nodes, remove_edges ]
+		binding.pry
 		#return node
-		return to_modify.to_json
-		#ordering = getOrdering()
-		#if firstChar == '<'
-		#	if ordering[line_number].model == "node" #if there was a note
-		#		insertNewElement(line_number, line_content, "node")
-		#		node = Node.find(ordering[line_number].id)
-		#		puts node.title
-		#		buildNode(node, line_content)
-		#		node.save
-		#		return node
-		#	elsif ordering[line_number].model == "note" #if it's the other type, delete what was there, insert a new thing
-		#		deleteElement(line_number)
-		#		insertNewElement(line_number, line_content, "note")
-		#	end
-		#elsif firstChar == '-'
-		#	if ordering[line_number].model == "note"
-		#		note = Note.find(ordering[line_number].id)
-		#		buildNote(note, line_content)
-#
-#				note.save
-#				#should add the Note to the parent's combined
-#				return note #this should really return the parent node, for graph insertion
-#			elsif ordering[line_number].model == "node" #if it's the other type, delete what was there, insert a new thing
-#				deleteElement(line_number)
-#				insertNewElement(line_number, line_content, "node")
-#			end
-#		else	
-#			return "goofed"
-#		end
+		return to_modify
+	end
+
+	#to be called from the AJAX, takes insertNewElement's response and formats it
+	def addNewElement(line_number, line_content)
+		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
+		if first_char == '<'
+			new_el = Node.new
+		else
+			new_el = Note.new
+		end
+		new_element_hash = insertElement(line_number, line_content, new_el)
+		return new_element_hash.to_json
+	end
+
+	#to be called from the AJAX, takes removeElement's response and formats it
+	def deleteElement(line_number)
+		deleted_element_hash = removeElement(line_number, true)
+		return deleted_element_hash.to_json
 	end
 
 	#shouldn't be called until the JS knows what type the new thing is
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
-	def insertNewElement(line_number, line_content, in_element=nil)
+	def insertElement(line_number, line_content, in_element=nil)
+		to_add = {}
+		to_remove = {}
+		to_modify = {}
+
 		ordering = getOrdering
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 		#first_char = ""
@@ -112,6 +120,7 @@ class Work < ActiveRecord::Base
 
 
 		if first_char == "<"
+			#shouldn't need this
 			if in_element != nil && in_element.is_a?(Node) #only use the in_el if it's not nil and the right type
 				new_node = in_element
 			else #to be safe, generally do a new one.
@@ -144,10 +153,14 @@ class Work < ActiveRecord::Base
 			#FIND CHILDREN
 			children = findElChildren(line_number, new_node.depth, ordering)
 			children.each do |child|
-				changeParent(child[:node], new_node)
+				changeParent(child[:node], new_node) #make this return the link so you can add it
 			end
 
-			return new_node.toCytoscapeHash
+			to_add = new_node.toCytoscapeHash
+
+			to_modify[:add] = to_add
+			to_modify[:remove] = to_remove
+			return to_modify
 
 		else
 			if in_element != nil && in_element.is_a?(Note) #only use the in_el if it's not nil and the right type
@@ -171,11 +184,20 @@ class Work < ActiveRecord::Base
 				new_note.node_id = nil
 				new_note.save
 			end
-			return parent_node.toCytoscapeHash
+
+			to_add = parent_node.toCytoscapeHash
+
+			to_modify[:add] = to_add
+			to_modify[:remove] = to_remove
+			return to_modify
 		end
 	end
 
-	def deleteElement(line_number, del_obj=true)
+	def removeElement(line_number, del_obj=true)
+		to_add = {}
+		to_remove = {}
+		to_modify = {}
+
 		ordering = getOrdering
 		el = getElementInOrdering(line_number, ordering)
 		if (el.is_a?(Node))
@@ -185,7 +207,7 @@ class Work < ActiveRecord::Base
 		else
 			node_hash = {}
 		end
-
+		to_remove = node_hash
 		#find elements children, remove element, then redo the order
 		children = findElChildren(line_number, el.depth, ordering)
 		
@@ -200,13 +222,10 @@ class Work < ActiveRecord::Base
 
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
-			if child[:node].is_a?(Node)
-				rents = child[:node].parents.first
-			end
 			new_parent = findElParent(child[:node].depth, child[:index], ordering)
-			if child[:node].is_a?(Node)
-				new_rents = child[:node].parents.first
-			end
+			#if child[:node].is_a?(Node)
+			#	new_rents = child[:node].parents.first
+			#end
 			changeParent(child[:node], new_parent)
 		end
 
@@ -217,7 +236,10 @@ class Work < ActiveRecord::Base
 		if del_obj
 			el.delete
 		end
-		return node_hash
+
+		to_modify[:add] = to_add
+		to_modify[:remove] = to_remove
+		return to_modify
 	end
 
 	#this could be a find parent function. even just pass it a location and the ordering. works for node and note, both have depth

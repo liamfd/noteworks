@@ -175,20 +175,23 @@ function delElement(line_num){
   });
 }
 
+
 //function that runs if the ajax is successful, will eventually update the graph
 function modInGraph(data){
   $("#test_box").text(JSON.stringify(data));
   
   //console.log("data=" + data);
   //test_data = data;
-
+  var pos_y;
+  var pos_x;
   //gets the identifier of the original node
-  var rem_node = cy.$("#" + data.remove.node.id);
-
+  var rem_node = data.remove.node;
   if (rem_node != undefined) {
   
     //save the position, so the replacement can be set at it
-    var pos = rem_node.position();
+    var rem_graph_node = cy.$("#" + rem_node.id);
+    pos_x = rem_graph_node.position().x;
+    pos_y = rem_graph_node.position().y;
   
     //delete the edges, then the node
     var edge_id_string;
@@ -196,15 +199,21 @@ function modInGraph(data){
       edge_id_string = "#" + data.remove.edges[i].id;
       cy.remove(edge_id_string);
     }
-    cy.remove(rem_node);
+    cy.remove(rem_graph_node);
+  }
+  else{ //if there was no remove node, this should be a random position
+    pos_x = 50;
+    pos_y = 60;
+  }
  
-   
+  var add_node = data.add.node;
+  if (add_node != undefined) {
     //add the new node
     data.add.node.id = data.add.node.id.toString(); //convert the id to a string
     cy.add({
       group: "nodes",
       data: data.add.node,
-      position:{ x: pos.x, y: pos.y}
+      position:{ x: pos_x, y: pos_y}
     }).addClass("starting");
 
     //add the new edges, first converting their values to strings
@@ -222,6 +231,7 @@ function modInGraph(data){
     }
 
   }
+
 }
 
 

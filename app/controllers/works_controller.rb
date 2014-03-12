@@ -105,7 +105,7 @@ class WorksController < ApplicationController
     line_content = params[:line_content]
 
     gon.changed = @modded_element.to_json
-    @modded_element = @work.insertNewElement(line_number.to_i, line_content.to_s)
+    @modded_element = @work.addNewElement(line_number.to_i, line_content.to_s)
 
     respond_to do |format|
       format.js {render :json => @modded_element}
