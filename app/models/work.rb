@@ -66,15 +66,19 @@ class Work < ActiveRecord::Base
 		remove_remove = from_remove[:remove]
 
 		#this use of remove is confusing here. switch it to delete where it's opposed to add (not insert)
+		add_nodes = {}
+		remove_nodes = {}
+		add_edges = {}
+		remove_edges = {}
 
-		add_nodes = insert_add[:node] + remove_add[:node]
-		remove_nodes = insert_remove[:node] + remove_remove[:node]
+		add_nodes = [insert_add[:node] , remove_add[:node]]
+		remove_nodes = [insert_remove[:node] , remove_remove[:node]]
 
-		add_edges =  insert_add[:edges] + remove_add[:edges]
-		remove_edges = insert_remove[:edges] + remove_remove[:edges] 
+		add_edges = [insert_add[:edges] , remove_add[:edges]]
+		remove_edges = [insert_remove[:edges] , remove_remove[:edges]] 
 
-		to_modify[:add] = [ add_nodes, add_edges ]
-		to_modify[:remove] = [ remove_nodes, remove_edges ]
+		to_modify[:add] = { nodes: add_nodes, edges: add_edges }
+		to_modify[:remove] = { nodes: remove_nodes, edges: remove_edges }
 		binding.pry
 		#return node
 		return to_modify
