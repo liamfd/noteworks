@@ -144,7 +144,7 @@ function updateElement(line_num, text){
     data: {line_number: line_num, line_content: text},
     dataType:"json",
     success: function(data){
-      modElement(data);
+      modInGraph(data);
     }
   });
 }
@@ -157,7 +157,7 @@ function addElement(line_num, text){
     data: {line_number: line_num, line_content: text},
     dataType:"json",
     success: function(data){
-      modElement(data);
+      modInGraph(data);
     }
   });
 }
@@ -170,13 +170,13 @@ function delElement(line_num){
     data: {line_number: line_num},
     dataType:"json",
     success: function(data){
-      modElement(data);
+      modInGraph(data);
     }
   });
 }
 
 //function that runs if the ajax is successful, will eventually update the graph
-function modElement(data){
+function modInGraph(data){
   $("#test_box").text(JSON.stringify(data));
   
   //console.log("data=" + data);
