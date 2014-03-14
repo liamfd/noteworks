@@ -134,13 +134,13 @@ class Work < ActiveRecord::Base
 			new_el = Note.new
 		end
 		new_element_hash = insertElement(line_number, line_content, new_el)
-		return new_element_hash.to_json
+		return formatHashForAJAX(new_element_hash, [])
 	end
 
 	#to be called from the AJAX, takes removeElement's response and formats it
 	def deleteElement(line_number)
 		deleted_element_hash = removeElement(line_number, true)
-		return deleted_element_hash.to_json
+		return formatHashForAJAX([], deleted_element_hash)
 	end
 
 	#shouldn't be called until the JS knows what type the new thing is
@@ -150,11 +150,6 @@ class Work < ActiveRecord::Base
 
 		ordering = getOrdering
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
-		#first_char = ""
-		#matched = line_content.match(/[ ,\t]*(.)/)
-		#if matched != nil
-		#	first_char = matched.captures.first
-		#end
 
 		#update the markup
 		markup_lines = getMarkupLines
@@ -177,20 +172,20 @@ class Work < ActiveRecord::Base
 			setOrder(ordering)
 
 			#FIND PARENT
-			if new_node.depth != 0 #if it's not a base element
+			if new_node.depth != 0 #if it's not a base element, give it a parent
 				parent_node = findElParent(new_node.depth, line_number, ordering)
-				if parent_node != nil
+				if parent_node != nil #only give it a parent if it actually has one
 					relation = Link.new(child_id: new_node.id, parent_id: parent_node.id, work_id: self.id)
 					relation.save
 				#	new_node.parent_relationships << relation
 				#	parent_node.child_relationships << relation
-				else
-					relation = Link.new(child_id: new_node.id, parent_id: nil, work_id: self.id)
-					relation.save
+				#else
+				#	relation = Link.new(child_id: new_node.id, parent_id: nil, work_id: self.id)
+				#	relation.save
 				#	new_node.parent_relationships << relation
 				end
-			else
-				relation = Link.new(child_id: new_node.id, parent_id: nil, work_id:self.id) #empty initial relationship
+			#else
+			#	relation = Link.new(child_id: new_node.id, parent_id: nil, work_id:self.id) #empty initial relationship
 			end
 
 			#FIND CHILDREN
@@ -218,17 +213,18 @@ class Work < ActiveRecord::Base
 
 			#FIND PARENT
 			parent_node = findElParent(new_note.depth, line_number, ordering)
-			if parent_node != nil
+			if parent_node != nil #if it has a parent, set it. ignore otherwise
 				new_note.node_id = parent_node.id
 				parent_node.combine_notes
-				new_note.save
-			else
-				new_note.node_id = nil
-				new_note.save
+			#else
+			#	new_note.node_id = nil
+			#	new_note.save
 			end
-
-			to_modify[:add_node] = parent_node.toCytoscapeHash[:node]
-			to_modify[:add_edges] = parent_node.toCytoscapeHash[:edges]
+			new_note.save
+			if parent_node != nil #if it actually has a parent
+				to_modify[:add_node] = parent_node.toCytoscapeHash[:node]
+				to_modify[:add_edges] = parent_node.toCytoscapeHash[:edges]
+			end
 			to_modify[:remove_edges] = []
 			return to_modify
 		end
@@ -276,7 +272,7 @@ class Work < ActiveRecord::Base
 			el.parent_relationships.delete_all
 		end
 
-		if del_obj
+		if del_obj #delete unless explicitly told not to (when it's called from modify)
 			el.delete
 		end
 
@@ -286,7 +282,7 @@ class Work < ActiveRecord::Base
 		return to_modify
 	end
 
-	#this could be a find parent function. even just pass it a location and the ordering. works for node and note, both have depth
+	# works for node and note, both have depth
 	def findElParent(el_depth, index, ordering)
 		i = index - 1
 		while i >= 0 #until the beginning
@@ -335,24 +331,42 @@ class Work < ActiveRecord::Base
 
 	def changeParent(child, parent)
 		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
+
 			relation = child.parent_relationships.first #hierarchy relationship should always be first
-			if (parent != nil)
-				relation.parent_id = parent.id
-				relation.save
+			if (parent != nil) #if there is a parent for it
+				if relation != nil #if it already has a parent relation
+					relation.parent_id = parent.id
+					relation.save
+				else #if it doesn't have a parent already
+					relation = Link.new(child_id: child.id, parent_id: parent.id, work_id: self.id)
+					relation.save
+				end
 				#parent.child_relationships << relation
-			else
-				relation.parent_id = nil
-				relation.save
+			else #if it doesn't have a new parent to be assigned
+				if (relation != nil) #if it exists, delete it
+					relation.delete
+				end #if it doesn't exist and doesn't need to, do nothing
 			end
 			
+			#relation = child.parent_relationships.first #hierarchy relationship should always be first
+			#if (parent != nil)
+			#	relation.parent_id = parent.id
+			#	relation.save
+			#	#parent.child_relationships << relation
+			#else
+			#	relation.parent_id = nil
+			#	relation.save
+			#end
+			
+
 		elsif child.is_a?(Note)
 			prev_parent_id = child.node_id
-			if (parent != nil)
+			if (parent != nil) #if it has a parent already
 				child.node_id = parent.id
 				child.save
 				parent.combine_notes
 				parent.save
-			else
+			else #if it doesn't have a parent, don't set it to anything
 				child.node_id = nil
 				child.save			
 			end
