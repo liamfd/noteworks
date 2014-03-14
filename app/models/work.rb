@@ -39,7 +39,7 @@ class Work < ActiveRecord::Base
 		if (insert[:add_node] != nil)
 			add_nodes.append(insert[:add_node])#only comes from one, this'll probs change
 		end
-
+		binding.pry
 		remove_nodes = []
 		if (remove[:remove_node] != nil)
 			remove_nodes.append(remove[:remove_node])
@@ -134,13 +134,13 @@ class Work < ActiveRecord::Base
 			new_el = Note.new
 		end
 		new_element_hash = insertElement(line_number, line_content, new_el)
-		return formatHashForAJAX(new_element_hash, [])
+		return formatHashForAJAX(new_element_hash, {})
 	end
 
 	#to be called from the AJAX, takes removeElement's response and formats it
 	def deleteElement(line_number)
 		deleted_element_hash = removeElement(line_number, true)
-		return formatHashForAJAX([], deleted_element_hash)
+		return formatHashForAJAX({}, deleted_element_hash)
 	end
 
 	#shouldn't be called until the JS knows what type the new thing is
