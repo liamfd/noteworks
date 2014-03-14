@@ -59,27 +59,58 @@ class Work < ActiveRecord::Base
 		else	
 			return toJSONOutput(self.nodes.first)
 		end
-		insert_add = from_insert[:add]
-		insert_remove = from_insert[:remove]
 
-		remove_add = from_remove[:add]
-		remove_remove = from_remove[:remove]
+		#take care of the adding and removing nodes
+		add_nodes = []
+		remove_nodes = []
+		add_nodes.append(from_insert[:add_node])#only comes from one, this'll probs change
+		remove_nodes.append(from_remove[:remove_node])
+
+		#do the add_edges from both sources
+		add_edges = []
+		if (from_insert[:add_edges] != nil)
+			add_edges += from_insert[:add_edges]
+		end
+		if (from_remove[:add_edges] != nil)
+			add_edges += from_remove[:add_edges]
+		end
+
+		#do the remove edges from both sources
+		remove_edges = []
+		if (from_insert[:remove_edges] != nil)
+			remove_edges += from_insert[:remove_edges]
+		end
+		if (from_remove[:remove_edges] != nil)
+			remove_edges += from_remove[:remove_edges]
+		end
+
+		#combine into the modify
+		to_modify[:add_nodes] = add_nodes
+		to_modify[:add_edges] = add_edges
+		to_modify[:remove_nodes] = remove_nodes
+		to_modify[:remove_edges] = remove_edges
+		#insert_add = from_insert[:add]
+		#insert_remove = from_insert[:remove]
+
+		#remove_add = from_remove[:add]
+		#remove_remove = from_remove[:remove]
 
 		#this use of remove is confusing here. switch it to delete where it's opposed to add (not insert)
-		add_nodes = {}
-		remove_nodes = {}
-		add_edges = {}
-		remove_edges = {}
+		#add_nodes = {}
+		#remove_nodes = {}
+		#add_edges = {}
+		#remove_edges = {}
 
-		add_nodes = [insert_add[:node] , remove_add[:node]] #only gonna be one at a time
-		remove_nodes = [insert_remove[:node] , remove_remove[:node]] 
+		#add_nodes = [insert_add[:node] , remove_add[:node]] #only gonna be one at a time
+		#remove_nodes = [insert_remove[:node] , remove_remove[:node]] 
 
-		add_edges = insert_add[:edges] + remove_add[:edges] #def an array
-		remove_edges = insert_remove[:edges] + remove_remove[:edges] 
+		#add_edges = insert_add[:edges] + remove_add[:edges] #def an array
+		#remove_edges = insert_remove[:edges] + remove_remove[:edges] 
 
-		to_modify[:add] = { nodes: add_nodes, edges: add_edges }
-		to_modify[:remove] = { nodes: remove_nodes, edges: remove_edges }
-		binding.pry
+		#to_modify[:add] = { nodes: add_nodes, edges: add_edges }
+		#to_modify[:remove] = { nodes: remove_nodes, edges: remove_edges }
+		
+
 		#return node
 		return to_modify
 	end
@@ -105,8 +136,6 @@ class Work < ActiveRecord::Base
 	#shouldn't be called until the JS knows what type the new thing is
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
 	def insertElement(line_number, line_content, in_element=nil)
-		to_add = {}
-		to_remove = {}
 		to_modify = {}
 
 		ordering = getOrdering
@@ -161,7 +190,7 @@ class Work < ActiveRecord::Base
 			end
 
 			to_modify[:add_node] = new_node.toCytoscapeHash[:node]
-			to_modify[:add_edges] = new_node.tyCytoscapeHash[:edges]
+			to_modify[:add_edges] = new_node.toCytoscapeHash[:edges]
 			to_modify[:remove_edges] = []
 			return to_modify
 
