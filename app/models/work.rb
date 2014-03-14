@@ -31,7 +31,45 @@ class Work < ActiveRecord::Base
    	#fix the infinite loop, then you can have this back
 	end
 
+	def formatHashForAJAX(insert={}, remove={})
+		#take care of the adding and removing nodes
+		to_modify = {}
 
+		add_nodes = []
+		if (insert[:add_node] != nil)
+			add_nodes.append(insert[:add_node])#only comes from one, this'll probs change
+		end
+
+		remove_nodes = []
+		if (remove[:remove_node] != nil)
+			remove_nodes.append(remove[:remove_node])
+		end
+
+		#do the add_edges from both sources
+		add_edges = []
+		if (insert[:add_edges] != nil)
+			add_edges += insert[:add_edges]
+		end
+		if (remove[:add_edges] != nil)
+			add_edges += remove[:add_edges]
+		end
+
+		#do the remove edges from both sources
+		remove_edges = []
+		if (insert[:remove_edges] != nil)
+			remove_edges += insert[:remove_edges]
+		end
+		if (remove[:remove_edges] != nil)
+			remove_edges += remove[:remove_edges]
+		end
+
+		#combine into the modify
+		to_modify[:add_nodes] = add_nodes
+		to_modify[:add_edges] = add_edges
+		to_modify[:remove_nodes] = remove_nodes
+		to_modify[:remove_edges] = remove_edges
+		return to_modify
+	end
 
 	#parser shit
 	def modifyElement(line_number, line_content)
@@ -57,38 +95,10 @@ class Work < ActiveRecord::Base
 			from_insert = insertElement(line_number, line_content, curr_note)
 			#to_add = nodeToCytoscapeHash(node)	
 		else	
-			return toJSONOutput(self.nodes.first)
+			#return toJSONOutput(self.nodes.first)
 		end
 
-		#take care of the adding and removing nodes
-		add_nodes = []
-		remove_nodes = []
-		add_nodes.append(from_insert[:add_node])#only comes from one, this'll probs change
-		remove_nodes.append(from_remove[:remove_node])
-
-		#do the add_edges from both sources
-		add_edges = []
-		if (from_insert[:add_edges] != nil)
-			add_edges += from_insert[:add_edges]
-		end
-		if (from_remove[:add_edges] != nil)
-			add_edges += from_remove[:add_edges]
-		end
-
-		#do the remove edges from both sources
-		remove_edges = []
-		if (from_insert[:remove_edges] != nil)
-			remove_edges += from_insert[:remove_edges]
-		end
-		if (from_remove[:remove_edges] != nil)
-			remove_edges += from_remove[:remove_edges]
-		end
-
-		#combine into the modify
-		to_modify[:add_nodes] = add_nodes
-		to_modify[:add_edges] = add_edges
-		to_modify[:remove_nodes] = remove_nodes
-		to_modify[:remove_edges] = remove_edges
+		to_modify = formatHashForAJAX(from_insert, from_remove)
 		#insert_add = from_insert[:add]
 		#insert_remove = from_insert[:remove]
 
