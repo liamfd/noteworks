@@ -39,7 +39,6 @@ class Work < ActiveRecord::Base
 		if (insert[:add_node] != nil)
 			add_nodes.append(insert[:add_node])#only comes from one, this'll probs change
 		end
-		binding.pry
 		remove_nodes = []
 		if (remove[:remove_node] != nil)
 			remove_nodes.append(remove[:remove_node])
@@ -99,27 +98,6 @@ class Work < ActiveRecord::Base
 		end
 
 		to_modify = formatHashForAJAX(from_insert, from_remove)
-		#insert_add = from_insert[:add]
-		#insert_remove = from_insert[:remove]
-
-		#remove_add = from_remove[:add]
-		#remove_remove = from_remove[:remove]
-
-		#this use of remove is confusing here. switch it to delete where it's opposed to add (not insert)
-		#add_nodes = {}
-		#remove_nodes = {}
-		#add_edges = {}
-		#remove_edges = {}
-
-		#add_nodes = [insert_add[:node] , remove_add[:node]] #only gonna be one at a time
-		#remove_nodes = [insert_remove[:node] , remove_remove[:node]] 
-
-		#add_edges = insert_add[:edges] + remove_add[:edges] #def an array
-		#remove_edges = insert_remove[:edges] + remove_remove[:edges] 
-
-		#to_modify[:add] = { nodes: add_nodes, edges: add_edges }
-		#to_modify[:remove] = { nodes: remove_nodes, edges: remove_edges }
-		
 
 		#return node
 		return to_modify
@@ -145,6 +123,7 @@ class Work < ActiveRecord::Base
 
 	#shouldn't be called until the JS knows what type the new thing is
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
+	#just don't send it on enter, make it wait, if it's done wrongly after leaving the line treat that accordinglyma
 	def insertElement(line_number, line_content, in_element=nil)
 		to_modify = {}
 
@@ -239,8 +218,13 @@ class Work < ActiveRecord::Base
 			remove_node = el.toCytoscapeHash[:node]
 			remove_edges = el.toCytoscapeHash[:edges]
 		elsif (el.is_a?(Note))
-			remove_node = el.node.toCytoscapeHash[:node]
-			remove_edges = el.node.toCytoscapeHash[:edges]
+			if el.node != nil
+				remove_node = el.node.toCytoscapeHash[:node]
+				remove_edges = el.node.toCytoscapeHash[:edges]
+			else
+				remove_node = {}
+				remove_edges = []
+			end
 		else
 			remove_node = {}
 			remove_edges = []
@@ -249,7 +233,7 @@ class Work < ActiveRecord::Base
 
 		#find elements children, remove element, then redo the order
 		children = findElChildren(line_number, el.depth, ordering)
-		
+		binding.pry
 		#update the ordering
 		ordering.delete_at(line_number)
 		setOrder(ordering)
@@ -265,6 +249,7 @@ class Work < ActiveRecord::Base
 			#if child[:node].is_a?(Node)
 			#	new_rents = child[:node].parents.first
 			#end
+			binding.pry
 			changeParent(child[:node], new_parent)
 		end
 
@@ -275,7 +260,7 @@ class Work < ActiveRecord::Base
 		if del_obj #delete unless explicitly told not to (when it's called from modify)
 			el.delete
 		end
-
+		binding.pry
 		to_modify[:remove_node] = remove_node
 		to_modify[:remove_edges] = remove_edges
 		to_modify[:add_edges] = add_edges
