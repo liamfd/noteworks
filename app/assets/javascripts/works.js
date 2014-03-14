@@ -181,56 +181,70 @@ function modInGraph(data){
   $("#test_box").text(JSON.stringify(data));
   
   //console.log("data=" + data);
-  //test_data = data;
-  var pos_y;
-  var pos_x;
-  //gets the identifier of the original node
-  var rem_node = data.remove.node;
-  if (rem_node != undefined) {
-  
-    //save the position, so the replacement can be set at it
-    var rem_graph_node = cy.$("#" + rem_node.id);
-    pos_x = rem_graph_node.position().x;
-    pos_y = rem_graph_node.position().y;
-  
-    //delete the edges, then the node
-    var edge_id_string;
-    for (i = 0; i < data.remove.edges.length; i++){
-      edge_id_string = "#" + data.remove.edges[i].id;
+  test_data = data;
+  var pos_y = 50; //these two will be random
+  var pos_x = 60;
+
+  //delete the edges
+  var edge_id_string;
+  for (i = 0; i < data.remove.edges.length; i++){
+    rem_edge = data.remove.edges[i];
+    if ((rem_edge != null) && (rem_edge != undefined)){
+      edge_id_string = "#" + rem_edge.id;
       cy.remove(edge_id_string);
     }
-    cy.remove(rem_graph_node);
   }
-  else{ //if there was no remove node, this should be a random position
-    pos_x = 50;
-    pos_y = 60;
+
+  //delete the nodes
+  var rem_node;
+  for (i = 0, len = data.remove.nodes.length; i < len; ++i){
+    rem_node = data.remove.nodes[i];
+    if ((rem_node != null) && (rem_node != undefined)){
+      //save the position, so the replacement can be set at it
+      var rem_graph_node = cy.$("#" + rem_node.id);
+      pos_x = rem_graph_node.position().x;
+      pos_y = rem_graph_node.position().y;
+    
+      cy.remove(rem_graph_node);
+    }
   }
  
-  var add_node = data.add.node;
-  if (add_node != undefined) {
-    //add the new node
-    data.add.node.id = data.add.node.id.toString(); //convert the id to a string
-    cy.add({
-      group: "nodes",
-      data: data.add.node,
-      position:{ x: pos_x, y: pos_y}
-    }).addClass("starting");
+  //var add_node = data.add.node;
+  //add the edges
+  for (i = 0, len = data.add.nodes.length; i < len; ++i){
+    add_node = data.add.nodes[i];
+    if ((add_node != null) && (add_node != undefined)) {
+      //add the new node
+      console.log("ehy");
+      node_string = add_node.id.toString();
+      console.log(node_string);
+    //  data.add.node.id = data.add.node.id.toString(); //convert the id to a string
+      cy.add({
+        group: "nodes",
+        data: add_node,
+        position:{ x: pos_x, y: pos_y}
+      }).addClass("starting");
+    }
+  }
 
-    //add the new edges, first converting their values to strings
-    for (i = 0; i < data.add.edges.length; i++){
-      data.add.edges[i].id = data.add.edges[i].id.toString();
-      data.add.edges[i].source = data.add.edges[i].source.toString();
-      data.add.edges[i].target = data.add.edges[i].target.toString();
+  //add the new edges, first converting their values to strings
+  for (i = 0; i < data.add.edges.length; i++){
+    add_edge = data.add.edges[i];
+    if ((add_edge != null) && (add_edge != undefined)){
+      add_edge.id = data.add.edges[i].id.toString();
+      add_edge.source = data.add.edges[i].source.toString();
+      add_edge.target = data.add.edges[i].target.toString();
      
-      if ((data.add.edges[i].source != undefined) && (data.add.edges[i].target != undefined)){ //ignore if edge goes nowhere
+      if ((add_edge.source != undefined) && (add_edge.target != undefined)){ //ignore if edge goes nowhere
         cy.add({
           group: "edges",
-          data: data.add.edges[i]
+          data: add_edge
         });
       }
     }
-
   }
+
+  
 
 }
 

@@ -71,11 +71,11 @@ class Work < ActiveRecord::Base
 		add_edges = {}
 		remove_edges = {}
 
-		add_nodes = [insert_add[:node] , remove_add[:node]]
-		remove_nodes = [insert_remove[:node] , remove_remove[:node]]
+		add_nodes = [insert_add[:node] , remove_add[:node]] #only gonna be one at a time
+		remove_nodes = [insert_remove[:node] , remove_remove[:node]] 
 
-		add_edges = [insert_add[:edges] , remove_add[:edges]]
-		remove_edges = [insert_remove[:edges] , remove_remove[:edges]] 
+		add_edges = insert_add[:edges] + remove_add[:edges] #def an array
+		remove_edges = insert_remove[:edges] + remove_remove[:edges] 
 
 		to_modify[:add] = { nodes: add_nodes, edges: add_edges }
 		to_modify[:remove] = { nodes: remove_nodes, edges: remove_edges }
@@ -160,10 +160,9 @@ class Work < ActiveRecord::Base
 				changeParent(child[:node], new_node) #make this return the link so you can add it
 			end
 
-			to_add = new_node.toCytoscapeHash
-
-			to_modify[:add] = to_add
-			to_modify[:remove] = to_remove
+			to_modify[:add_node] = new_node.toCytoscapeHash[:node]
+			to_modify[:add_edges] = new_node.tyCytoscapeHash[:edges]
+			to_modify[:remove_edges] = []
 			return to_modify
 
 		else
@@ -189,29 +188,30 @@ class Work < ActiveRecord::Base
 				new_note.save
 			end
 
-			to_add = parent_node.toCytoscapeHash
-
-			to_modify[:add] = to_add
-			to_modify[:remove] = to_remove
+			to_modify[:add_node] = parent_node.toCytoscapeHash[:node]
+			to_modify[:add_edges] = parent_node.toCytoscapeHash[:edges]
+			to_modify[:remove_edges] = []
 			return to_modify
 		end
 	end
 
 	def removeElement(line_number, del_obj=true)
-		to_add = {}
-		to_remove = {}
 		to_modify = {}
 
 		ordering = getOrdering
 		el = getElementInOrdering(line_number, ordering)
 		if (el.is_a?(Node))
-			node_hash = el.toCytoscapeHash
+			remove_node = el.toCytoscapeHash[:node]
+			remove_edges = el.toCytoscapeHash[:edges]
 		elsif (el.is_a?(Note))
-			node_hash = el.node.toCytoscapeHash
+			remove_node = el.node.toCytoscapeHash[:node]
+			remove_edges = el.node.toCytoscapeHash[:edges]
 		else
-			node_hash = {}
+			remove_node = {}
+			remove_edges = []
 		end
-		to_remove = node_hash
+		add_edges = [] #this will be edited later
+
 		#find elements children, remove element, then redo the order
 		children = findElChildren(line_number, el.depth, ordering)
 		
@@ -241,8 +241,9 @@ class Work < ActiveRecord::Base
 			el.delete
 		end
 
-		to_modify[:add] = to_add
-		to_modify[:remove] = to_remove
+		to_modify[:remove_node] = remove_node
+		to_modify[:remove_edges] = remove_edges
+		to_modify[:add_edges] = add_edges
 		return to_modify
 	end
 
