@@ -187,8 +187,8 @@ function modInGraph(data){
 
   //delete the edges
   var edge_id_string;
-  for (i = 0; i < data.remove.edges.length; i++){
-    rem_edge = data.remove.edges[i];
+  for (i = 0; i < data.remove_edges.length; i++){
+    rem_edge = data.remove_edges[i];
     if ((rem_edge != null) && (rem_edge != undefined)){
       edge_id_string = "#" + rem_edge.id;
       cy.remove(edge_id_string);
@@ -197,8 +197,8 @@ function modInGraph(data){
 
   //delete the nodes
   var rem_node;
-  for (i = 0, len = data.remove.nodes.length; i < len; ++i){
-    rem_node = data.remove.nodes[i];
+  for (i = 0, len = data.remove_nodes.length; i < len; ++i){
+    rem_node = data.remove_nodes[i];
     if ((rem_node != null) && (rem_node != undefined)){
       //save the position, so the replacement can be set at it
       var rem_graph_node = cy.$("#" + rem_node.id);
@@ -211,13 +211,11 @@ function modInGraph(data){
  
   //var add_node = data.add.node;
   //add the edges
-  for (i = 0, len = data.add.nodes.length; i < len; ++i){
-    add_node = data.add.nodes[i];
+  for (i = 0, len = data.add_nodes.length; i < len; ++i){
+    add_node = data.add_nodes[i];
     if ((add_node != null) && (add_node != undefined)) {
       //add the new node
-      console.log("ehy");
-      node_string = add_node.id.toString();
-      console.log(node_string);
+      add_node.id = add_node.id.toString();
     //  data.add.node.id = data.add.node.id.toString(); //convert the id to a string
       cy.add({
         group: "nodes",
@@ -228,14 +226,17 @@ function modInGraph(data){
   }
 
   //add the new edges, first converting their values to strings
-  for (i = 0; i < data.add.edges.length; i++){
-    add_edge = data.add.edges[i];
+  for (i = 0; i < data.add_edges.length; i++){
+    add_edge = data.add_edges[i];
+    console.log(add_edge);
     if ((add_edge != null) && (add_edge != undefined)){
-      add_edge.id = data.add.edges[i].id.toString();
-      add_edge.source = data.add.edges[i].source.toString();
-      add_edge.target = data.add.edges[i].target.toString();
+      add_edge.id = data.add_edges[i].id.toString();
+      add_edge.source = data.add_edges[i].source.toString();
+      add_edge.target = data.add_edges[i].target.toString();
+      console.log(add_edge);
      
-      if ((add_edge.source != undefined) && (add_edge.target != undefined)){ //ignore if edge goes nowhere
+      //maybe have this check instead that both nodes exist in the graph, otherwise you get an error
+      if ((add_edge.source != undefined) && (add_edge.target != undefined) && (add_edge.id != undefined)){ //ignore if edge goes nowhere
         cy.add({
           group: "edges",
           data: add_edge
