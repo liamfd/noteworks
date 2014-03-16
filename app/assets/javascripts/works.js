@@ -6,10 +6,12 @@ var lineText = "";
 var prevLine = 0;
 var num_lines = 0;
 var test_data;
+var changes_made;
 
 
 $( document ).ready(function() {
   num_lines = getNumLines();
+  changes_made = false;
   test_data = {};
 
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
@@ -31,40 +33,29 @@ function upFunction(e){
   if (el == undefined)
     return;
   var curr_num_lines = getNumLines();
-  console.log("curr_num_lines" + curr_num_lines);
-  console.log("num_lines" + num_lines);
+  //console.log("curr_num_lines" + curr_num_lines);
+  //console.log("num_lines" + num_lines);
 
-/*
-  //checks if the number of lines has changed
-  if (curr_num_lines < num_lines){
- //   console.log("deleted!");
-    num_lines = curr_num_lines;
-  }
-  else if (curr_num_lines > num_lines){
- //   console.log("added!");
-    num_lines = curr_num_lines;
-  }
-  else
-    console.log("same");
-*/
   var text;
   currLine = getCurrentLine(el);
+
+  if ((code < 37) || (code > 40)){ //if it's not an arrow key
+    changes_made = true;
+    console.log("go time");
+  }
 
 
   if (code == 13){ //if it's an enter, update old line, add new (can hit enter anywhere in line)
     //the new line is always the current line. even if entering at the beginning, your generating a new line, 
     //and moving shit to it
+
+   // curr_text = getLineText(currLine);
+    //addElement(currLine, curr_text); //shouldn't do this, the line is blank, will be changed later
     prev_text = getLineText(prevLine);
-    curr_text = getLineText(currLine);
-    //console.log("previous: " + prev_text);
-   // console.log("crrent: " + curr_text);
-    addElement(currLine, curr_text); //shouldn't do this, it's obviously not ready yet
-    updateElement(prevLine, prev_text); 
+    updateElement(prevLine, prev_text);
 
     num_lines++;
     prevLine = currLine; //The this doesn't get updated auto on enter
-    //console.log("inserted line" + currLine);
-    //console.log("updating line" + prevLine);
   }
 
   else if ((code == 8) && (curr_num_lines < num_lines)){ //if it's backspace and a whole line gone
@@ -84,9 +75,12 @@ function upFunction(e){
   }
 
   else if (checkLineChanged(currLine)){ //otherwise, if I've just changed lines
-    text = getLineText(prevLine);
-    updateElement(prevLine, text);
-    
+    if (changes_made){ //if he's not just arrowing around
+      text = getLineText(prevLine);
+      updateElement(prevLine, text);
+      console.log("doing shit!");
+      changes_made = false;
+    }
     prevLine = currLine;
    // console.log("switched from " + prevLine + "to " + currLine);
   }
