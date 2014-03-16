@@ -31,44 +31,7 @@ class Work < ActiveRecord::Base
    	#fix the infinite loop, then you can have this back
 	end
 
-	def formatHashForAJAX(insert={}, remove={})
-		#take care of the adding and removing nodes
-		to_modify = {}
 
-		add_nodes = []
-		if (insert[:add_node] != nil)
-			add_nodes.append(insert[:add_node])#only comes from one, this'll probs change
-		end
-		remove_nodes = []
-		if (remove[:remove_node] != nil)
-			remove_nodes.append(remove[:remove_node])
-		end
-
-		#do the add_edges from both sources
-		add_edges = []
-		if (insert[:add_edges] != nil)
-			add_edges += insert[:add_edges]
-		end
-		if (remove[:add_edges] != nil)
-			add_edges += remove[:add_edges]
-		end
-
-		#do the remove edges from both sources
-		remove_edges = []
-		if (insert[:remove_edges] != nil)
-			remove_edges += insert[:remove_edges]
-		end
-		if (remove[:remove_edges] != nil)
-			remove_edges += remove[:remove_edges]
-		end
-
-		#combine into the modify
-		to_modify[:add_nodes] = add_nodes
-		to_modify[:add_edges] = add_edges
-		to_modify[:remove_nodes] = remove_nodes
-		to_modify[:remove_edges] = remove_edges
-		return to_modify
-	end
 
 	#parser shit
 	def modifyElement(line_number, line_content)
@@ -115,8 +78,15 @@ class Work < ActiveRecord::Base
 
 	#to be called from the AJAX, takes removeElement's response and formats it
 	def deleteElement(line_number)
-		deleted_element_hash = removeElement(line_number, true)
-		return formatHashForAJAX({}, deleted_element_hash)
+		ordering = getOrdering
+		el = getElementInOrdering(line_number, ordering)
+		if (el.is_a?(Node))
+			deleted_element_hash = removeElement(line_number, true)
+			return formatHashForAJAX({}, deleted_element_hash)
+		else
+			deleted_element_hash = removeElement(line_number, true)
+			return formatHashForAJAX(deleted_element_hash, deleted_element_hash)
+		end	
 	end
 
 	#shouldn't be called until the JS knows what type the new thing is
@@ -192,12 +162,14 @@ class Work < ActiveRecord::Base
 			parent_node = findElParent(new_note.depth, line_number, ordering)
 			if parent_node != nil #if it has a parent, set it. ignore otherwise
 				new_note.node_id = parent_node.id
+				new_note.save
 				parent_node.combine_notes
 			#else
 			#	new_note.node_id = nil
 			#	new_note.save
+			else
+				new_note.save
 			end
-			new_note.save
 			if parent_node != nil #if it actually has a parent
 				to_modify[:add_node] = parent_node.toCytoscapeHash[:node]
 				to_modify[:add_edges] = parent_node.toCytoscapeHash[:edges]
@@ -248,16 +220,27 @@ class Work < ActiveRecord::Base
 			#if child[:node].is_a?(Node)
 			#	new_rents = child[:node].parents.first
 			#end
+
+			#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
 			changeParent(child[:node], new_parent)
 		end
 
-		if el.is_a?(Node)
+		owner = nil
+		if el.is_a?(Node) #delete links to parents if it's a node
 			el.parent_relationships.delete_all
+		elsif el.is_a?(Note) #if it's a note, have its parents redo its notes
+			binding.pry
+			owner = el.node
 		end
 
 		if del_obj #delete unless explicitly told not to (when it's called from modify)
 			el.delete
 		end
+
+		if owner != nil
+			owner.combine_notes
+		end
+		binding.pry
 		to_modify[:remove_node] = remove_node
 		to_modify[:remove_edges] = remove_edges
 		to_modify[:add_edges] = add_edges
@@ -364,14 +347,15 @@ class Work < ActiveRecord::Base
 	end
 
 
-	def getMarkupLines
-		return markup.split(/\r\n|[\r\n]/) #match \r\n if present, if not either works
-	end
-
 	def setMarkup(markup_lines)
 		m = markup_lines.join("\r\n") #join with \r\n
 		self.update_attribute :markup, m
 	end
+
+	def getMarkupLines
+		return markup.split(/\r\n|[\r\n]/) #match \r\n if present, if not either works
+	end
+
 
 	#takes an array ordering, converts it to the order string and saves
 	def setOrder(ordering)
@@ -589,15 +573,55 @@ class Work < ActiveRecord::Base
 		return ordering
 	end
 
-end
 
-def getTextFromRegexp(text, expression)
-	wanted = ""
-	if text != nil
-		matched = text.match(expression)
-		if matched != nil
-			wanted = matched.captures.first
+	#takes a string and a regexp, returns the result or nothing if no result
+	def getTextFromRegexp(text, expression)
+		wanted = ""
+		if text != nil
+			matched = text.match(expression)
+			if matched != nil
+				wanted = matched.captures.first
+			end
 		end
+		return wanted
 	end
-	return wanted
+
+	def formatHashForAJAX(insert={}, remove={})
+		#take care of the adding and removing nodes
+		to_modify = {}
+
+		add_nodes = []
+		if (insert[:add_node] != nil)
+			add_nodes.append(insert[:add_node])#only comes from one, this'll probs change
+		end
+		remove_nodes = []
+		if (remove[:remove_node] != nil)
+			remove_nodes.append(remove[:remove_node])
+		end
+
+		#do the add_edges from both sources
+		add_edges = []
+		if (insert[:add_edges] != nil)
+			add_edges += insert[:add_edges]
+		end
+		if (remove[:add_edges] != nil)
+			add_edges += remove[:add_edges]
+		end
+
+		#do the remove edges from both sources
+		remove_edges = []
+		if (insert[:remove_edges] != nil)
+			remove_edges += insert[:remove_edges]
+		end
+		if (remove[:remove_edges] != nil)
+			remove_edges += remove[:remove_edges]
+		end
+
+		#combine into the modify
+		to_modify[:add_nodes] = add_nodes
+		to_modify[:add_edges] = add_edges
+		to_modify[:remove_nodes] = remove_nodes
+		to_modify[:remove_edges] = remove_edges
+		return to_modify
+	end
 end
