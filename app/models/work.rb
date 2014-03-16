@@ -233,7 +233,6 @@ class Work < ActiveRecord::Base
 
 		#find elements children, remove element, then redo the order
 		children = findElChildren(line_number, el.depth, ordering)
-		binding.pry
 		#update the ordering
 		ordering.delete_at(line_number)
 		setOrder(ordering)
@@ -249,7 +248,6 @@ class Work < ActiveRecord::Base
 			#if child[:node].is_a?(Node)
 			#	new_rents = child[:node].parents.first
 			#end
-			binding.pry
 			changeParent(child[:node], new_parent)
 		end
 
@@ -260,7 +258,6 @@ class Work < ActiveRecord::Base
 		if del_obj #delete unless explicitly told not to (when it's called from modify)
 			el.delete
 		end
-		binding.pry
 		to_modify[:remove_node] = remove_node
 		to_modify[:remove_edges] = remove_edges
 		to_modify[:add_edges] = add_edges
@@ -319,7 +316,7 @@ class Work < ActiveRecord::Base
 
 			relation = child.parent_relationships.first #hierarchy relationship should always be first
 			if (parent != nil) #if there is a parent for it
-				if relation != nil #if it already has a parent relation
+				if relation != nil #if it already has a parent relation. should be .any?
 					relation.parent_id = parent.id
 					relation.save
 				else #if it doesn't have a parent already
@@ -327,6 +324,7 @@ class Work < ActiveRecord::Base
 					relation.save
 				end
 				#parent.child_relationships << relation
+
 			else #if it doesn't have a new parent to be assigned
 				if (relation != nil) #if it exists, delete it
 					relation.delete
@@ -356,8 +354,9 @@ class Work < ActiveRecord::Base
 				child.save			
 			end
 
-			if prev_parent_id != nil #only make changes to the previous parent if there is one
-				prev_parent = Node.find(prev_parent_id)
+			#update the notes of the other node, if it exists
+			if Node.exists?(prev_parent_id) #automatically false if nil, so if it has no prev_parent, works even if it thinks it does
+				prev_parent = Node.find(prev_parent_id) #BUG
 				prev_parent.combine_notes()
 				prev_parent.save
 			end

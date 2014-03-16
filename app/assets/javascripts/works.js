@@ -58,8 +58,8 @@ function upFunction(e){
     curr_text = getLineText(currLine);
     //console.log("previous: " + prev_text);
    // console.log("crrent: " + curr_text);
-    addElement(currLine, curr_text);
-    updateElement(prevLine, prev_text);
+    addElement(currLine, curr_text); //shouldn't do this, it's obviously not ready yet
+    updateElement(prevLine, prev_text); 
 
     num_lines++;
     prevLine = currLine; //The this doesn't get updated auto on enter
