@@ -93,8 +93,6 @@ class Work < ActiveRecord::Base
 			from_remove = removeElement(line_number, false)
 			from_insert = insertElement(line_number, line_content, curr_note)
 			#to_add = nodeToCytoscapeHash(node)	
-		else	
-			#return toJSONOutput(self.nodes.first)
 		end
 
 		to_modify = formatHashForAJAX(from_insert, from_remove)
@@ -178,7 +176,7 @@ class Work < ActiveRecord::Base
 			to_modify[:remove_edges] = []
 			return to_modify
 
-		else
+		elsif first_char == '-'
 			if in_element != nil && in_element.is_a?(Note) #only use the in_el if it's not nil and the right type
 				new_note = in_element
 			else
@@ -206,6 +204,8 @@ class Work < ActiveRecord::Base
 			end
 			to_modify[:remove_edges] = []
 			return to_modify
+		else
+			return {}
 		end
 	end
 
