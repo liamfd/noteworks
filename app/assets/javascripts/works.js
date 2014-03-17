@@ -38,10 +38,14 @@ function upFunction(e){
 
   var text;
   currLine = getCurrentLine(el);
+  text = getLineText(prevLine);
+
+  console.log("currLine:" + currLine);
+  console.log("prevLine:" + prevLine);
+  console.log("text:" + text);
 
   if ((code < 37) || (code > 40)){ //if it's not an arrow key
     changes_made = true;
-    console.log("go time");
   }
 
 
@@ -85,6 +89,8 @@ function upFunction(e){
    // console.log("switched from " + prevLine + "to " + currLine);
   }
 
+
+  console.log("--------------");
   
   //delete never changes the LINE
   //if the key pressed wasn't an arrow or a del/backsp.
@@ -113,10 +119,10 @@ function upFunction(e){
 
 //function called on click. Gets the current line and sends it to checkChanged
 function clickFunction(e){
-  var currLine = getCurrentLine(this);
-  checkLineChanged(currLine);
-  if (this == undefined)
-    return;
+ // var currLine = getCurrentLine(this);
+//  checkLineChanged(currLine);
+//  if (this == undefined)
+//    return;
 }
 
 
@@ -282,7 +288,7 @@ function getCurrentLine(el){
     }
   }
   //if it's a newline...
-  console.log("currLine: " + currLine);
+  //console.log("currLine: " + currLine);
   return currLine;
 }
 
@@ -511,7 +517,7 @@ $(loadCy = function(){
 
 function EDgetLineText(currLine){
   var text = $('#editable').get(0).innerText;
-  console.log("currLine: " + currLine);
+  //console.log("currLine: " + currLine);
   if (currLine != 0){
     var lines = $("#editable > *");
     if (lines[currLine-1] != null)

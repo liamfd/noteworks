@@ -137,10 +137,11 @@ class Work < ActiveRecord::Base
 
 			#FIND CHILDREN
 			children = findElChildren(line_number, new_node.depth, ordering)
+			binding.pry
 			children.each do |child|
 				changeParent(child[:node], new_node) #make this return the link so you can add it
 			end
-
+			binding.pry
 			to_modify[:add_node] = new_node.toCytoscapeHash[:node]
 			to_modify[:add_edges] = new_node.toCytoscapeHash[:edges]
 			to_modify[:remove_edges] = []
@@ -229,7 +230,6 @@ class Work < ActiveRecord::Base
 		if el.is_a?(Node) #delete links to parents if it's a node
 			el.parent_relationships.delete_all
 		elsif el.is_a?(Note) #if it's a note, have its parents redo its notes
-			binding.pry
 			owner = el.node
 		end
 
@@ -299,6 +299,7 @@ class Work < ActiveRecord::Base
 
 			relation = child.parent_relationships.first #hierarchy relationship should always be first
 			if (parent != nil) #if there is a parent for it
+
 				if relation != nil #if it already has a parent relation. should be .any?
 					relation.parent_id = parent.id
 					relation.save
@@ -330,8 +331,12 @@ class Work < ActiveRecord::Base
 			if (parent != nil) #if it has a parent already
 				child.node_id = parent.id
 				child.save
-				parent.combine_notes
+				parent.notes << child
 				parent.save
+			#	binding.pry
+				parent.combine_notes
+			#	parent.save
+			#	binding.pry
 			else #if it doesn't have a parent, don't set it to anything
 				child.node_id = nil
 				child.save			
