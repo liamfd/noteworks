@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"combine",
+				"combine_notes"
+			],
+			[
+				"parent",
+				"parent"
+			],
+			[
+				"changes",
+				"changes_made"
+			],
+			[
+				"prev_parent",
+				"prev_parent_id"
+			],
+			[
 				"remove",
 				"remove_edges"
 			],
@@ -80,10 +96,6 @@
 				"relations"
 			],
 			[
-				"parent",
-				"parent_relationships"
-			],
-			[
 				"pare",
 				"parentNode"
 			],
@@ -130,10 +142,6 @@
 			[
 				"updat",
 				"update_attribute"
-			],
-			[
-				"combine",
-				"combine_notes"
 			],
 			[
 				"delete",
@@ -506,14 +514,6 @@
 			[
 				"sec",
 				"sectionTitle"
-			],
-			[
-				"background",
-				"background-color"
-			],
-			[
-				"marg",
-				"margin-right"
 			]
 		]
 	},
@@ -523,7 +523,7 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 18102,
+				"buffer_size": 18867,
 				"line_ending": "Unix"
 			}
 		},
@@ -531,7 +531,7 @@
 			"file": "app/assets/javascripts/works.js",
 			"settings":
 			{
-				"buffer_size": 22350,
+				"buffer_size": 22344,
 				"line_ending": "Unix"
 			}
 		},
@@ -555,15 +555,18 @@
 			"file": "app/views/works/_terminal.html.erb",
 			"settings":
 			{
-				"buffer_size": 638,
+				"buffer_size": 662,
 				"line_ending": "Unix"
 			}
 		},
 		{
+			"contents": "\n<h1>Listing nodes</h1>\n\n<table>\n  <thead>\n    <tr>\n      <th>Title</th>\n      <th>Category</th>\n      <th>Work</th>\n      <th>Type</th>\n      <th>Parent</th>\n    </tr>\n  </thead>\n\n  <tbody>\n    <% @work.nodes.each do |node| %>\n      <tr>\n        <td><%= node.title %></td>\n        <td><%= node.category.name %></td>\n        <td><%= node.work.name %></td>\n        <td><%= node.type %></td>\n        <% if node.parents.first != nil %>\n          <td><%= node.parents.first.title %></td>\n        <% end %>\n      </tr>\n    <% end %>\n  </tbody>\n</table>\n\n\n<div id=\"cy\"></div>\n",
 			"file": "app/views/works/_nodedisplay.html.erb",
+			"file_size": 570,
+			"file_write_time": 1395003932000000,
 			"settings":
 			{
-				"buffer_size": 594,
+				"buffer_size": 570,
 				"line_ending": "Unix"
 			}
 		},
@@ -792,6 +795,11 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"binding",
+			"getCurrent",
+			"console.log",
+			"binding.pry",
+			"Children",
 			"from_",
 			"add.node",
 			"add.edges",
@@ -914,12 +922,7 @@
 			"lines",
 			"\"notes",
 			"\"notes\"",
-			"\"notes",
-			"note_text",
-			"notes",
-			"note_text",
-			"font-size",
-			"content"
+			"\"notes"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -979,7 +982,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -987,15 +990,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 18102,
+						"buffer_size": 18867,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7578,
-								7578
+								2276,
+								2276
 							]
 						],
 						"settings":
@@ -1096,7 +1099,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 5326.0,
+						"translation.y": 1518.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1106,15 +1109,15 @@
 					"file": "app/assets/javascripts/works.js",
 					"settings":
 					{
-						"buffer_size": 22350,
+						"buffer_size": 22344,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1953,
-								1953
+								2721,
+								2721
 							]
 						],
 						"settings":
@@ -1216,7 +1219,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1040.0,
+						"translation.y": 759.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1233,8 +1236,8 @@
 						"selection":
 						[
 							[
-								1607,
-								1607
+								1179,
+								1179
 							]
 						],
 						"settings":
@@ -1336,7 +1339,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 867.0,
+						"translation.y": 138.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1456,7 +1459,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1518.0,
+						"translation.y": 1932.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1466,15 +1469,15 @@
 					"file": "app/views/works/_terminal.html.erb",
 					"settings":
 					{
-						"buffer_size": 638,
+						"buffer_size": 662,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								585,
-								585
+								661,
+								661
 							]
 						],
 						"settings":
@@ -1526,6 +1529,7 @@
 							"gjslint_options":
 							[
 							],
+							"incomplete_sync": null,
 							"javascript_linter": "jshint",
 							"jshint_options":
 							{
@@ -1585,15 +1589,15 @@
 					"file": "app/views/works/_nodedisplay.html.erb",
 					"settings":
 					{
-						"buffer_size": 594,
+						"buffer_size": 570,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								594,
-								594
+								570,
+								570
 							]
 						],
 						"settings":

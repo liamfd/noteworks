@@ -42,6 +42,7 @@ class Work < ActiveRecord::Base
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 		ordering = getOrdering
 
+		#bug if it goes from node to note, or anything else
 		if first_char == '<'
 			curr_node = getElementInOrdering(line_number, ordering)
 			#to_remove = nodeToCytoscapeHash(curr_node)
@@ -56,6 +57,9 @@ class Work < ActiveRecord::Base
 			from_remove = removeElement(line_number, false)
 			from_insert = insertElement(line_number, line_content, curr_note)
 			#to_add = nodeToCytoscapeHash(node)	
+		else
+			from_remove = removeElement(line_number, true)
+			from_insert = insertElement(line_number, line_content)
 		end
 
 		to_modify = formatHashForAJAX(from_insert, from_remove)
@@ -73,7 +77,10 @@ class Work < ActiveRecord::Base
 			new_el = Note.new
 		end
 		new_element_hash = insertElement(line_number, line_content, new_el)
-		return formatHashForAJAX(new_element_hash, {})
+		old_node_hash = {}
+		old_node_hash[:remove_node] = new_element_hash[:add_node]
+		old_node_hash[:remove_edges] = new_element_hash[:add_edges]
+		return formatHashForAJAX(new_element_hash, old_node_hash)
 	end
 
 	#to be called from the AJAX, takes removeElement's response and formats it
@@ -85,7 +92,11 @@ class Work < ActiveRecord::Base
 			return formatHashForAJAX({}, deleted_element_hash)
 		else
 			deleted_element_hash = removeElement(line_number, true)
-			return formatHashForAJAX(deleted_element_hash, deleted_element_hash)
+
+			add_hash = {}
+			add_hash[:add_node] = deleted_element_hash[:remove_node]
+			add_hash[:add_edges] = deleted_element_hash[:remove_edges]
+			return formatHashForAJAX(add_hash, deleted_element_hash)
 		end	
 	end
 
@@ -137,11 +148,10 @@ class Work < ActiveRecord::Base
 
 			#FIND CHILDREN
 			children = findElChildren(line_number, new_node.depth, ordering)
-			binding.pry
 			children.each do |child|
 				changeParent(child[:node], new_node) #make this return the link so you can add it
 			end
-			binding.pry
+
 			to_modify[:add_node] = new_node.toCytoscapeHash[:node]
 			to_modify[:add_edges] = new_node.toCytoscapeHash[:edges]
 			to_modify[:remove_edges] = []
@@ -178,6 +188,8 @@ class Work < ActiveRecord::Base
 			to_modify[:remove_edges] = []
 			return to_modify
 		else
+			ordering.insert(line_number, ObjectPlace.new("null", nil))
+			setOrder(ordering)
 			return {}
 		end
 	end
@@ -198,9 +210,19 @@ class Work < ActiveRecord::Base
 				remove_node = {}
 				remove_edges = []
 			end
-		else
-			remove_node = {}
-			remove_edges = []
+		else #if it's not formatted right
+			#remove_node = {}
+			#remove_edges = []
+
+			#update the ordering
+			ordering.delete_at(line_number)
+			setOrder(ordering)
+			
+			#update the markup
+			markup_lines = getMarkupLines
+			markup_lines.delete_at(line_number);
+			setMarkup(markup_lines);
+			return {}
 		end
 		add_edges = [] #this will be edited later
 
@@ -218,9 +240,6 @@ class Work < ActiveRecord::Base
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
 			new_parent = findElParent(child[:node].depth, child[:index], ordering)
-			#if child[:node].is_a?(Node)
-			#	new_rents = child[:node].parents.first
-			#end
 
 			#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
 			changeParent(child[:node], new_parent)
@@ -240,7 +259,6 @@ class Work < ActiveRecord::Base
 		if owner != nil
 			owner.combine_notes
 		end
-		binding.pry
 		to_modify[:remove_node] = remove_node
 		to_modify[:remove_edges] = remove_edges
 		to_modify[:add_edges] = add_edges
@@ -333,10 +351,7 @@ class Work < ActiveRecord::Base
 				child.save
 				parent.notes << child
 				parent.save
-			#	binding.pry
 				parent.combine_notes
-			#	parent.save
-			#	binding.pry
 			else #if it doesn't have a parent, don't set it to anything
 				child.node_id = nil
 				child.save			
@@ -377,9 +392,7 @@ class Work < ActiveRecord::Base
 		ordering = []
 		order_a.each do |o|
 			model = getTextFromRegexp(o, /([a-z]*)_/) #gets everything before underscore (only letters)
-			#model = o.match(/([a-z]*)_/).captures.first #gets everything before underscore (only letters)
 			id = getTextFromRegexp(o, /_([0-9]*)/) #gets everything after underscore (only digits)
-			#id = o.match(/_([0-9]*)/).captures.first.to_i #gets everything after underscore (only digits)
 			ordering.push(ObjectPlace.new(model, id))
 		end
 		return ordering
@@ -392,8 +405,10 @@ class Work < ActiveRecord::Base
 
 		if ordering[index].model == "node"
 			curr_el = Node.find(ordering[index].id)
-		else
+		elsif ordering[index].model == "note"
 			curr_el = Note.find(ordering[index].id)
+		elsif ordering[index].model == "null"
+			curr_el = nil
 		end #this should be a function. have to do it over and over
 		return curr_el
 	end
@@ -595,11 +610,20 @@ class Work < ActiveRecord::Base
 		#take care of the adding and removing nodes
 		to_modify = {}
 
+		#add nodes from both sources 
 		add_nodes = []
 		if (insert[:add_node] != nil)
 			add_nodes.append(insert[:add_node])#only comes from one, this'll probs change
 		end
+		if (remove[:add_node] != nil)
+			add_nodes.append(remove[:add_node])#only comes from one, this'll probs change
+		end
+
+		#remove nodes from both sources
 		remove_nodes = []
+		if (insert[:remove_node] != nil)
+			remove_nodes.append(insert[:remove_node])
+		end
 		if (remove[:remove_node] != nil)
 			remove_nodes.append(remove[:remove_node])
 		end

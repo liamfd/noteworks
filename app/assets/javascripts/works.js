@@ -17,9 +17,6 @@ $( document ).ready(function() {
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
   $ ('#work_markup').get(0).onkeyup= upFunction;
   $ ('#work_markup').get(0).onclick= clickFunction;
-  // $ ('#editable').get(0).onkeypress= EDpressFunction;
-  // $ ('#editable').get(0).onkeyup= EDupFunction;
-  // $ ('#editable').get(0).onclick= EDclickFunction;
 });
 
 
@@ -53,8 +50,8 @@ function upFunction(e){
     //the new line is always the current line. even if entering at the beginning, your generating a new line, 
     //and moving shit to it
 
-   // curr_text = getLineText(currLine);
-    //addElement(currLine, curr_text); //shouldn't do this, the line is blank, will be changed later
+    curr_text = getLineText(currLine);
+    addElement(currLine, curr_text); //shouldn't do this, the line is blank, will be changed later
     prev_text = getLineText(prevLine);
     updateElement(prevLine, prev_text);
 
@@ -91,28 +88,6 @@ function upFunction(e){
 
 
   console.log("--------------");
-  
-  //delete never changes the LINE
-  //if the key pressed wasn't an arrow or a del/backsp.
-  /*if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
-    currLine = getCurrentLine(el);
-    if (checkLineChanged(currLine)){
-      var text = getLineText(prevLine);
-      updateElement(prevLine, text);
-      prevLine = currLine;
-    }
-
-  }
-  else if (code == 13){
-    
-  }
-
-  else{
-    currLine = getCurrentLine(el);
-    checkLineChanged(currLine);
-  }
-*/
-
 
   return;
 }
@@ -138,6 +113,7 @@ $( document ).ready(function() {
 
 //ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
 function updateElement(line_num, text){
+  console.log("update");
   $.ajax({
     type:"GET",
     url:"mod_element",
@@ -151,6 +127,7 @@ function updateElement(line_num, text){
 
 //ajax call that takes in a line number and its text, and sends them to the addelement function in the works controller
 function addElement(line_num, text){
+  console.log("add");
   $.ajax({
     type:"GET",
     url:"add_element",
@@ -164,6 +141,7 @@ function addElement(line_num, text){
 
 //ajax call that takes in a line number and sends it to the delelement function in the works controller
 function delElement(line_num){
+  console.log("del");
   $.ajax({
     type:"GET",
     url:"del_element",
