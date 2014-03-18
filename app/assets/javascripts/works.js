@@ -52,6 +52,7 @@ function upFunction(e){
 
     curr_text = getLineText(currLine);
     addElement(currLine, curr_text); //shouldn't do this, the line is blank, will be changed later
+    
     prev_text = getLineText(prevLine);
     updateElement(prevLine, prev_text);
 
@@ -160,11 +161,65 @@ function modInGraph(data){
   
   //console.log("data=" + data);
   test_data = data;
-  var pos_y = 50; //these two will be random
-  var pos_x = 60;
+  var pos_y; //these two will be random
+  var pos_x;
+  var edge_id_string;
+
+
+  //delete the edges bieng modified (WILL PROBABLY DROP THIS)
+  for (i = 0; i < data.modify_edges.length; i++){
+    mod_edge = data.modify_edges[i];
+    if ((mod_edge != null) && (mod_edge != undefined)){
+      edge_id_string = "#" + mod_edge.id;
+      cy.remove(edge_id_string);
+    }
+  }
+
+  //modify the mod notes. Saves position, removes, adds back in with new data
+  var mod_node;
+  for (i = 0, len = data.modify_nodes.length; i < len; ++i){
+    mod_node = data.modify_nodes[i];
+    if ((mod_node != null) && (mod_node != undefined)){
+      //save the position, so the replacement can be set at it
+      var mod_graph_node = cy.$("#" + mod_node.id);
+      pos_x = mod_graph_node.position().x;
+      pos_y = mod_graph_node.position().y;
+    
+      cy.remove(mod_graph_node);
+      mod_node.id = mod_node.id.toString();
+      cy.add({
+        group: "nodes",
+        data: mod_node,
+        position:{ x: pos_x, y: pos_y}
+      }).addClass("starting");
+    
+    }
+  }
+
+  //add the edges being modified (WILL PROBABLY DROP THIS AS WELL)
+  for (i = 0; i < data.modify_edges.length; i++){
+    mod_edge = data.modify_edges[i];
+    console.log(add_edge);
+    if ((mod_edge != null) && (mod_edge != undefined)){
+      mod_edge.id = data.mod_edges[i].id.toString();
+      mod_edge.source = data.mod_edges[i].source.toString();
+      mod_edge.target = data.mod_edges[i].target.toString();
+      console.log(mod_edge);
+     
+      //maybe have this check instead that both nodes exist in the graph, otherwise you get an error
+      if ((mod_edge.source != undefined) && (mod_edge.target != undefined) && (mod_edge.id != undefined)){ //ignore if edge goes nowhere
+        cy.add({
+          group: "edges",
+          data: mod_edge
+        });
+      }
+    }
+  }
+
+  pos_y = 50; //these two will be random
+  pos_x = 60;
 
   //delete the edges
-  var edge_id_string;
   for (i = 0; i < data.remove_edges.length; i++){
     rem_edge = data.remove_edges[i];
     if ((rem_edge != null) && (rem_edge != undefined)){
@@ -180,8 +235,8 @@ function modInGraph(data){
     if ((rem_node != null) && (rem_node != undefined)){
       //save the position, so the replacement can be set at it
       var rem_graph_node = cy.$("#" + rem_node.id);
-      pos_x = rem_graph_node.position().x;
-      pos_y = rem_graph_node.position().y;
+      //pos_x = rem_graph_node.position().x;
+      //pos_y = rem_graph_node.position().y;
     
       cy.remove(rem_graph_node);
     }

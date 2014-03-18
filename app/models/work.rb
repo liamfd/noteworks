@@ -104,7 +104,7 @@ class Work < ActiveRecord::Base
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
 	#just don't send it on enter, make it wait, if it's done wrongly after leaving the line treat that accordinglyma
 	def insertElement(line_number, line_content, in_element=nil)
-		to_modify = {modify_nodes: [], modify_edges: [], remove_node: {}, remove_edges: [], add_node: {}, add_edges: []}
+		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		ordering = getOrdering
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
@@ -201,7 +201,7 @@ class Work < ActiveRecord::Base
 	end
 
 	def removeElement(line_number, del_obj=true)
-		to_modify = {modify_nodes: [], modify_edges: [], remove_node: {}, remove_edges: [], add_node: {}, add_edges: []}
+		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		ordering = getOrdering
 		el = getElementInOrdering(line_number, ordering)
@@ -209,13 +209,13 @@ class Work < ActiveRecord::Base
 			to_modify[:remove_node] = (el.toCytoscapeHash[:node])
 			to_modify[:remove_edges] = el.toCytoscapeHash[:edges]
 		elsif (el.is_a?(Note))
-			if el.node != nil
-				to_modify[:modify_nodes].append(el.node.toCytoscapeHash[:node])
-				to_modify[:modify_edges] = el.node.toCytoscapeHash[:edges]
-			else
+			#if el.node != nil
+			#	to_modify[:modify_nodes].append(el.node.toCytoscapeHash[:node])
+			#	to_modify[:modify_edges] = el.node.toCytoscapeHash[:edges]
+			#else
 				#remove_node = {}
 				#remove_edges = []
-			end
+			#end
 		else #if it's not formatted right
 			#remove_node = {}
 			#remove_edges = []
@@ -268,8 +268,10 @@ class Work < ActiveRecord::Base
 			el.delete
 		end
 
-		if owner != nil
+		if owner != nil #basically, if it's a note, and one that does have a parent
 			owner.combine_notes
+			to_modify[:modify_nodes].append(owner.toCytoscapeHash[:node])
+			to_modify[:modify_edges] = owner.toCytoscapeHash[:edges]
 		end
 		#to_modify[:remove_node] = remove_node
 		#to_modify[:remove_edges] = remove_edges
