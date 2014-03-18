@@ -146,15 +146,21 @@ class Work < ActiveRecord::Base
 			#	relation = Link.new(child_id: new_node.id, parent_id: nil, work_id:self.id) #empty initial relationship
 			end
 
+			remove_edges = []
 			#FIND CHILDREN
 			children = findElChildren(line_number, new_node.depth, ordering)
 			children.each do |child|
+				if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
+					old_parent_edge = child[:node].parent_relationships.first
+					remove_edges.append({ id: old_parent_edge.id, source: old_parent_edge.parent_id.to_s, target: old_parent_edge.child_id.to_s })
+				end
 				changeParent(child[:node], new_node) #make this return the link so you can add it
 			end
 
 			to_modify[:add_node] = new_node.toCytoscapeHash[:node]
 			to_modify[:add_edges] = new_node.toCytoscapeHash[:edges]
-			to_modify[:remove_edges] = []
+			to_modify[:remove_edges] = remove_edges
+
 			return to_modify
 
 		elsif first_char == '-'
@@ -285,6 +291,11 @@ class Work < ActiveRecord::Base
 		children = Array.new
 		i = index + 1
 		curr_el = getElementInOrdering(i, ordering)
+		while (curr_el == "null") #ignore nil elements
+			i = i+1
+			curr_el = getElementInOrdering(i, ordering)
+		end
+
 		if curr_el.is_a?(Node)
 			curr_child_depth = curr_el.depth
 		else #if it's a note, it can't have children, so arbitrary big depth that'll get rest on the first node
@@ -292,7 +303,7 @@ class Work < ActiveRecord::Base
 		end
 
 		while (curr_el != nil && el_depth < curr_el.depth) #until you find something of equal or lesser depth
-			puts curr_el
+
 			#basically, include it if it's nested deeper (therefore in this loop,) but don't go into children of what you find)
 			if curr_el.depth <= curr_child_depth && curr_el.is_a?(Node)
 				node_and_index = { node: curr_el, index: i}
@@ -301,13 +312,16 @@ class Work < ActiveRecord::Base
 			elsif curr_el.depth <= curr_child_depth && curr_el.is_a?(Note)
 				node_and_index = { node: curr_el, index: i}
 				children.push(node_and_index)
-				#this might solve the bug below curr_child_depth = 100000 
+				curr_child_depth = 100000 
 			end
 			#if there's an indented note after some nodes, it will likely get ignored
 
 			i = i+1
-			puts i
 			curr_el = getElementInOrdering(i, ordering)
+			while (curr_el == "null") #ignore nil elements
+				i = i+1
+				curr_el = getElementInOrdering(i, ordering)
+			end
 		end
 		return children
 	end
@@ -408,7 +422,7 @@ class Work < ActiveRecord::Base
 		elsif ordering[index].model == "note"
 			curr_el = Note.find(ordering[index].id)
 		elsif ordering[index].model == "null"
-			curr_el = nil
+			curr_el = "null"
 		end #this should be a function. have to do it over and over
 		return curr_el
 	end
