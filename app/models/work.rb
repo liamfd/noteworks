@@ -152,7 +152,9 @@ class Work < ActiveRecord::Base
 			children.each do |child|
 				if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
 					old_parent_edge = child[:node].parent_relationships.first
-					remove_edges.append({ id: old_parent_edge.id, source: old_parent_edge.parent_id.to_s, target: old_parent_edge.child_id.to_s })
+					if old_parent_edge != nil
+						remove_edges.append({ id: old_parent_edge.id, source: old_parent_edge.parent_id.to_s, target: old_parent_edge.child_id.to_s })
+					end
 				end
 				changeParent(child[:node], new_node) #make this return the link so you can add it
 			end
