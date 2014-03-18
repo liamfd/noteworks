@@ -93,11 +93,15 @@ class Work < ActiveRecord::Base
 			return formatHashForAJAX({}, deleted_element_hash)
 		else
 			deleted_element_hash = removeElement(line_number, true)
+			#deleted_element_hash[:modify_node] = deleted_element_hash[:remove_node]
+			#deleted_element_hash[:modify_edges] = deleted_element_hash[:remove_edges]
+			#deleted_element_hash[:remove_node] = {}
+			#deleted_element_hash[:remove_edges] = {}
 
-			add_hash = {}
-			add_hash[:add_node] = deleted_element_hash[:remove_node]
-			add_hash[:add_edges] = deleted_element_hash[:remove_edges]
-			return formatHashForAJAX(add_hash, deleted_element_hash)
+			#add_hash = {}
+			#add_hash[:add_node] = deleted_element_hash[:remove_node]
+			#add_hash[:add_edges] = deleted_element_hash[:remove_edges]
+			return formatHashForAJAX(deleted_element_hash,{})
 		end	
 	end
 
@@ -202,20 +206,21 @@ class Work < ActiveRecord::Base
 	end
 
 	def removeElement(line_number, del_obj=true)
-		to_modify = {}
+		to_modify = {modify_nodes: [], modify_edges: [], remove_node: {}, remove_edges: [], add_node: {}, add_edges: []}
 
 		ordering = getOrdering
 		el = getElementInOrdering(line_number, ordering)
 		if (el.is_a?(Node))
-			remove_node = el.toCytoscapeHash[:node]
-			remove_edges = el.toCytoscapeHash[:edges]
+			to_modify[:remove_node].append(el.toCytoscapeHash[:node])
+			to_modify[:remove_edges] += el.toCytoscapeHash[:edges]
 		elsif (el.is_a?(Note))
 			if el.node != nil
-				remove_node = el.node.toCytoscapeHash[:node]
-				remove_edges = el.node.toCytoscapeHash[:edges]
+				to_modify[:modify_nodes].append(el.node.toCytoscapeHash[:node]) #adding one
+				to_modify[:modify_edges] += el.node.toCytoscapeHash[:edges] #adding an array
+				binding.pry
 			else
-				remove_node = {}
-				remove_edges = []
+				#remove_node = {}
+				#remove_edges = []
 			end
 		else #if it's not formatted right
 			#remove_node = {}
@@ -231,7 +236,7 @@ class Work < ActiveRecord::Base
 			setMarkup(markup_lines);
 			return {}
 		end
-		add_edges = [] #this will be edited later
+		#add_edges = [] #this will be edited later
 
 		#find elements children, remove element, then redo the order
 		children = findElChildren(line_number, el.depth, ordering)
@@ -253,7 +258,7 @@ class Work < ActiveRecord::Base
 			if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
 				new_parent_edge = child[:node].parent_relationships.first
 				if (new_parent_edge != nil)
-					add_edges.append({ id: new_parent_edge.id, source: new_parent_edge.parent_id.to_s, target: new_parent_edge.child_id.to_s })
+					to_modify[:add_edges].append({ id: new_parent_edge.id, source: new_parent_edge.parent_id.to_s, target: new_parent_edge.child_id.to_s })
 				end
 			end
 		end
@@ -272,9 +277,9 @@ class Work < ActiveRecord::Base
 		if owner != nil
 			owner.combine_notes
 		end
-		to_modify[:remove_node] = remove_node
-		to_modify[:remove_edges] = remove_edges
-		to_modify[:add_edges] = add_edges
+		#to_modify[:remove_node] = remove_node
+		#to_modify[:remove_edges] = remove_edges
+		#to_modify[:add_edges] = add_edges
 		return to_modify
 	end
 
@@ -632,7 +637,16 @@ class Work < ActiveRecord::Base
 
 	def formatHashForAJAX(insert={}, remove={})
 		#take care of the adding and removing nodes
-		to_modify = {}
+		to_change = {}
+
+		#modify nodes from both sources 
+		modify_nodes = []
+		if (insert[:modify_nodes] != nil)
+			modify_nodes += insert[:modify_nodes]
+		end
+		if (remove[:modify_nodes] != nil)
+			modify_nodes += remove[:modify_nodes]
+		end
 
 		#add nodes from both sources 
 		add_nodes = []
@@ -650,6 +664,15 @@ class Work < ActiveRecord::Base
 		end
 		if (remove[:remove_node] != nil)
 			remove_nodes.append(remove[:remove_node])
+		end
+
+		#do the modify_edges from both sources
+		modify_edges = []
+		if (insert[:modify_edges] != nil)
+			modify_edges += insert[:modify_edges]
+		end
+		if (remove[:modify_edges] != nil)
+			modify_edges += remove[:modify_edges]
 		end
 
 		#do the add_edges from both sources
@@ -671,10 +694,12 @@ class Work < ActiveRecord::Base
 		end
 
 		#combine into the modify
-		to_modify[:add_nodes] = add_nodes
-		to_modify[:add_edges] = add_edges
-		to_modify[:remove_nodes] = remove_nodes
-		to_modify[:remove_edges] = remove_edges
-		return to_modify
+		to_change[:modify_nodes] = modify_nodes
+		to_change[:modify_edges] = modify_edges
+		to_change[:add_nodes] = add_nodes
+		to_change[:add_edges] = add_edges
+		to_change[:remove_nodes] = remove_nodes
+		to_change[:remove_edges] = remove_edges
+		return to_change
 	end
 end
