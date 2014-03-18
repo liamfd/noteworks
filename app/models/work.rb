@@ -77,10 +77,10 @@ class Work < ActiveRecord::Base
 			new_el = Note.new
 		end
 		new_element_hash = insertElement(line_number, line_content, new_el)
-		old_node_hash = {}
-		old_node_hash[:remove_node] = new_element_hash[:add_node]
-		old_node_hash[:remove_edges] = new_element_hash[:add_edges]
-		return formatHashForAJAX(new_element_hash, old_node_hash)
+		#old_node_hash = {}
+		#old_node_hash[:remove_node] = new_element_hash[:add_node]
+		#old_node_hash[:remove_edges] = new_element_hash[:add_edges]
+		return formatHashForAJAX(new_element_hash, {})
 	end
 
 	#to be called from the AJAX, takes removeElement's response and formats it
@@ -89,14 +89,9 @@ class Work < ActiveRecord::Base
 		el = getElementInOrdering(line_number, ordering)
 		if (el.is_a?(Node))
 			deleted_element_hash = removeElement(line_number, true)
-			binding.pry
 			return formatHashForAJAX({}, deleted_element_hash)
 		else
 			deleted_element_hash = removeElement(line_number, true)
-			#deleted_element_hash[:modify_node] = deleted_element_hash[:remove_node]
-			#deleted_element_hash[:modify_edges] = deleted_element_hash[:remove_edges]
-			#deleted_element_hash[:remove_node] = {}
-			#deleted_element_hash[:remove_edges] = {}
 
 			#add_hash = {}
 			#add_hash[:add_node] = deleted_element_hash[:remove_node]
@@ -109,7 +104,7 @@ class Work < ActiveRecord::Base
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
 	#just don't send it on enter, make it wait, if it's done wrongly after leaving the line treat that accordinglyma
 	def insertElement(line_number, line_content, in_element=nil)
-		to_modify = {}
+		to_modify = {modify_nodes: [], modify_edges: [], remove_node: {}, remove_edges: [], add_node: {}, add_edges: []}
 
 		ordering = getOrdering
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
@@ -193,10 +188,10 @@ class Work < ActiveRecord::Base
 				new_note.save
 			end
 			if parent_node != nil #if it actually has a parent
-				to_modify[:add_node] = parent_node.toCytoscapeHash[:node]
-				to_modify[:add_edges] = parent_node.toCytoscapeHash[:edges]
+				to_modify[:modify_nodes].append(parent_node.toCytoscapeHash[:node])
+				to_modify[:modify_edges] = parent_node.toCytoscapeHash[:edges]
 			end
-			to_modify[:remove_edges] = []
+			#to_modify[:remove_edges] = []
 			return to_modify
 		else
 			ordering.insert(line_number, ObjectPlace.new("null", nil))
@@ -211,13 +206,12 @@ class Work < ActiveRecord::Base
 		ordering = getOrdering
 		el = getElementInOrdering(line_number, ordering)
 		if (el.is_a?(Node))
-			to_modify[:remove_node].append(el.toCytoscapeHash[:node])
-			to_modify[:remove_edges] += el.toCytoscapeHash[:edges]
+			to_modify[:remove_node] = (el.toCytoscapeHash[:node])
+			to_modify[:remove_edges] = el.toCytoscapeHash[:edges]
 		elsif (el.is_a?(Note))
 			if el.node != nil
-				to_modify[:modify_nodes].append(el.node.toCytoscapeHash[:node]) #adding one
-				to_modify[:modify_edges] += el.node.toCytoscapeHash[:edges] #adding an array
-				binding.pry
+				to_modify[:modify_nodes].append(el.node.toCytoscapeHash[:node])
+				to_modify[:modify_edges] = el.node.toCytoscapeHash[:edges]
 			else
 				#remove_node = {}
 				#remove_edges = []
