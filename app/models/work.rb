@@ -89,6 +89,7 @@ class Work < ActiveRecord::Base
 		el = getElementInOrdering(line_number, ordering)
 		if (el.is_a?(Node))
 			deleted_element_hash = removeElement(line_number, true)
+			binding.pry
 			return formatHashForAJAX({}, deleted_element_hash)
 		else
 			deleted_element_hash = removeElement(line_number, true)
@@ -245,10 +246,16 @@ class Work < ActiveRecord::Base
 
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
-			new_parent = findElParent(child[:node].depth, child[:index], ordering)
 
+			new_parent = findElParent(child[:node].depth, child[:index], ordering)
 			#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
 			changeParent(child[:node], new_parent)
+			if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
+				new_parent_edge = child[:node].parent_relationships.first
+				if (new_parent_edge != nil)
+					add_edges.append({ id: new_parent_edge.id, source: new_parent_edge.parent_id.to_s, target: new_parent_edge.child_id.to_s })
+				end
+			end
 		end
 
 		owner = nil
@@ -335,9 +342,12 @@ class Work < ActiveRecord::Base
 				if relation != nil #if it already has a parent relation. should be .any?
 					relation.parent_id = parent.id
 					relation.save
+					child.save
+					parent.save
 				else #if it doesn't have a parent already
 					relation = Link.new(child_id: child.id, parent_id: parent.id, work_id: self.id)
 					relation.save
+					child.save
 				end
 				#parent.child_relationships << relation
 
@@ -373,7 +383,7 @@ class Work < ActiveRecord::Base
 
 			#update the notes of the other node, if it exists
 			if Node.exists?(prev_parent_id) #automatically false if nil, so if it has no prev_parent, works even if it thinks it does
-				prev_parent = Node.find(prev_parent_id) #BUG
+				prev_parent = Node.find(prev_parent_id)
 				prev_parent.combine_notes()
 				prev_parent.save
 			end
