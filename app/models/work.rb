@@ -146,17 +146,29 @@ class Work < ActiveRecord::Base
 			#	relation = Link.new(child_id: new_node.id, parent_id: nil, work_id:self.id) #empty initial relationship
 			end
 
+			owner_id = nil
 			remove_edges = []
 			#FIND CHILDREN
 			children = findElChildren(line_number, new_node.depth, ordering)
 			children.each do |child|
+				#removes the old edges
 				if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
 					old_parent_edge = child[:node].parent_relationships.first
 					if old_parent_edge != nil
 						remove_edges.append({ id: old_parent_edge.id, source: old_parent_edge.parent_id.to_s, target: old_parent_edge.child_id.to_s })
 					end
+				elsif child[:node].is_a?(Note)
+					owner_id = child[:node].node_id
 				end
-				changeParent(child[:node], new_node) #make this return the link so you can add it
+
+				#binding.pry
+				changeParent(child[:node], new_node)
+				#binding.pry
+				#updates the now changed parents if necessary
+				if owner_id != nil #if there's a real parent at the end, modify it in the graph
+					to_modify[:modify_nodes].append(Node.find(owner_id).toCytoscapeHash[:node])
+				end
+				owner_id = nil #resets it to make the above check false for non-nodes
 			end
 
 			to_modify[:add_node] = new_node.toCytoscapeHash[:node]
