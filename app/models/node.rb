@@ -45,7 +45,7 @@ class Node < ActiveRecord::Base
   end
 
     #look up how to do this with JSON objects in ruby
-  def toCytoscapeHash
+  def to_cytoscape_hash
     #add section
     toNode = {};
     toNode[:id] = self.id

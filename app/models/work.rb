@@ -26,7 +26,7 @@ class Work < ActiveRecord::Base
 	#bottom, private
   	def before_save_checker 
    		#if markup_changed?
-   		#	parseText
+   		#	parse_text
    		#end
    	#fix the infinite loop, then you can have this back
 	end
@@ -34,85 +34,85 @@ class Work < ActiveRecord::Base
 
 
 	#parser shit
-	def modifyElement(line_number, line_content)
+	def modify_element(line_number, line_content)
 		from_insert = {}
 		from_remove = {}
 		to_modify = {}
 
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
-		ordering = getOrdering
+		ordering = get_ordering
 
 		#bug if it goes from node to note, or anything else
 		if first_char == '<'
-			curr_node = getElementInOrdering(line_number, ordering)
+			curr_node = get_element_in_ordering(line_number, ordering)
 			#to_remove = nodeToCytoscapeHash(curr_node)
 			
-			from_remove = removeElement(line_number, false)
-			from_insert = insertElement(line_number, line_content, curr_node)
+			from_remove = remove_element(line_number, false)
+			from_insert = insert_element(line_number, line_content, curr_node)
 			#to_add = nodeToCytoscapeHash(node)
 		elsif first_char == '-'
-			curr_note = getElementInOrdering(line_number, ordering)
+			curr_note = get_element_in_ordering(line_number, ordering)
 			#to_remove = nodeToCytoscapeHash(curr_note.node)
 			
-			from_remove = removeElement(line_number, false)
-			from_insert = insertElement(line_number, line_content, curr_note)
+			from_remove = remove_element(line_number, false)
+			from_insert = insert_element(line_number, line_content, curr_note)
 			#to_add = nodeToCytoscapeHash(node)	
 		else
-			from_remove = removeElement(line_number, true)
-			from_insert = insertElement(line_number, line_content)
+			from_remove = remove_element(line_number, true)
+			from_insert = insert_element(line_number, line_content)
 		end
 
-		to_modify = formatHashForAJAX(from_insert, from_remove)
+		to_modify = format_hash_for_AJAX(from_insert, from_remove)
 
 		#return node
 		return to_modify
 	end
 
 	#to be called from the AJAX, takes insertNewElement's response and formats it
-	def addNewElement(line_number, line_content)
+	def add_new_element(line_number, line_content)
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 		if first_char == '<'
 			new_el = Node.new
 		else
 			new_el = Note.new
 		end
-		new_element_hash = insertElement(line_number, line_content, new_el)
+		new_element_hash = insert_element(line_number, line_content, new_el)
 		#old_node_hash = {}
 		#old_node_hash[:remove_node] = new_element_hash[:add_node]
 		#old_node_hash[:remove_edges] = new_element_hash[:add_edges]
-		return formatHashForAJAX(new_element_hash, {})
+		return format_hash_for_AJAX(new_element_hash, {})
 	end
 
-	#to be called from the AJAX, takes removeElement's response and formats it
-	def deleteElement(line_number)
-		ordering = getOrdering
-		el = getElementInOrdering(line_number, ordering)
+	#to be called from the AJAX, takes remove_element's response and formats it
+	def delete_element(line_number)
+		ordering = get_ordering
+		el = get_element_in_ordering(line_number, ordering)
 		if (el.is_a?(Node))
-			deleted_element_hash = removeElement(line_number, true)
-			return formatHashForAJAX({}, deleted_element_hash)
+			deleted_element_hash = remove_element(line_number, true)
+			return format_hash_for_AJAX({}, deleted_element_hash)
 		else
-			deleted_element_hash = removeElement(line_number, true)
+			deleted_element_hash = remove_element(line_number, true)
 
 			#add_hash = {}
 			#add_hash[:add_node] = deleted_element_hash[:remove_node]
 			#add_hash[:add_edges] = deleted_element_hash[:remove_edges]
-			return formatHashForAJAX(deleted_element_hash,{})
+			return format_hash_for_AJAX(deleted_element_hash,{})
 		end	
 	end
 
 	#shouldn't be called until the JS knows what type the new thing is
 	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
 	#just don't send it on enter, make it wait, if it's done wrongly after leaving the line treat that accordinglyma
-	def insertElement(line_number, line_content, in_element=nil)
+	def insert_element(line_number, line_content, in_element=nil)
 		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
-		ordering = getOrdering
+		ordering = get_ordering
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 
 		#update the markup
-		markup_lines = getMarkupLines
+		markup_lines = get_markup_lines
 		markup_lines.insert(line_number, line_content);
-		setMarkup(markup_lines);
+		set_markup(markup_lines);
 
 
 		if first_char == "<"
@@ -122,16 +122,16 @@ class Work < ActiveRecord::Base
 			else #to be safe, generally do a new one.
 				new_node = Node.new
 			end
-			buildNode(new_node, line_content)
+			build_node(new_node, line_content)
 			new_node.save
 
 			#update the ordering
 			ordering.insert(line_number, ObjectPlace.new("node", new_node.id))
-			setOrder(ordering)
+			set_order(ordering)
 
 			#FIND PARENT
 			if new_node.depth != 0 #if it's not a base element, give it a parent
-				parent_node = findElParent(new_node.depth, line_number, ordering)
+				parent_node = find_element_parent(new_node.depth, line_number, ordering)
 				if parent_node != nil #only give it a parent if it actually has one
 					relation = Link.new(child_id: new_node.id, parent_id: parent_node.id, work_id: self.id)
 					relation.save
@@ -149,7 +149,7 @@ class Work < ActiveRecord::Base
 			owner_id = nil
 			remove_edges = []
 			#FIND CHILDREN
-			children = findElChildren(line_number, new_node.depth, ordering)
+			children = find_element_children(line_number, new_node.depth, ordering)
 			children.each do |child|
 				#removes the old edges
 				if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
@@ -162,17 +162,17 @@ class Work < ActiveRecord::Base
 				end
 
 				#binding.pry
-				changeParent(child[:node], new_node)
+				change_parent(child[:node], new_node)
 				#binding.pry
 				#updates the now changed parents if necessary
 				if owner_id != nil #if there's a real parent at the end, modify it in the graph
-					to_modify[:modify_nodes].append(Node.find(owner_id).toCytoscapeHash[:node])
+					to_modify[:modify_nodes].append(Node.find(owner_id).to_cytoscape_hash[:node])
 				end
 				owner_id = nil #resets it to make the above check false for non-nodes
 			end
 
-			to_modify[:add_node] = new_node.toCytoscapeHash[:node]
-			to_modify[:add_edges] = new_node.toCytoscapeHash[:edges]
+			to_modify[:add_node] = new_node.to_cytoscape_hash[:node]
+			to_modify[:add_edges] = new_node.to_cytoscape_hash[:edges]
 			to_modify[:remove_edges] = remove_edges
 
 			return to_modify
@@ -184,13 +184,13 @@ class Work < ActiveRecord::Base
 				new_note = Note.new
 			end
 
-			buildNote(new_note, line_content)
+			build_note(new_note, line_content)
 			new_note.save
 			ordering.insert(line_number, ObjectPlace.new("note", new_note.id))
-			setOrder(ordering)
+			set_order(ordering)
 
 			#FIND PARENT
-			parent_node = findElParent(new_note.depth, line_number, ordering)
+			parent_node = find_element_parent(new_note.depth, line_number, ordering)
 			if parent_node != nil #if it has a parent, set it. ignore otherwise
 				new_note.node_id = parent_node.id
 				new_note.save
@@ -202,30 +202,30 @@ class Work < ActiveRecord::Base
 				new_note.save
 			end
 			if parent_node != nil #if it actually has a parent
-				to_modify[:modify_nodes].append(parent_node.toCytoscapeHash[:node])
-				to_modify[:modify_edges] = parent_node.toCytoscapeHash[:edges]
+				to_modify[:modify_nodes].append(parent_node.to_cytoscape_hash[:node])
+				to_modify[:modify_edges] = parent_node.to_cytoscape_hash[:edges]
 			end
 			#to_modify[:remove_edges] = []
 			return to_modify
 		else
 			ordering.insert(line_number, ObjectPlace.new("null", nil))
-			setOrder(ordering)
+			set_order(ordering)
 			return {}
 		end
 	end
 
-	def removeElement(line_number, del_obj=true)
+	def remove_element(line_number, del_obj=true)
 		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
-		ordering = getOrdering
-		el = getElementInOrdering(line_number, ordering)
+		ordering = get_ordering
+		el = get_element_in_ordering(line_number, ordering)
 		if (el.is_a?(Node))
-			to_modify[:remove_node] = (el.toCytoscapeHash[:node])
-			to_modify[:remove_edges] = el.toCytoscapeHash[:edges]
+			to_modify[:remove_node] = (el.to_cytoscape_hash[:node])
+			to_modify[:remove_edges] = el.to_cytoscape_hash[:edges]
 		elsif (el.is_a?(Note))
 			#if el.node != nil
-			#	to_modify[:modify_nodes].append(el.node.toCytoscapeHash[:node])
-			#	to_modify[:modify_edges] = el.node.toCytoscapeHash[:edges]
+			#	to_modify[:modify_nodes].append(el.node.to_cytoscape_hash[:node])
+			#	to_modify[:modify_edges] = el.node.to_cytoscape_hash[:edges]
 			#else
 				#remove_node = {}
 				#remove_edges = []
@@ -236,34 +236,34 @@ class Work < ActiveRecord::Base
 
 			#update the ordering
 			ordering.delete_at(line_number)
-			setOrder(ordering)
+			set_order(ordering)
 			
 			#update the markup
-			markup_lines = getMarkupLines
+			markup_lines = get_markup_lines
 			markup_lines.delete_at(line_number);
-			setMarkup(markup_lines);
+			set_markup(markup_lines);
 			return {}
 		end
 		#add_edges = [] #this will be edited later
 
 		#find elements children, remove element, then redo the order
-		children = findElChildren(line_number, el.depth, ordering)
+		children = find_element_children(line_number, el.depth, ordering)
 		#update the ordering
 		ordering.delete_at(line_number)
-		setOrder(ordering)
+		set_order(ordering)
 		
 		#update the markup
-		markup_lines = getMarkupLines
+		markup_lines = get_markup_lines
 		markup_lines.delete_at(line_number);
-		setMarkup(markup_lines);
+		set_markup(markup_lines);
 
 		owner_id = nil
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
-			new_parent = findElParent(child[:node].depth, child[:index], ordering)
+			new_parent = find_element_parent(child[:node].depth, child[:index], ordering)
 			
 			#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
-			changeParent(child[:node], new_parent)
+			change_parent(child[:node], new_parent)
 			if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
 				new_parent_edge = child[:node].parent_relationships.first
 				if (new_parent_edge != nil)
@@ -272,7 +272,7 @@ class Work < ActiveRecord::Base
 			end
 			#sets the graph to update the new parent nodes with their new note, who have just had their notes changed
 			if child[:node].is_a?(Note) && new_parent != nil #if there's a real parent at the end, modify it in the graph
-				to_modify[:modify_nodes].append(new_parent.toCytoscapeHash[:node])
+				to_modify[:modify_nodes].append(new_parent.to_cytoscape_hash[:node])
 			end
 			owner_id = nil #resets it to make the above check false for non-nodes
 		end
@@ -290,8 +290,8 @@ class Work < ActiveRecord::Base
 
 		if owner != nil #basically, if it's a note, and one that does have a parent
 			owner.combine_notes
-			to_modify[:modify_nodes].append(owner.toCytoscapeHash[:node])
-			to_modify[:modify_edges] = owner.toCytoscapeHash[:edges]
+			to_modify[:modify_nodes].append(owner.to_cytoscape_hash[:node])
+			to_modify[:modify_edges] = owner.to_cytoscape_hash[:edges]
 		end
 		#to_modify[:remove_node] = remove_node
 		#to_modify[:remove_edges] = remove_edges
@@ -300,7 +300,7 @@ class Work < ActiveRecord::Base
 	end
 
 	# works for node and note, both have depth
-	def findElParent(el_depth, index, ordering)
+	def find_element_parent(el_depth, index, ordering)
 		i = index - 1
 		while i >= 0 #until the beginning
 			if ordering[i].model == "node" #if it's a node, not just a note
@@ -315,13 +315,13 @@ class Work < ActiveRecord::Base
 	end
 
 	#returns a collection of all the children of an element at a line, given its line, a depth, and an ordering
-	def findElChildren(index, el_depth, ordering)
+	def find_element_children(index, el_depth, ordering)
 		children = Array.new
 		i = index + 1
-		curr_el = getElementInOrdering(i, ordering)
+		curr_el = get_element_in_ordering(i, ordering)
 		while (curr_el == "null") #ignore nil elements
 			i = i+1
-			curr_el = getElementInOrdering(i, ordering)
+			curr_el = get_element_in_ordering(i, ordering)
 		end
 
 		if curr_el.is_a?(Node)
@@ -345,16 +345,16 @@ class Work < ActiveRecord::Base
 			#if there's an indented note after some nodes, it will likely get ignored
 
 			i = i+1
-			curr_el = getElementInOrdering(i, ordering)
+			curr_el = get_element_in_ordering(i, ordering)
 			while (curr_el == "null") #ignore nil elements
 				i = i+1
-				curr_el = getElementInOrdering(i, ordering)
+				curr_el = get_element_in_ordering(i, ordering)
 			end
 		end
 		return children
 	end
 
-	def changeParent(child, parent)
+	def change_parent(child, parent)
 		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
 
 			relation = child.parent_relationships.first #hierarchy relationship should always be first
@@ -412,18 +412,18 @@ class Work < ActiveRecord::Base
 	end
 
 
-	def setMarkup(markup_lines)
+	def set_markup(markup_lines)
 		m = markup_lines.join("\r\n") #join with \r\n
 		self.update_attribute :markup, m
 	end
 
-	def getMarkupLines
+	def get_markup_lines
 		return markup.split(/\r\n|[\r\n]/) #match \r\n if present, if not either works
 	end
 
 
 	#takes an array ordering, converts it to the order string and saves
-	def setOrder(ordering)
+	def set_order(ordering)
 		o = ""
 		ordering.each do |obj_place|
 			o << (obj_place.model + "_" + obj_place.id.to_s + "///,")
@@ -432,7 +432,7 @@ class Work < ActiveRecord::Base
 	end
 	
 	#returns ordering array (elements of type ObjectPlace), based on the self.order string
-	def getOrdering
+	def get_ordering
 		order_a = self.order.split("///,") #o is the array of strings
 		ordering = []
 		order_a.each do |o|
@@ -443,7 +443,7 @@ class Work < ActiveRecord::Base
 		return ordering
 	end
 
-	def getElementInOrdering(index, ordering)
+	def get_element_in_ordering(index, ordering)
 		if index >= ordering.length
 			return nil
 		end
@@ -458,7 +458,7 @@ class Work < ActiveRecord::Base
 		return curr_el
 	end
 
-	def printOrdering(ordering)
+	def print_ordering(ordering)
 		ordering.each do |item|
 			if item.model == "node"
 				node = Node.find(item.id)
@@ -470,7 +470,7 @@ class Work < ActiveRecord::Base
 		end
 	end
 
-	def parseText
+	def parse_text
 		Node.destroy_all(work_id: self.id)
 		Link.destroy_all(work_id: self.id)
 
@@ -487,7 +487,7 @@ class Work < ActiveRecord::Base
 			#if a new node should be made
 			if first_char == '<'
 				new_node = Node.new
-				buildNode(new_node, line)
+				build_node(new_node, line)
 				new_node.save
 
 				#get the parent.
@@ -529,7 +529,7 @@ class Work < ActiveRecord::Base
 			#if it's a note
 			elsif first_char == '-'
 				new_note = Note.new()
-				buildNote(new_note, line)
+				build_note(new_note, line)
 
 				#this is a bug. it just gets attached to the previous node without regard for depth
 				parentNodeDepth = stack.pop
@@ -547,7 +547,7 @@ class Work < ActiveRecord::Base
 			else
 				#this currently does the same as the dash
 				new_note = Note.new()
-				buildNote(new_note, line)
+				build_note(new_note, line)
 				
 				parentNodeDepth = stack.pop
 				parentNode = Node.find(parentNodeDepth.node_idnum)
@@ -559,13 +559,13 @@ class Work < ActiveRecord::Base
 			end
 		end
 
-		#should fix this so I can get rid of populateOrdering, only works here because things are produced in order, can do it as I go
-		o = populateOrdering
-		setOrder(o)
+		#should fix this so I can get rid of populate_ordering, only works here because things are produced in order, can do it as I go
+		o = populate_ordering
+		set_order(o)
 	end
 
 	#builds a note, getting its parent, attaching its data, and then returns the note
-	def buildNote(note, text)
+	def build_note(note, text)
 		content = getTextFromRegexp(text, /-(.*)/)
 		#content = text.match(/-(.*)/).captures.first
 		note.body = content
@@ -578,7 +578,7 @@ class Work < ActiveRecord::Base
 	end
 
 	#builds a node (including type, title, category) and returns it
-	def buildNode(node, text)
+	def build_node(node, text)
 		withinBrackets = getTextFromRegexp(text, /(<.*>)/)
 		#withinBrackets = text.match(/<.*>/).to_s
 		
@@ -623,9 +623,9 @@ class Work < ActiveRecord::Base
 		return node
 	end
 
-	#fills ordering according to stored nodes and notes. OUTDATED, KEEPING FOR PARSETEXT, USE getOrdering
+	#fills ordering according to stored nodes and notes. OUTDATED, KEEPING FOR PARSETEXT, USE get_ordering
 	#this only works if the node ids line up to the order, so not if any inserted
-	def populateOrdering
+	def populate_ordering
 		ordering = Array.new
 		self.nodes.each do |node|
 			ordering.push(ObjectPlace.new("node", node.id))
@@ -651,7 +651,7 @@ class Work < ActiveRecord::Base
 		return wanted
 	end
 
-	def formatHashForAJAX(insert={}, remove={})
+	def format_hash_for_AJAX(insert={}, remove={})
 		#take care of the adding and removing nodes
 		to_change = {}
 
