@@ -257,10 +257,11 @@ class Work < ActiveRecord::Base
 		markup_lines.delete_at(line_number);
 		setMarkup(markup_lines);
 
+		owner_id = nil
 		#for each child, find their new parent according to the ordering, update the elements
 		children.each do |child|
-
 			new_parent = findElParent(child[:node].depth, child[:index], ordering)
+			
 			#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
 			changeParent(child[:node], new_parent)
 			if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
@@ -269,6 +270,11 @@ class Work < ActiveRecord::Base
 					to_modify[:add_edges].append({ id: new_parent_edge.id, source: new_parent_edge.parent_id.to_s, target: new_parent_edge.child_id.to_s })
 				end
 			end
+			#sets the graph to update the new parent nodes with their new note, who have just had their notes changed
+			if child[:node].is_a?(Note) && new_parent != nil #if there's a real parent at the end, modify it in the graph
+				to_modify[:modify_nodes].append(new_parent.toCytoscapeHash[:node])
+			end
+			owner_id = nil #resets it to make the above check false for non-nodes
 		end
 
 		owner = nil
