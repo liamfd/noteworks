@@ -2,10 +2,10 @@
 
 one:
   title: MyString
-  category_id: 
-  work_id: 
+  category: one
+  work: one
 
 two:
   title: MyString
-  category_id: 
-  work_id: 
+  category: two
+  work: two

@@ -1,11 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  markup: MyText
-  group_id: 
-  name: Mine
+  child_id: 
+  parent_id: 
 
 two:
-  markup: MyText
-  group_id: 
-  name: Other
+  child_id: 
+  parent_id: 

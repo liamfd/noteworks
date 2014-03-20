@@ -17,6 +17,10 @@ $( document ).ready(function() {
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
   $ ('#work_markup').get(0).onkeyup= upFunction;
   $ ('#work_markup').get(0).onclick= clickFunction;
+
+  var ele = gon.elements;
+  ele = JSON.stringify(ele);
+  $( ".test" ).text(ele);
 });
 
 
@@ -95,22 +99,12 @@ function upFunction(e){
 
 //function called on click. Gets the current line and sends it to checkChanged
 function clickFunction(e){
- // var currLine = getCurrentLine(this);
+  var currLine = getCurrentLine(this);
 //  checkLineChanged(currLine);
 //  if (this == undefined)
 //    return;
+  prevLine = currLine;
 }
-
-
-$( document ).ready(function() {
-    var ele = gon.elements;
-    ele = JSON.stringify(ele);
-    $( ".test" ).text(ele);
-
-    var lel = gon.elements;
-    $( ".test" ).text(JSON.stringify(lel));
-});
-
 
 //ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
 function updateElement(line_num, text){

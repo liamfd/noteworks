@@ -15,12 +15,6 @@ class Work < ActiveRecord::Base
          "Media"
 	]
 
-	def initialize
-		super
-  		@tester = "shoe"
-  		@ordering = []
- 	end
-
 	before_save :before_save_checker
 
 	#bottom, private
