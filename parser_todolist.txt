@@ -1,4 +1,0 @@
-MAKE IT NOT HAVE TO REDO
-	-compare lines
-	-keep two indices
-	-keep a copy of the old markup
