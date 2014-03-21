@@ -39,30 +39,82 @@ class Work < ActiveRecord::Base
 		curr_el = get_element_in_ordering(line_number, ordering);
 
 		#bug if it goes from node to note, or anything else
-		if first_char == '<'
+		if first_char == '<' 
 
 			if curr_el.is_a?(Node) #if it hasn't changed type, reuse it.
 				from_remove = remove_element(line_number, false)
-				from_insert = insert_element(line_number, line_content, curr_node)
-			else #if it's changed to another type
+				from_insert = insert_element(line_number, line_content, curr_el)
 
+				#consolidates these into remove
+				if from_remove[:remove_node][:id] == from_insert[:add_node][:id]
+					from_insert[:modify_nodes].append(from_insert[:add_node])
+					from_insert[:add_node] = {}
+					from_remove[:remove_node] = {}
+				end
+
+				#WHILE I SHOULD BE DOING THIS WITH THE EDGES, ADD/REMOVE IS THE SAME,
+				#AND IDEALLY THEY WILL BE UNNECESSARY WHEN THE JS IS PROPER, AS THE NODE
+				#WILL REMAIN ON MODIFY, EDGES CAN BE LEFT ALONE
+				#if from_insert[:add_edges] == from_remove[:remove_edges]
+				#	from_insert[:modify_edges] = from_insert[:add_edges]
+				#	from_insert[:add_edges] = []
+				#	from_remove[:remove_edges] = []
+				#end
+
+			#	puts "KEPT NODE NODE"
+			else #if it's changed to another type, delete what's there and make whatever it is
+				from_remove = remove_element(line_number, true)
+				from_insert = insert_element(line_number, line_content)
+			#	puts "CHANGED OTHER TO NODE"
 			end
 
 
-			curr_node = get_element_in_ordering(line_number, ordering)
+			#curr_node = get_element_in_ordering(line_number, ordering)
 			#to_remove = nodeToCytoscapeHash(curr_node)
 			
-			from_remove = remove_element(line_number, false)
-			from_insert = insert_element(line_number, line_content, curr_node)
+			#from_remove = remove_element(line_number, false)
+			#from_insert = insert_element(line_number, line_content, curr_node)
 			#to_add = nodeToCytoscapeHash(node)
 		elsif first_char == '-'
-			curr_note = get_element_in_ordering(line_number, ordering)
+			if curr_el.is_a?(Note) #if it hasn't changed type, reuse it.
+				from_remove = remove_element(line_number, false)
+				from_insert = insert_element(line_number, line_content, curr_el)
+
+				#consolidates these into remove
+				if from_remove[:remove_node][:id] == from_insert[:add_node][:id]
+					from_insert[:modify_nodes].append(from_insert[:add_node])
+					from_insert[:add_node] = {}
+					from_remove[:remove_node] = {}
+				end
+
+				#SEE ABOVE CAPSLOCKED COMMENT
+				#from_insert[:add_edges].zip(from_remove[:remove_edges]).each do |add_edge, rem_edge|
+				#	if ((add_edge[:source] == rem_edge[:source]) && (add_edge[:target] == rem_edge[:target]))
+				#		mod_edges << add_edge
+				#	end
+				#end
+
+				#if from_insert[:add_edges] == from_remove[:remove_edges]
+				#	from_insert[:modify_edges] = from_insert[:add_edges]
+				#	from_insert[:add_edges] = []
+				#	from_remove[:remove_edges] = []
+				#end
+
+			#	puts "KEPT NOTE NOTE"
+			else #if it's changed to another type, delete what's there and make whatever it is
+				from_remove = remove_element(line_number, true)
+				from_insert = insert_element(line_number, line_content)
+			#	puts "CHANGED OTHER TO NOTE"
+			end
+
+
+			#curr_note = get_element_in_ordering(line_number, ordering)
 			#to_remove = nodeToCytoscapeHash(curr_note.node)
 			
-			from_remove = remove_element(line_number, false)
-			from_insert = insert_element(line_number, line_content, curr_note)
+			#from_remove = remove_element(line_number, false)
+			#from_insert = insert_element(line_number, line_content, curr_note)
 			#to_add = nodeToCytoscapeHash(node)	
-		else
+		else #if it's not formatted right, you want to get rid of what's there and insert the null
 			from_remove = remove_element(line_number, true)
 			from_insert = insert_element(line_number, line_content)
 		end
