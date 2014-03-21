@@ -39,18 +39,17 @@ class Work < ActiveRecord::Base
 		curr_el = get_element_in_ordering(line_number, ordering);
 
 		#bug if it goes from node to note, or anything else
-		if first_char == '<' 
+		if first_char == '<' && curr_el.is_a?(Node)
 
-			if curr_el.is_a?(Node) #if it hasn't changed type, reuse it.
-				from_remove = remove_element(line_number, false)
-				from_insert = insert_element(line_number, line_content, curr_el)
+			from_remove = remove_element(line_number, false)
+			from_insert = insert_element(line_number, line_content, curr_el)
 
-				#consolidates these into remove
-				if from_remove[:remove_node][:id] == from_insert[:add_node][:id]
-					from_insert[:modify_nodes].append(from_insert[:add_node])
-					from_insert[:add_node] = {}
-					from_remove[:remove_node] = {}
-				end
+			#consolidates these into remove
+			if from_remove[:remove_node][:id] == from_insert[:add_node][:id]
+				from_insert[:modify_nodes].append(from_insert[:add_node])
+				from_insert[:add_node] = {}
+				from_remove[:remove_node] = {}
+			end
 
 				#WHILE I SHOULD BE DOING THIS WITH THE EDGES, ADD/REMOVE IS THE SAME,
 				#AND IDEALLY THEY WILL BE UNNECESSARY WHEN THE JS IS PROPER, AS THE NODE
@@ -60,61 +59,21 @@ class Work < ActiveRecord::Base
 				#	from_insert[:add_edges] = []
 				#	from_remove[:remove_edges] = []
 				#end
-
-			#	puts "KEPT NODE NODE"
-			else #if it's changed to another type, delete what's there and make whatever it is
-				from_remove = remove_element(line_number, true)
-				from_insert = insert_element(line_number, line_content)
-			#	puts "CHANGED OTHER TO NODE"
-			end
-
-
-			#curr_node = get_element_in_ordering(line_number, ordering)
-			#to_remove = nodeToCytoscapeHash(curr_node)
-			
-			#from_remove = remove_element(line_number, false)
-			#from_insert = insert_element(line_number, line_content, curr_node)
-			#to_add = nodeToCytoscapeHash(node)
-		elsif first_char == '-'
-			if curr_el.is_a?(Note) #if it hasn't changed type, reuse it.
-				from_remove = remove_element(line_number, false)
-				from_insert = insert_element(line_number, line_content, curr_el)
-
-				#consolidates these into remove
-				if from_remove[:remove_node][:id] == from_insert[:add_node][:id]
-					from_insert[:modify_nodes].append(from_insert[:add_node])
-					from_insert[:add_node] = {}
-					from_remove[:remove_node] = {}
-				end
-
-				#SEE ABOVE CAPSLOCKED COMMENT
 				#from_insert[:add_edges].zip(from_remove[:remove_edges]).each do |add_edge, rem_edge|
 				#	if ((add_edge[:source] == rem_edge[:source]) && (add_edge[:target] == rem_edge[:target]))
 				#		mod_edges << add_edge
 				#	end
 				#end
 
-				#if from_insert[:add_edges] == from_remove[:remove_edges]
-				#	from_insert[:modify_edges] = from_insert[:add_edges]
-				#	from_insert[:add_edges] = []
-				#	from_remove[:remove_edges] = []
-				#end
-
-			#	puts "KEPT NOTE NOTE"
-			else #if it's changed to another type, delete what's there and make whatever it is
-				from_remove = remove_element(line_number, true)
-				from_insert = insert_element(line_number, line_content)
-			#	puts "CHANGED OTHER TO NOTE"
-			end
-
-
-			#curr_note = get_element_in_ordering(line_number, ordering)
-			#to_remove = nodeToCytoscapeHash(curr_note.node)
-			
-			#from_remove = remove_element(line_number, false)
-			#from_insert = insert_element(line_number, line_content, curr_note)
-			#to_add = nodeToCytoscapeHash(node)	
-		else #if it's not formatted right, you want to get rid of what's there and insert the null
+ 		#if you have a note and are modding it
+		elsif first_char == '-' && curr_el.is_a?(Note)
+			from_remove = remove_element(line_number, false)
+			from_insert = insert_element(line_number, line_content, curr_el)
+			#consolidates these into remove
+		
+		#if it's not the same or not formatted right, you want to get rid of what's there 
+		#and insert whatever's appropriate
+		else 
 			from_remove = remove_element(line_number, true)
 			from_insert = insert_element(line_number, line_content)
 		end
@@ -718,56 +677,56 @@ class Work < ActiveRecord::Base
 
 		#modify nodes from both sources 
 		modify_nodes = []
-		if (insert[:modify_nodes] != nil)
-			modify_nodes += insert[:modify_nodes]
-		end
 		if (remove[:modify_nodes] != nil)
 			modify_nodes += remove[:modify_nodes]
+		end
+		if (insert[:modify_nodes] != nil)
+			modify_nodes += insert[:modify_nodes]
 		end
 
 		#add nodes from both sources 
 		add_nodes = []
-		if (insert[:add_node] != nil)
-			add_nodes.append(insert[:add_node])#only comes from one, this'll probs change
-		end
 		if (remove[:add_node] != nil)
 			add_nodes.append(remove[:add_node])#only comes from one, this'll probs change
+		end
+		if (insert[:add_node] != nil)
+			add_nodes.append(insert[:add_node])#only comes from one, this'll probs change
 		end
 
 		#remove nodes from both sources
 		remove_nodes = []
-		if (insert[:remove_node] != nil)
-			remove_nodes.append(insert[:remove_node])
-		end
 		if (remove[:remove_node] != nil)
 			remove_nodes.append(remove[:remove_node])
+		end
+		if (insert[:remove_node] != nil)
+			remove_nodes.append(insert[:remove_node])
 		end
 
 		#do the modify_edges from both sources
 		modify_edges = []
-		if (insert[:modify_edges] != nil)
-			modify_edges += insert[:modify_edges]
-		end
 		if (remove[:modify_edges] != nil)
 			modify_edges += remove[:modify_edges]
+		end
+		if (insert[:modify_edges] != nil)
+			modify_edges += insert[:modify_edges]
 		end
 
 		#do the add_edges from both sources
 		add_edges = []
-		if (insert[:add_edges] != nil)
-			add_edges += insert[:add_edges]
-		end
 		if (remove[:add_edges] != nil)
 			add_edges += remove[:add_edges]
+		end
+		if (insert[:add_edges] != nil)
+			add_edges += insert[:add_edges]
 		end
 
 		#do the remove edges from both sources
 		remove_edges = []
-		if (insert[:remove_edges] != nil)
-			remove_edges += insert[:remove_edges]
-		end
 		if (remove[:remove_edges] != nil)
 			remove_edges += remove[:remove_edges]
+		end
+		if (insert[:remove_edges] != nil)
+			remove_edges += insert[:remove_edges]
 		end
 
 		#combine into the modify
