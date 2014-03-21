@@ -33,9 +33,12 @@ function upFunction(e){
   var el = this;
   if (el == undefined)
     return;
+
   var curr_num_lines = getNumLines();
-  //console.log("curr_num_lines" + curr_num_lines);
-  //console.log("num_lines" + num_lines);
+  var num_lines_changed = num_lines - curr_num_lines;
+  console.log("curr_num_lines" + curr_num_lines);
+  console.log("num_lines" + num_lines);
+  console.log("num_lines_changed" + num_lines_changed);
 
   var text;
   currLine = getCurrentLine(el);
@@ -55,17 +58,19 @@ function upFunction(e){
     //and moving shit to it
 
     curr_text = getLineText(currLine);
-    addElement(currLine, curr_text); //shouldn't do this, the line is blank, will be changed later
+    //addElement(currLine, curr_text);
     
-    prev_text = getLineText(prevLine);
-    updateElement(prevLine, prev_text);
+    console.log("ENTER");
 
-    num_lines++;
+    prev_text = getLineText(prevLine); //in case a change is made on the previous line, before/after linebreak
+   // updateElement(prevLine, prev_text);
+
+    num_lines = curr_num_lines;
     prevLine = currLine; //The this doesn't get updated auto on enter
   }
 
   else if ((code == 8) && (curr_num_lines < num_lines)){ //if it's backspace and a whole line gone
-    delElement(prevLine);
+   // delElement(prevLine);
     num_lines--;
     prevLine = currLine;
     
@@ -83,10 +88,19 @@ function upFunction(e){
   else if (checkLineChanged(currLine)){ //otherwise, if I've just changed lines
     if (changes_made){ //if he's not just arrowing around
       text = getLineText(prevLine);
-      updateElement(prevLine, text);
+    //  updateElement(prevLine, text);
       console.log("doing shit!");
       changes_made = false;
     }
+
+
+    //starting at the line after the original spot, until the current spot (insertion ends)
+//    for (var i = prevLine+1; i <= currLine; i++){
+ //     curr_text = getLineText(i);
+     // addElement(i, curr_text);
+  //    console.log("Changing " , i);
+  //  }
+
     prevLine = currLine;
    // console.log("switched from " + prevLine + "to " + currLine);
   }

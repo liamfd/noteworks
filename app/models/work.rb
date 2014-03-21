@@ -36,8 +36,19 @@ class Work < ActiveRecord::Base
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 		ordering = get_ordering
 
+		curr_el = get_element_in_ordering(line_number, ordering);
+
 		#bug if it goes from node to note, or anything else
 		if first_char == '<'
+
+			if curr_el.is_a?(Node) #if it hasn't changed type, reuse it.
+				from_remove = remove_element(line_number, false)
+				from_insert = insert_element(line_number, line_content, curr_node)
+			else #if it's changed to another type
+
+			end
+
+
 			curr_node = get_element_in_ordering(line_number, ordering)
 			#to_remove = nodeToCytoscapeHash(curr_node)
 			
@@ -64,13 +75,13 @@ class Work < ActiveRecord::Base
 
 	#to be called from the AJAX, takes insertNewElement's response and formats it
 	def add_new_element(line_number, line_content)
-		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
-		if first_char == '<'
-			new_el = Node.new
-		else
-			new_el = Note.new
-		end
-		new_element_hash = insert_element(line_number, line_content, new_el)
+		#first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
+		#if first_char == '<'
+		#	new_el = Node.new
+		#else
+		#	new_el = Note.new
+		#end
+		new_element_hash = insert_element(line_number, line_content)
 		#old_node_hash = {}
 		#old_node_hash[:remove_node] = new_element_hash[:add_node]
 		#old_node_hash[:remove_edges] = new_element_hash[:add_edges]
@@ -79,19 +90,23 @@ class Work < ActiveRecord::Base
 
 	#to be called from the AJAX, takes remove_element's response and formats it
 	def delete_element(line_number)
-		ordering = get_ordering
-		el = get_element_in_ordering(line_number, ordering)
-		if (el.is_a?(Node))
-			deleted_element_hash = remove_element(line_number, true)
-			return format_hash_for_AJAX({}, deleted_element_hash)
-		else
-			deleted_element_hash = remove_element(line_number, true)
+		#ordering = get_ordering
+		#el = get_element_in_ordering(line_number, ordering)
+		deleted_element_hash = remove_element(line_number, true)
+		return format_hash_for_AJAX({}, deleted_element_hash)
+		
+
+		#if (el.is_a?(Node))
+	#		deleted_element_hash = remove_element(line_number, true)
+	#		return format_hash_for_AJAX({}, deleted_element_hash)
+	#	else
+	#		deleted_element_hash = remove_element(line_number, true)
 
 			#add_hash = {}
 			#add_hash[:add_node] = deleted_element_hash[:remove_node]
 			#add_hash[:add_edges] = deleted_element_hash[:remove_edges]
-			return format_hash_for_AJAX(deleted_element_hash,{})
-		end	
+	#		return format_hash_for_AJAX(deleted_element_hash,{})
+	#	end	
 	end
 
 	#shouldn't be called until the JS knows what type the new thing is
