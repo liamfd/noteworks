@@ -105,10 +105,16 @@ class Work < ActiveRecord::Base
 	end
 
 	#to be called from the AJAX, takes remove_element's response and formats it
-	def delete_element(line_number)
+	def delete_element(lines_number)
 		#ordering = get_ordering
 		#el = get_element_in_ordering(line_number, ordering)
-		deleted_element_hash = remove_element(line_number, true)
+		deleted_element_hash = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+
+		lines_number.each do |number|
+			deleted_element_hash = deleted_element_hash.merge(remove_element(number))
+		end
+
+		#deleted_element_hash = remove_element(line_number, true)
 		return format_hash_for_AJAX({}, deleted_element_hash)
 		
 
