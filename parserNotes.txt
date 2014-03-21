@@ -1,9 +1,0 @@
-strings in quotation marks (either type)
-
-<type title -category > (ignore spaces)
-originally, parse the whole thing.
-eventually, parse only the last element changed, move up to it's title line, everything below that
-
-highlight the type, category and title in special colors 
-use indentation
- 
