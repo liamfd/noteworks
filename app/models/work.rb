@@ -44,7 +44,7 @@ class Work < ActiveRecord::Base
 			from_remove = remove_element(line_number, false)
 			from_insert = insert_element(line_number, line_content, curr_el)
 
-			#consolidates these into remove
+			#consolidates these into modify in insert
 			if from_remove[:remove_node][:id] == from_insert[:add_node][:id]
 				from_insert[:modify_nodes].append(from_insert[:add_node])
 				from_insert[:add_node] = {}
@@ -69,7 +69,6 @@ class Work < ActiveRecord::Base
 		elsif first_char == '-' && curr_el.is_a?(Note)
 			from_remove = remove_element(line_number, false)
 			from_insert = insert_element(line_number, line_content, curr_el)
-			#consolidates these into remove
 		
 		#if it's not the same or not formatted right, you want to get rid of what's there 
 		#and insert whatever's appropriate
@@ -85,14 +84,20 @@ class Work < ActiveRecord::Base
 	end
 
 	#to be called from the AJAX, takes insertNewElement's response and formats it
-	def add_new_element(line_number, line_content)
+	def add_new_element(lines_number, lines_content)
 		#first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 		#if first_char == '<'
 		#	new_el = Node.new
 		#else
 		#	new_el = Note.new
 		#end
-		new_element_hash = insert_element(line_number, line_content)
+		new_element_hash = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		lines_number.zip(lines_content).each do |number, content|
+			binding.pry
+			new_element_hash = new_element_hash.merge(insert_element(number, content))
+		end
+
+		#new_element_hash = insert_element(line_number, line_content)
 		#old_node_hash = {}
 		#old_node_hash[:remove_node] = new_element_hash[:add_node]
 		#old_node_hash[:remove_edges] = new_element_hash[:add_edges]
