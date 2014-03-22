@@ -190,6 +190,12 @@ class Work < ActiveRecord::Base
 					end
 				elsif child[:node].is_a?(Note)
 					owner_id = child[:node].node_id
+				elsif child[:node].is_a?(LinkCollection)
+					binding.pry
+					#if it's a link collection, remove all those links, gonna reassign
+					LinkCollection.links.each do |link|
+						remove_edges.append({ id: link.id, source: link.parent_id.to_s, target: link.child_id.to_s })
+					end
 				end
 
 				#binding.pry
@@ -484,7 +490,7 @@ class Work < ActiveRecord::Base
 
 		elsif child.is_a?(Note)
 			prev_parent_id = child.node_id
-			if (parent != nil) #if it has a parent already
+			if (parent != nil) #if it has a new parent parent already
 				child.node_id = parent.id
 				child.save
 				parent.notes << child
@@ -500,6 +506,17 @@ class Work < ActiveRecord::Base
 				prev_parent = Node.find(prev_parent_id)
 				prev_parent.combine_notes()
 				prev_parent.save
+			end
+		
+		elsif child.is_a?(LinkCollection)
+			if (parent != nil) #if it has a new parent
+				child.links.each do |link| #reassign its links to that parent
+					link.change_parent(parent)
+				end
+			else #if a new parent wasn't found for it
+				child.links.each do |link| #reassign its links to nil
+					link.change_parent(nil)
+				end
 			end
 		end
 	end

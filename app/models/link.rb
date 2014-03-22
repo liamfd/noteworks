@@ -13,4 +13,12 @@ class Link < ActiveRecord::Base
     weight: "#{1}"
     }
   end
+
+  def change_child(new_child)
+    self.update_attributes(child_id: new_child_id)
+  end
+
+  def change_parent(new_parent)
+    self.update_attributes(parent_id: new_parent_id)
+  end
 end
