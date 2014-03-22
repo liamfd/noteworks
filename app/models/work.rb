@@ -250,7 +250,7 @@ class Work < ActiveRecord::Base
 			set_order(ordering)
 			parent_node = find_element_parent(link_coll_depth, line_number, ordering)
 
-			if parent_node != nil
+			if parent_node != nil #only create these if it does have that parent
 				link_coll = parent_node.link_collections.build
 				#link_coll.node = parent_node
 				#parent_node.link_colls << link_coll
@@ -260,8 +260,12 @@ class Work < ActiveRecord::Base
 
 				link_coll.depth = link_coll_depth
 				link_coll.save
+			
 				#update id in ordering
+				ordering[line_number].id = link_coll.id
+				set_order(ordering)
 			end
+
 			return {}
 
 
@@ -336,52 +340,39 @@ class Work < ActiveRecord::Base
 			markup_lines.delete_at(line_number);
 			set_markup(markup_lines);
 
+			#save the owning node of this note, delete the note, then redo the owner's notes
+			owner = el.node
 			if del_obj #delete unless explicitly told not to (when it's called from modify)
 				el.delete
 			end
-			owner = el.node
+
 			owner.combine_notes
 			to_modify[:modify_nodes].append(owner.to_cytoscape_hash[:node])
 			to_modify[:modify_edges] = owner.to_cytoscape_hash[:edges]
 		
-		else #if it's not formatted right
-			#remove_node = {}
-			#remove_edges = []
-
+		elsif (el.is_a?(LinkCollection))
+			#binding.pry
 			#update the ordering
 			ordering.delete_at(line_number)
 			set_order(ordering)
-			
+		
 			#update the markup
 			markup_lines = get_markup_lines
 			markup_lines.delete_at(line_number);
 			set_markup(markup_lines);
-			return {}
-		end
 
-		if del_obj #delete unless explicitly told not to (when it's called from modify)
-			el.delete
-		end
+			binding.pry
 
-		return to_modify
-	end
-
-	def b_remove_element(line_number, del_obj=true)
-		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
-
-		ordering = get_ordering
-		el = get_element_in_ordering(line_number, ordering)
-		if (el.is_a?(Node))
-			to_modify[:remove_node] = (el.to_cytoscape_hash[:node])
-			to_modify[:remove_edges] = el.to_cytoscape_hash[:edges]
-		elsif (el.is_a?(Note))
-			#if el.node != nil
-			#	to_modify[:modify_nodes].append(el.node.to_cytoscape_hash[:node])
-			#	to_modify[:modify_edges] = el.node.to_cytoscape_hash[:edges]
-			#else
-				#remove_node = {}
-				#remove_edges = []
+			#el.links.each do |link|
+			#	Link.find(link.id).destroy
 			#end
+			#el.links.destroy_all#inform the nodes of this
+			#binding.pry
+			if del_obj #delete unless explicitly told not to (when it's called from modify)
+				el.destroy
+			end
+			binding.pry
+
 		else #if it's not formatted right
 			#remove_node = {}
 			#remove_edges = []
@@ -396,59 +387,8 @@ class Work < ActiveRecord::Base
 			set_markup(markup_lines);
 			return {}
 		end
-		#add_edges = [] #this will be edited later
 
-		#find elements children, remove element, then redo the order
-		children = find_element_children(line_number, el.depth, ordering)
-	
-		#update the ordering
-		ordering.delete_at(line_number)
-		set_order(ordering)
-		
-		#update the markup
-		markup_lines = get_markup_lines
-		markup_lines.delete_at(line_number);
-		set_markup(markup_lines);
 
-		owner_id = nil
-		#for each child, find their new parent according to the ordering, update the elements
-		children.each do |child|
-			new_parent = find_element_parent(child[:node].depth, child[:index], ordering)
-			
-			#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
-			change_parent(child[:node], new_parent)
-			if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
-				new_parent_edge = child[:node].parent_relationships.first
-				if (new_parent_edge != nil)
-					to_modify[:add_edges].append({ id: new_parent_edge.id, source: new_parent_edge.parent_id.to_s, target: new_parent_edge.child_id.to_s })
-				end
-			end
-			#sets the graph to update the new parent nodes with their new note, who have just had their notes changed
-			if child[:node].is_a?(Note) && new_parent != nil #if there's a real parent at the end, modify it in the graph
-				to_modify[:modify_nodes].append(new_parent.to_cytoscape_hash[:node])
-			end
-			owner_id = nil #resets it to make the above check false for non-nodes
-		end
-
-		owner = nil
-		if el.is_a?(Node) #delete links to parents if it's a node
-			el.parent_relationships.delete_all
-		elsif el.is_a?(Note) #if it's a note, have its parents redo its notes
-			owner = el.node
-		end
-
-		if del_obj #delete unless explicitly told not to (when it's called from modify)
-			el.delete
-		end
-
-		if owner != nil #basically, if it's a note, and one that does have a parent
-			owner.combine_notes
-			to_modify[:modify_nodes].append(owner.to_cytoscape_hash[:node])
-			to_modify[:modify_edges] = owner.to_cytoscape_hash[:edges]
-		end
-		#to_modify[:remove_node] = remove_node
-		#to_modify[:remove_edges] = remove_edges
-		#to_modify[:add_edges] = add_edges
 		return to_modify
 	end
 
@@ -605,10 +545,12 @@ class Work < ActiveRecord::Base
 			curr_el = Node.find(ordering[index].id)
 		elsif ordering[index].model == "note"
 			curr_el = Note.find(ordering[index].id)
-			
+		elsif ordering[index].model == "lcoll"
+			curr_el = LinkCollection.find(ordering[index].id)
+
 		elsif ordering[index].model == "null"
 			curr_el = "null"
-		end #this should be a function. have to do it over and over
+		end
 		return curr_el
 	end
 
@@ -895,5 +837,93 @@ class Work < ActiveRecord::Base
 		to_change[:remove_nodes] = remove_nodes
 		to_change[:remove_edges] = remove_edges
 		return to_change
+	end
+
+
+
+	def b_remove_element(line_number, del_obj=true)
+		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+
+		ordering = get_ordering
+		el = get_element_in_ordering(line_number, ordering)
+		if (el.is_a?(Node))
+			to_modify[:remove_node] = (el.to_cytoscape_hash[:node])
+			to_modify[:remove_edges] = el.to_cytoscape_hash[:edges]
+		elsif (el.is_a?(Note))
+			#if el.node != nil
+			#	to_modify[:modify_nodes].append(el.node.to_cytoscape_hash[:node])
+			#	to_modify[:modify_edges] = el.node.to_cytoscape_hash[:edges]
+			#else
+				#remove_node = {}
+				#remove_edges = []
+			#end
+		else #if it's not formatted right
+			#remove_node = {}
+			#remove_edges = []
+
+			#update the ordering
+			ordering.delete_at(line_number)
+			set_order(ordering)
+			
+			#update the markup
+			markup_lines = get_markup_lines
+			markup_lines.delete_at(line_number);
+			set_markup(markup_lines);
+			return {}
+		end
+		#add_edges = [] #this will be edited later
+
+		#find elements children, remove element, then redo the order
+		children = find_element_children(line_number, el.depth, ordering)
+	
+		#update the ordering
+		ordering.delete_at(line_number)
+		set_order(ordering)
+		
+		#update the markup
+		markup_lines = get_markup_lines
+		markup_lines.delete_at(line_number);
+		set_markup(markup_lines);
+
+		owner_id = nil
+		#for each child, find their new parent according to the ordering, update the elements
+		children.each do |child|
+			new_parent = find_element_parent(child[:node].depth, child[:index], ordering)
+			
+			#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
+			change_parent(child[:node], new_parent)
+			if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
+				new_parent_edge = child[:node].parent_relationships.first
+				if (new_parent_edge != nil)
+					to_modify[:add_edges].append({ id: new_parent_edge.id, source: new_parent_edge.parent_id.to_s, target: new_parent_edge.child_id.to_s })
+				end
+			end
+			#sets the graph to update the new parent nodes with their new note, who have just had their notes changed
+			if child[:node].is_a?(Note) && new_parent != nil #if there's a real parent at the end, modify it in the graph
+				to_modify[:modify_nodes].append(new_parent.to_cytoscape_hash[:node])
+			end
+			owner_id = nil #resets it to make the above check false for non-nodes
+		end
+
+		owner = nil
+		if el.is_a?(Node) #delete links to parents if it's a node
+			el.parent_relationships.delete_all
+		elsif el.is_a?(Note) #if it's a note, have its parents redo its notes
+			owner = el.node
+		end
+
+		if del_obj #delete unless explicitly told not to (when it's called from modify)
+			el.delete
+		end
+
+		if owner != nil #basically, if it's a note, and one that does have a parent
+			owner.combine_notes
+			to_modify[:modify_nodes].append(owner.to_cytoscape_hash[:node])
+			to_modify[:modify_edges] = owner.to_cytoscape_hash[:edges]
+		end
+		#to_modify[:remove_node] = remove_node
+		#to_modify[:remove_edges] = remove_edges
+		#to_modify[:add_edges] = add_edges
+		return to_modify
 	end
 end

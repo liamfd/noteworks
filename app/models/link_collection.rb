@@ -1,6 +1,6 @@
 class LinkCollection < ActiveRecord::Base
   belongs_to :node, inverse_of: :link_collections
-  has_many :links, inverse_of: :link_collection
+  has_many :links, inverse_of: :link_collection, dependent: :destroy
 
   def set_links(text)
   	
