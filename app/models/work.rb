@@ -430,13 +430,13 @@ class Work < ActiveRecord::Base
 		end
 
 		while (curr_el != nil && el_depth < curr_el.depth) #until you find something of equal or lesser depth
-
 			#basically, include it if it's nested deeper (therefore in this loop,) but don't go into children of what you find)
 			if curr_el.depth <= curr_child_depth && curr_el.is_a?(Node)
 				node_and_index = { node: curr_el, index: i}
 				children.push(node_and_index)
 				curr_child_depth = curr_el.depth
-			elsif curr_el.depth <= curr_child_depth && curr_el.is_a?(Note)
+			elsif curr_el.depth <= curr_child_depth && (curr_el.is_a?(Note) || curr_el.is_a?(LinkCollection))
+				binding.pry
 				node_and_index = { node: curr_el, index: i}
 				children.push(node_and_index)
 				curr_child_depth = 100000 
@@ -509,6 +509,7 @@ class Work < ActiveRecord::Base
 			end
 		
 		elsif child.is_a?(LinkCollection)
+			binding.pry
 			if (parent != nil) #if it has a new parent
 				child.links.each do |link| #reassign its links to that parent
 					link.change_parent(parent)
