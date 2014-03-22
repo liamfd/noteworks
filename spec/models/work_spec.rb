@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe Work do
 	it "can be instantiated" do
-    	Work.new.should be_an_instance_of(Work)
+    	expect(Work.new).to be_an_instance_of(Work)
   	end
 
-  	describe modify_element do
+  	describe 'modify_element' do
 
   		before :each do
   		end

@@ -3,7 +3,8 @@ class Link < ActiveRecord::Base
   belongs_to :parent, class_name: :Node
 
   belongs_to :work
-  #validates :work_id, presence: true
+  belongs_to :link_collection, inverse_of: :links
+ # validates :work_id, presence: true
 
   def as_json(*args)
     {

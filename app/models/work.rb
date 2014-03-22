@@ -2,7 +2,7 @@ class Work < ActiveRecord::Base
 	belongs_to :group
 
 	has_many :nodes, dependent: :destroy
-	has_many :links
+	has_many :links, dependent: :destroy
 
 	ObjectPlace = Struct.new(:model, :id)
 	NodeDepth = Struct.new(:node_idnum, :depth)
@@ -36,10 +36,11 @@ class Work < ActiveRecord::Base
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
 		ordering = get_ordering
 
+		ordering_el = ordering[line_number]
 		curr_el = get_element_in_ordering(line_number, ordering);
 
 		#bug if it goes from node to note, or anything else
-		if first_char == '<' && curr_el.is_a?(Node)
+		if first_char == '<' && ordering_el.model == "node" && curr_el.is_a?(Node)
 
 			from_remove = remove_element(line_number, false)
 			from_insert = insert_element(line_number, line_content, curr_el)
@@ -66,7 +67,7 @@ class Work < ActiveRecord::Base
 				#end
 
  		#if you have a note and are modding it
-		elsif first_char == '-' && curr_el.is_a?(Note)
+		elsif first_char == '-' && ordering_el.model == "note" && curr_el.is_a?(Note)
 			from_remove = remove_element(line_number, false)
 			from_insert = insert_element(line_number, line_content, curr_el)
 		
@@ -93,7 +94,6 @@ class Work < ActiveRecord::Base
 		#end
 		new_element_hash = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		lines_number.zip(lines_content).each do |number, content|
-			binding.pry
 			new_element_hash = new_element_hash.merge(insert_element(number, content))
 		end
 
@@ -238,6 +238,42 @@ class Work < ActiveRecord::Base
 			end
 			#to_modify[:remove_edges] = []
 			return to_modify
+	
+
+		elsif first_char == ':'
+			#build link collection
+			#link_coll = self.link_collections.build
+			whitespace = getTextFromRegexp(line_content, /(.*):/)
+			link_coll_depth = (whitespace.length)/3 #+2?
+
+			ordering.insert(line_number, ObjectPlace.new("lcoll", nil))
+			set_order(ordering)
+			parent_node = find_element_parent(link_coll_depth, line_number, ordering)
+
+			if parent_node != nil
+				link_coll = parent_node.link_collections.build
+				#link_coll.node = parent_node
+				#parent_node.link_colls << link_coll
+				
+				link_names = getTextFromRegexp(line_content, /:(.*)/)
+				link_coll.set_links(link_names)
+
+				link_coll.depth = link_coll_depth
+				link_coll.save
+				#update id in ordering
+			end
+			return {}
+
+
+			#link_names = line_content.split(",")
+			#link_names.each do |link_name|
+			#	link_coll.add_link(link_name)
+			#end
+			#link_coll.set_links()
+
+			#when breaking ties with old parent, give it the list of links, have it destroy
+			#all with matching ids, then add those all to the new parent?
+
 		else
 			ordering.insert(line_number, ObjectPlace.new("null", nil))
 			set_order(ordering)
@@ -483,6 +519,7 @@ class Work < ActiveRecord::Base
 			curr_el = Node.find(ordering[index].id)
 		elsif ordering[index].model == "note"
 			curr_el = Note.find(ordering[index].id)
+			
 		elsif ordering[index].model == "null"
 			curr_el = "null"
 		end #this should be a function. have to do it over and over

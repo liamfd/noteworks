@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140228162704) do
+ActiveRecord::Schema.define(version: 20140322161758) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
@@ -20,15 +20,28 @@ ActiveRecord::Schema.define(version: 20140228162704) do
     t.string   "color"
   end
 
+  create_table "link_collections", force: true do |t|
+    t.integer  "node_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "depth"
+    t.integer  "work_id"
+  end
+
+  add_index "link_collections", ["node_id"], name: "index_link_collections_on_node_id"
+  add_index "link_collections", ["work_id"], name: "index_link_collections_on_work_id"
+
   create_table "links", force: true do |t|
     t.integer  "child_id"
     t.integer  "parent_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "work_id"
+    t.integer  "link_collection_id"
   end
 
   add_index "links", ["child_id"], name: "index_links_on_child_id"
+  add_index "links", ["link_collection_id"], name: "index_links_on_link_collection_id"
   add_index "links", ["parent_id"], name: "index_links_on_parent_id"
 
   create_table "nodes", force: true do |t|

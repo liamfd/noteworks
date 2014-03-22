@@ -3,6 +3,7 @@ class Node < ActiveRecord::Base
   belongs_to :work
   has_many :notes, dependent: :destroy, inverse_of: :node
   has_one :position, dependent: :destroy
+  has_many :link_collections, inverse_of: :node
 
   validates :category_id, presence: true
   validates :work_id, presence: true
