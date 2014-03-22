@@ -315,6 +315,7 @@ class Work < ActiveRecord::Base
 
 		#find elements children, remove element, then redo the order
 		children = find_element_children(line_number, el.depth, ordering)
+	
 		#update the ordering
 		ordering.delete_at(line_number)
 		set_order(ordering)
@@ -610,7 +611,31 @@ class Work < ActiveRecord::Base
 				
 			#for special chars
 			elsif first_char == ':'
-				puts "colontown!"
+
+				#ordering.insert(line_number, ObjectPlace.new("lcoll", nil))
+				#set_order(ordering)
+				#parent_node = find_element_parent(link_coll_depth, line_number, ordering)
+
+				#this is a bug. it just gets attached to the previous node without regard for depth
+				parent_node_depth = stack.pop
+				parent_node = Node.find(parentNodeDepth.node_idnum)
+				stack.push(parent_node_depth)
+
+				whitespace = getTextFromRegexp(line, /(.*):/)
+				link_coll_depth = (whitespace.length)/3 #+2?
+
+				if parent_node != nil
+					link_coll = parent_node.link_collections.build
+					#link_coll.node = parent_node
+					#parent_node.link_colls << link_coll
+					
+					link_names = getTextFromRegexp(line_content, /:(.*)/)
+					link_coll.set_links(link_names)
+
+					link_coll.depth = link_coll_depth
+					link_coll.save
+					#update id in ordering
+				end
 
 			else
 				#this currently does the same as the dash
