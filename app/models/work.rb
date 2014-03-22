@@ -281,7 +281,92 @@ class Work < ActiveRecord::Base
 		end
 	end
 
+
 	def remove_element(line_number, del_obj=true)
+		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+
+		ordering = get_ordering
+		el = get_element_in_ordering(line_number, ordering)
+		if (el.is_a?(Node))
+			to_modify[:remove_node] = (el.to_cytoscape_hash[:node])
+			to_modify[:remove_edges] = el.to_cytoscape_hash[:edges]
+
+			#find elements children, remove element, then redo the order
+			children = find_element_children(line_number, el.depth, ordering)
+
+			#update the ordering
+			ordering.delete_at(line_number)
+			set_order(ordering)
+			
+			#update the markup
+			markup_lines = get_markup_lines
+			markup_lines.delete_at(line_number);
+			set_markup(markup_lines);
+
+			#for each child, find their new parent according to the ordering, update the elements
+			children.each do |child|
+				binding.pry
+				new_parent = find_element_parent(child[:node].depth, child[:index], ordering)
+				
+				#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
+				change_parent(child[:node], new_parent)
+				if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
+					new_parent_edge = child[:node].parent_relationships.first
+					if (new_parent_edge != nil)
+						to_modify[:add_edges].append({ id: new_parent_edge.id, source: new_parent_edge.parent_id.to_s, target: new_parent_edge.child_id.to_s })
+					end
+				
+				elsif child[:node].is_a?(Note) && new_parent != nil #if there's a real parent at the end, modify it in the graph
+					to_modify[:modify_nodes].append(new_parent.to_cytoscape_hash[:node])
+				end
+			end
+
+			el.parent_relationships.delete_all
+			if del_obj #delete unless explicitly told not to (when it's called from modify)
+				el.delete
+			end
+
+		elsif (el.is_a?(Note))
+			#update the ordering
+			ordering.delete_at(line_number)
+			set_order(ordering)
+		
+			#update the markup
+			markup_lines = get_markup_lines
+			markup_lines.delete_at(line_number);
+			set_markup(markup_lines);
+
+			if del_obj #delete unless explicitly told not to (when it's called from modify)
+				el.delete
+			end
+			owner = el.node
+			owner.combine_notes
+			to_modify[:modify_nodes].append(owner.to_cytoscape_hash[:node])
+			to_modify[:modify_edges] = owner.to_cytoscape_hash[:edges]
+		
+		else #if it's not formatted right
+			#remove_node = {}
+			#remove_edges = []
+
+			#update the ordering
+			ordering.delete_at(line_number)
+			set_order(ordering)
+			
+			#update the markup
+			markup_lines = get_markup_lines
+			markup_lines.delete_at(line_number);
+			set_markup(markup_lines);
+			return {}
+		end
+
+		if del_obj #delete unless explicitly told not to (when it's called from modify)
+			el.delete
+		end
+
+		return to_modify
+	end
+
+	def b_remove_element(line_number, del_obj=true)
 		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		ordering = get_ordering
