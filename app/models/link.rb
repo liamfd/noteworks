@@ -15,10 +15,10 @@ class Link < ActiveRecord::Base
   end
 
   def change_child(new_child)
-    self.update_attributes(child_id: new_child_id)
+    self.update_attributes(child_id: new_child.id)
   end
 
   def change_parent(new_parent)
-    self.update_attributes(parent_id: new_parent_id)
+    self.update_attributes(parent_id: new_parent.id)
   end
 end
