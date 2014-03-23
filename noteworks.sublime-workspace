@@ -523,7 +523,7 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 29985,
+				"buffer_size": 29856,
 				"line_ending": "Unix"
 			}
 		},
@@ -808,6 +808,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"insert_ele",
+			"get_ordering",
+			"populate_",
+			".links.eac",
 			"new_parent_id",
 			"change_",
 			"owner_id",
@@ -931,11 +935,7 @@
 			"element._private.style",
 			"drawText",
 			"getNodeHeight",
-			"nodeHeight",
-			"pxValue",
-			"getNodeHeight",
-			"nodeHeight",
-			"drawNode"
+			"nodeHeight"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1019,7 +1019,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -1027,15 +1027,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 29985,
+						"buffer_size": 29856,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								10684,
-								10684
+								22437,
+								22437
 							]
 						],
 						"settings":
@@ -1135,8 +1135,8 @@
 							"syntax": "Packages/Ruby/Ruby.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
-						"translation.x": 733.0,
-						"translation.y": 6781.0,
+						"translation.x": 0.0,
+						"translation.y": 15472.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1153,8 +1153,8 @@
 						"selection":
 						[
 							[
-								411,
-								411
+								240,
+								240
 							]
 						],
 						"settings":

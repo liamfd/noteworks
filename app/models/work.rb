@@ -266,13 +266,19 @@ class Work < ActiveRecord::Base
 
 				link_coll.depth = link_coll_depth
 				link_coll.save
+				binding.pry
+				if link_coll.links != nil && link_coll.links.any?
+					link_coll.links.each do |link|
+						to_modify[:add_edges].append(link.to_cytoscape_hash)
+					end
+				end
 			
 				#update id in ordering
 				ordering[line_number].id = link_coll.id
 				set_order(ordering)
 			end
 
-			return {}
+			return to_modify
 
 
 			#link_names = line_content.split(",")
@@ -367,17 +373,19 @@ class Work < ActiveRecord::Base
 			markup_lines.delete_at(line_number);
 			set_markup(markup_lines);
 
+			#links = el.links
 			binding.pry
-
-			#el.links.each do |link|
-			#	Link.find(link.id).destroy
-			#end
+			if el.links != nil && el.links.any?
+				el.links.each do |link|
+					to_modify[:remove_edges].append(link.to_cytoscape_hash)
+				end
+			end
 			#el.links.destroy_all#inform the nodes of this
 			#binding.pry
 			if del_obj #delete unless explicitly told not to (when it's called from modify)
-				el.destroy
+				el.destroy #destroys its children as well, hence destroy
 			end
-			binding.pry
+
 
 		else #if it's not formatted right
 			#remove_node = {}
@@ -393,7 +401,6 @@ class Work < ActiveRecord::Base
 			set_markup(markup_lines);
 			return {}
 		end
-
 
 		return to_modify
 	end
@@ -679,7 +686,7 @@ class Work < ActiveRecord::Base
 					link_coll.set_links(link_names)
 
 					link_coll.depth = link_coll_depth
-					binding.pry
+					#binding.pry
 					link_coll.save
 					#update id in ordering
 				end
@@ -691,7 +698,6 @@ class Work < ActiveRecord::Base
 
 		#should fix this so I can get rid of populate_ordering, only works here because things are produced in order, can do it as I go
 		#o = populate_ordering
-		binding.pry
 		set_order(o)
 	end
 
