@@ -78,7 +78,8 @@ class Work < ActiveRecord::Base
 			from_insert = insert_element(line_number, line_content)
 		end
 
-		to_modify = format_hash_for_AJAX(from_insert, from_remove)
+		#to_modify = format_hash_for_AJAX(from_insert, from_remove)
+		to_modify = merge_two_hashes(from_insert, from_remove)
 
 		#return node
 		return to_modify
@@ -86,56 +87,26 @@ class Work < ActiveRecord::Base
 
 	#to be called from the AJAX, takes insertNewElement's response and formats it
 	def add_new_element(lines_number, lines_content)
-		#first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
-		#if first_char == '<'
-		#	new_el = Node.new
-		#else
-		#	new_el = Note.new
-		#end
 		new_element_hash = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		lines_number.zip(lines_content).each do |number, content|
 			new_element_hash = new_element_hash.merge(insert_element(number, content))
 		end
-
-		#new_element_hash = insert_element(line_number, line_content)
-		#old_node_hash = {}
-		#old_node_hash[:remove_node] = new_element_hash[:add_node]
-		#old_node_hash[:remove_edges] = new_element_hash[:add_edges]
-		return format_hash_for_AJAX(new_element_hash, {})
+		return new_element_hash
 	end
 
 	#to be called from the AJAX, takes remove_element's response and formats it
 	def delete_element(lines_number)
-		#ordering = get_ordering
-		#el = get_element_in_ordering(line_number, ordering)
 		deleted_element_hash = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		lines_number.each do |number|
 			deleted_element_hash = deleted_element_hash.merge(remove_element(number))
 		end
-
-		#deleted_element_hash = remove_element(line_number, true)
-		return format_hash_for_AJAX({}, deleted_element_hash)
-		
-
-		#if (el.is_a?(Node))
-	#		deleted_element_hash = remove_element(line_number, true)
-	#		return format_hash_for_AJAX({}, deleted_element_hash)
-	#	else
-	#		deleted_element_hash = remove_element(line_number, true)
-
-			#add_hash = {}
-			#add_hash[:add_node] = deleted_element_hash[:remove_node]
-			#add_hash[:add_edges] = deleted_element_hash[:remove_edges]
-	#		return format_hash_for_AJAX(deleted_element_hash,{})
-	#	end	
+		return deleted_element_hash
 	end
 
-	#shouldn't be called until the JS knows what type the new thing is
-	#can do that by checking the line each time (after an enter?) and looking for a special char. or just wait till it's typed?
-	#just don't send it on enter, make it wait, if it's done wrongly after leaving the line treat that accordinglyma
+	#insert a new element, into the markup, ordering, and relations
 	def insert_element(line_number, line_content, in_element=nil)
-		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		ordering = get_ordering
 		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
@@ -204,7 +175,7 @@ class Work < ActiveRecord::Base
 				owner_id = nil #resets it to make the above check false for non-nodes
 			end
 
-			to_modify[:add_node] = new_node.to_cytoscape_hash[:node]
+			to_modify[:add_nodes].append(new_node.to_cytoscape_hash[:node])
 			to_modify[:add_edges] = new_node.to_cytoscape_hash[:edges]
 			to_modify[:remove_edges] = remove_edges
 
@@ -276,16 +247,6 @@ class Work < ActiveRecord::Base
 
 			return to_modify
 
-
-			#link_names = line_content.split(",")
-			#link_names.each do |link_name|
-			#	link_coll.add_link(link_name)
-			#end
-			#link_coll.set_links()
-
-			#when breaking ties with old parent, give it the list of links, have it destroy
-			#all with matching ids, then add those all to the new parent?
-
 		else
 			ordering.insert(line_number, ObjectPlace.new("null", nil))
 			set_order(ordering)
@@ -295,12 +256,12 @@ class Work < ActiveRecord::Base
 
 
 	def remove_element(line_number, del_obj=true)
-		to_modify = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		ordering = get_ordering
 		el = get_element_in_ordering(line_number, ordering)
 		if (el.is_a?(Node))
-			to_modify[:remove_node] = (el.to_cytoscape_hash[:node])
+			to_modify[:remove_nodes].append(el.to_cytoscape_hash[:node])
 			to_modify[:remove_edges] = el.to_cytoscape_hash[:edges]
 
 			#find elements children, remove element, then redo the order
@@ -797,6 +758,7 @@ class Work < ActiveRecord::Base
 
 	#takes in a hash, an a key, and sub_elements value, overwrites if entry with existing id, otherwise, adds
 	def insert_overwrite_in_hash(sub_element_value, element_array_key, hash)
+		binding.pry
 		element_array = hash[element_array_key]
 		new_element_id = sub_element_value[:id]
 		#element.include?()
@@ -821,69 +783,81 @@ class Work < ActiveRecord::Base
 
 	def format_hash_for_AJAX(insert={}, remove={})
 		#take care of the adding and removing nodes
-		to_change = {}
+		to_change = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], add_edges: [], remove_edges: [] }
 
 		#modify nodes from both sources 
-		modify_nodes = []
+		#modify_nodes = []
 		if (remove[:modify_nodes] != nil)
-			modify_nodes += remove[:modify_nodes]
+			insert_overwrite_in_hash(remove[:modify_nodes], :modify_nodes, to_change)
+			#modify_nodes += remove[:modify_nodes]
 		end
 		if (insert[:modify_nodes] != nil)
-			modify_nodes += insert[:modify_nodes]
+			insert_overwrite_in_hash(insert[:modify_nodes], :modify_nodes, to_change)
+			#modify_nodes += insert[:modify_nodes]
 		end
 
 		#add nodes from both sources 
-		add_nodes = []
+		#add_nodes = []
 		if (remove[:add_node] != nil)
-			add_nodes.append(remove[:add_node])#only comes from one, this'll probs change
+			insert_overwrite_in_hash(remove[:add_node], :add_nodes, to_change)
+			#add_nodes.append(remove[:add_node])
 		end
 		if (insert[:add_node] != nil)
-			add_nodes.append(insert[:add_node])#only comes from one, this'll probs change
+			insert_overwrite_in_hash(insert[:add_node], :add_nodes, to_change)
+			#add_nodes.append(insert[:add_node])
 		end
 
 		#remove nodes from both sources
-		remove_nodes = []
+		#remove_nodes = []
 		if (remove[:remove_node] != nil)
-			remove_nodes.append(remove[:remove_node])
+			insert_overwrite_in_hash(remove[:remove_node], :remove_nodes, to_change)
+			#remove_nodes.append(remove[:remove_node])
 		end
 		if (insert[:remove_node] != nil)
-			remove_nodes.append(insert[:remove_node])
+			insert_overwrite_in_hash(insert[:remove_node], :remove_nodes, to_change)
+			#remove_nodes.append(insert[:remove_node])
 		end
 
 		#do the modify_edges from both sources
-		modify_edges = []
+		#modify_edges = []
 		if (remove[:modify_edges] != nil)
-			modify_edges += remove[:modify_edges]
+			insert_overwrite_in_hash(remove[:modify_edges], :modify_edges, to_change)
+			#modify_edges += remove[:modify_edges]
 		end
 		if (insert[:modify_edges] != nil)
-			modify_edges += insert[:modify_edges]
+			insert_overwrite_in_hash(insert[:modify_edges], :modify_edges, to_change)
+			#modify_edges += insert[:modify_edges]
 		end
 
 		#do the add_edges from both sources
-		add_edges = []
+		#add_edges = []
 		if (remove[:add_edges] != nil)
-			add_edges += remove[:add_edges]
+			insert_overwrite_in_hash(remove[:add_edges], :add_edges, to_change)
+			#add_edges += remove[:add_edges]
 		end
 		if (insert[:add_edges] != nil)
-			add_edges += insert[:add_edges]
+			insert_overwrite_in_hash(insert[:add_edges], :add_edges, to_change)
+			#add_edges += insert[:add_edges]
 		end
 
 		#do the remove edges from both sources
-		remove_edges = []
+		#remove_edges = []
 		if (remove[:remove_edges] != nil)
-			remove_edges += remove[:remove_edges]
+			insert_overwrite_in_hash(remove[:remove_edges], :remove_edges, to_change)
+			#remove_edges += remove[:remove_edges]
 		end
 		if (insert[:remove_edges] != nil)
-			remove_edges += insert[:remove_edges]
+			insert_overwrite_in_hash(insert[:remove_edges], :remove_edges, to_change)
+			#remove_edges += insert[:remove_edges]
 		end
 
 		#combine into the modify
-		to_change[:modify_nodes] = modify_nodes
-		to_change[:modify_edges] = modify_edges
-		to_change[:add_nodes] = add_nodes
-		to_change[:add_edges] = add_edges
-		to_change[:remove_nodes] = remove_nodes
-		to_change[:remove_edges] = remove_edges
+		#to_change[:modify_nodes] = modify_nodes
+		#to_change[:modify_edges] = modify_edges
+		#to_change[:add_nodes] = add_nodes
+		#to_change[:add_edges] = add_edges
+		#to_change[:remove_nodes] = remove_nodes
+		#to_change[:remove_edges] = remove_edges
 		return to_change
 	end
 
@@ -973,5 +947,11 @@ class Work < ActiveRecord::Base
 		#to_modify[:remove_edges] = remove_edges
 		#to_modify[:add_edges] = add_edges
 		return to_modify
+	end
+
+	def merge_two_hashes(h1, h2)
+		h1.merge(h2) do |key, v1, v2|
+		  v1 + v2
+		end
 	end
 end
