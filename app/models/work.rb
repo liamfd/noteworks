@@ -795,6 +795,24 @@ class Work < ActiveRecord::Base
 		return wanted
 	end
 
+	#takes in a hash, an a key, and sub_elements value, overwrites if entry with existing id, otherwise, adds
+	def insert_overwrite_in_hash(sub_element_value, element_array_key, hash)
+		element_array = hash[element_array_key]
+		new_element_id = sub_element_value[:id]
+		#element.include?()
+		#element_equal_id = element_array.find_all {|element| element[:id] == new_element_id}
+		element_array.map! do |element|
+			binding.pry
+			if element[:id].to_s == new_element_id.to_s
+				element = sub_element_value
+			else
+				element = element
+			end
+		end
+		return hash
+
+	end
+
 	def format_hash_for_AJAX(insert={}, remove={})
 		#take care of the adding and removing nodes
 		to_change = {}
