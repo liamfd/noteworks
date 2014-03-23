@@ -46,10 +46,10 @@ class Work < ActiveRecord::Base
 			from_insert = insert_element(line_number, line_content, curr_el)
 
 			#consolidates these into modify in insert
-			if from_remove[:remove_node][:id] == from_insert[:add_node][:id]
-				from_insert[:modify_nodes].append(from_insert[:add_node])
-				from_insert[:add_node] = {}
-				from_remove[:remove_node] = {}
+			if from_remove[:remove_nodes].first[:id] == from_insert[:add_nodes].first[:id]
+				from_insert[:modify_nodes].append(from_insert[:add_nodes].first)
+				from_insert[:add_nodes] = []
+				from_remove[:remove_nodes] = []
 			end
 
 				#WHILE I SHOULD BE DOING THIS WITH THE EDGES, ADD/REMOVE IS THE SAME,
@@ -82,7 +82,7 @@ class Work < ActiveRecord::Base
 		to_modify = merge_two_hashes(from_insert, from_remove)
 
 		#return node
-		return to_modify
+		return uniqify_arrays_in_hash(to_modify, :id)
 	end
 
 	#to be called from the AJAX, takes insertNewElement's response and formats it
@@ -91,7 +91,9 @@ class Work < ActiveRecord::Base
 		lines_number.zip(lines_content).each do |number, content|
 			new_element_hash = new_element_hash.merge(insert_element(number, content))
 		end
-		return new_element_hash
+		#return new_element_hash
+		return uniqify_arrays_in_hash(new_element_hash, :id)
+
 	end
 
 	#to be called from the AJAX, takes remove_element's response and formats it
@@ -101,7 +103,8 @@ class Work < ActiveRecord::Base
 		lines_number.each do |number|
 			deleted_element_hash = deleted_element_hash.merge(remove_element(number))
 		end
-		return deleted_element_hash
+		#return deleted_element_hash
+		return uniqify_arrays_in_hash(deleted_element_hash, :id)
 	end
 
 	#insert a new element, into the markup, ordering, and relations
@@ -756,32 +759,7 @@ class Work < ActiveRecord::Base
 		return wanted
 	end
 
-	#takes in a hash, an a key, and sub_elements value, overwrites if entry with existing id, otherwise, adds
-	def insert_overwrite_in_hash(sub_element_value, element_array_key, hash)
-		binding.pry
-		element_array = hash[element_array_key]
-		new_element_id = sub_element_value[:id]
-		#element.include?()
-		#element_equal_id = element_array.find_all {|element| element[:id] == new_element_id}
-		replaced = false
-		element_array.map! do |element|
-			if element[:id].to_s == new_element_id.to_s
-				replaced = true
-				element = sub_element_value
-			else
-				element = element
-			end
-		end
-
-		if !replaced
-			hash[element_array_key].append(sub_element_value)
-		end
-
-		return hash
-
-	end
-
-
+	#takes in a hash of arrays, returns a version that has all repeated values removed (last one remains)
 	def uniqify_arrays_in_hash(hash, sub_key)
 		#iterates over each of the top level values in the hash
 		new_hash = {}
@@ -792,6 +770,7 @@ class Work < ActiveRecord::Base
 		return new_hash
 	end
 
+	#merges two hashes of arrays
 	def merge_two_hashes(h1, h2)
 		h1.merge(h2) do |key, v1, v2|
 		  v1 + v2
