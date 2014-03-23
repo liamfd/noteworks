@@ -88,9 +88,10 @@ class Work < ActiveRecord::Base
 
 	#to be called from the AJAX, takes insertNewElement's response and formats it
 	def add_new_element(lines_number, lines_content)
-		new_element_hash = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		new_element_hash = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		
 		lines_number.zip(lines_content).each do |number, content|
-			new_element_hash = new_element_hash.merge(insert_element(number, content))
+			new_element_hash = merge_two_hashes(new_element_hash , insert_element(number, content))
 		end
 		#return new_element_hash
 		return uniqify_arrays_in_hash(new_element_hash, :id)
@@ -99,10 +100,10 @@ class Work < ActiveRecord::Base
 
 	#to be called from the AJAX, takes remove_element's response and formats it
 	def delete_element(lines_number)
-		deleted_element_hash = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		deleted_element_hash = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		lines_number.reverse.each do |number|
-			deleted_element_hash = deleted_element_hash.merge(remove_element(number))
+			deleted_element_hash = merge_two_hashes(deleted_element_hash , remove_element(number))
 		end
 		#return deleted_element_hash
 		return uniqify_arrays_in_hash(deleted_element_hash, :id)
