@@ -41,7 +41,7 @@ class Work < ActiveRecord::Base
 		curr_el = get_element_in_ordering(line_number, ordering);
 
 		#bug if it goes from node to note, or anything else
-		if first_char == '<' && ordering_el.model == "node" && curr_el.is_a?(Node)
+		if first_char == '.' && ordering_el.model == "node" && curr_el.is_a?(Node)
 
 			from_remove = remove_element(line_number, false)
 			from_insert = insert_element(line_number, line_content, curr_el)
@@ -121,7 +121,7 @@ class Work < ActiveRecord::Base
 		set_markup(markup_lines);
 
 
-		if first_char == "<"
+		if first_char == "."
 			#shouldn't need this
 			if in_element != nil && in_element.is_a?(Node) #only use the in_el if it's not nil and the right type
 				new_node = in_element
@@ -555,7 +555,7 @@ class Work < ActiveRecord::Base
 		ordering.each do |item|
 			if item.model == "node"
 				node = Node.find(item.id)
-				puts "<" + node.depth.to_s + node.title
+				puts "." + node.depth.to_s + node.title
 			elsif item.model == "note"
 				note = Note.find(item.id)
 				puts "-" + note.depth.to_s + note.body
@@ -578,7 +578,7 @@ class Work < ActiveRecord::Base
 			first_char = getTextFromRegexp(line, /[ ,\t]*(.)/)
 		
 			#if a new node should be made
-			if first_char == '<'
+			if first_char == '.'
 				new_node = Node.new
 				build_node(new_node, line)
 				new_node.save
@@ -626,6 +626,7 @@ class Work < ActiveRecord::Base
 				build_note(new_note, line)
 
 				#this is a bug. it just gets attached to the previous node without regard for depth
+				binding.pry
 				parentNodeDepth = stack.pop
 				parentNode = Node.find(parentNodeDepth.node_idnum)
 				stack.push(parentNodeDepth)
@@ -658,7 +659,6 @@ class Work < ActiveRecord::Base
 					link_coll.set_links(link_names)
 
 					link_coll.depth = link_coll_depth
-					#binding.pry
 					link_coll.save
 					#update id in ordering
 				end
@@ -705,7 +705,6 @@ class Work < ActiveRecord::Base
 
 		#need to make these only the categories that belong to the user
 		category = Category.find_by name: category_name.downcase
-		binding.pry
 		if category == nil
 			category = Category.find_by name: :uncategorized
 		end
