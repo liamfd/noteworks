@@ -166,12 +166,6 @@ class Work < ActiveRecord::Base
 				if parent_node != nil #only give it a parent if it actually has one
 					relation = Link.new(child_id: new_node.id, parent_id: parent_node.id, work_id: self.id)
 					relation.save
-				#	new_node.parent_relationships << relation
-				#	parent_node.child_relationships << relation
-				#else
-				#	relation = Link.new(child_id: new_node.id, parent_id: nil, work_id: self.id)
-				#	relation.save
-				#	new_node.parent_relationships << relation
 				end
 			#else
 			#	relation = Link.new(child_id: new_node.id, parent_id: nil, work_id:self.id) #empty initial relationship
@@ -179,31 +173,33 @@ class Work < ActiveRecord::Base
 
 			owner_id = nil
 			remove_edges = []
-			#FIND CHILDREN
+
+			#FIND CHILDREN, ADOPT THEM (FROM EXISTING PARENT, THE WORD IS KIDNAP)
 			children = find_element_children(line_number, new_node.depth, ordering)
 			children.each do |child|
 				#removes the old edges
 				if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
 					old_parent_edge = child[:node].parent_relationships.first
 					if old_parent_edge != nil
-						remove_edges.append({ id: old_parent_edge.id, source: old_parent_edge.parent_id.to_s, target: old_parent_edge.child_id.to_s })
+						remove_edges.append(old_parent_edge.to_cytoscape_hash)
+						#remove_edges.append({ id: old_parent_edge.id, source: old_parent_edge.parent_id.to_s, target: old_parent_edge.child_id.to_s })
 					end
+
 				elsif child[:node].is_a?(Note)
 					owner_id = child[:node].node_id
-				elsif child[:node].is_a?(LinkCollection)
-					binding.pry
-					#if it's a link collection, remove all those links, gonna reassign
-					child[:node].links.each do |link|
-						remove_edges.append({ id: link.id, source: link.parent_id.to_s, target: link.child_id.to_s })
-					end
 				end
 
-				#binding.pry
 				change_parent(child[:node], new_node)
-				#binding.pry
 				#updates the now changed parents if necessary
 				if owner_id != nil #if there's a real parent at the end, modify it in the graph
 					to_modify[:modify_nodes].append(Node.find(owner_id).to_cytoscape_hash[:node])
+				
+				elsif child[:node].is_a?(LinkCollection)
+					#if it's a link collection, remove all those links, gonna reassign
+					child[:node].links.each do |link|
+						to_modify[:modify_edges].append(link.to_cytoscape_hash)
+						#remove_edges.append({ id: link.id, source: link.parent_id.to_s, target: link.child_id.to_s })
+					end
 				end
 				owner_id = nil #resets it to make the above check false for non-nodes
 			end
@@ -266,7 +262,7 @@ class Work < ActiveRecord::Base
 
 				link_coll.depth = link_coll_depth
 				link_coll.save
-				binding.pry
+
 				if link_coll.links != nil && link_coll.links.any?
 					link_coll.links.each do |link|
 						to_modify[:add_edges].append(link.to_cytoscape_hash)
@@ -321,7 +317,7 @@ class Work < ActiveRecord::Base
 
 			#for each child, find their new parent according to the ordering, update the elements
 			children.each do |child|
-				binding.pry
+
 				new_parent = find_element_parent(child[:node].depth, child[:index], ordering)
 				
 				#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
@@ -334,6 +330,20 @@ class Work < ActiveRecord::Base
 				
 				elsif child[:node].is_a?(Note) && new_parent != nil #if there's a real parent at the end, modify it in the graph
 					to_modify[:modify_nodes].append(new_parent.to_cytoscape_hash[:node])
+				
+				elsif child[:node].is_a?(LinkCollection) && new_parent != nil #if adopted, modify the edges
+					child[:node].links.each do |link|
+						to_modify[:modify_edges].append(link.to_cytoscape_hash)
+					end
+					#to_modify[:modify_edges].append(child[:node].links.to_cytoscape_hash)
+				
+				elsif child[:node].is_a?(LinkCollection) && new_parent == nil #if orphaned, ditch those edges
+					child[:node].links.each do |link|
+						to_modify[:remove_edges].append(link.to_cytoscape_hash)
+					end
+					#to_modify[:remove_edges].append(child[:node].links.to_cytoscape_hash)
+				
+
 				end
 			end
 
@@ -374,7 +384,6 @@ class Work < ActiveRecord::Base
 			set_markup(markup_lines);
 
 			#links = el.links
-			binding.pry
 			if el.links != nil && el.links.any?
 				el.links.each do |link|
 					to_modify[:remove_edges].append(link.to_cytoscape_hash)
@@ -443,7 +452,6 @@ class Work < ActiveRecord::Base
 				children.push(node_and_index)
 				curr_child_depth = curr_el.depth
 			elsif curr_el.depth <= curr_child_depth && (curr_el.is_a?(Note) || curr_el.is_a?(LinkCollection))
-				binding.pry
 				node_and_index = { node: curr_el, index: i}
 				children.push(node_and_index)
 				curr_child_depth = 100000 
@@ -516,7 +524,6 @@ class Work < ActiveRecord::Base
 			end
 		
 		elsif child.is_a?(LinkCollection)
-			binding.pry
 			if (parent != nil) #if it has a new parent
 				child.links.each do |link| #reassign its links to that parent
 					link.change_parent(parent)
