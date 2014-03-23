@@ -34,7 +34,7 @@ class Work < ActiveRecord::Base
 		from_remove = {}
 		to_modify = {}
 
-		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
+		first_char = get_text_from_regexp(line_content, /[ ,\t]*(.)/)
 		ordering = get_ordering
 
 		ordering_el = ordering[line_number]
@@ -113,7 +113,7 @@ class Work < ActiveRecord::Base
 		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		ordering = get_ordering
-		first_char = getTextFromRegexp(line_content, /[ ,\t]*(.)/)
+		first_char = get_text_from_regexp(line_content, /[ ,\t]*(.)/)
 
 		#update the markup
 		markup_lines = get_markup_lines
@@ -220,7 +220,7 @@ class Work < ActiveRecord::Base
 		elsif first_char == ':'
 			#build link collection
 			#link_coll = self.link_collections.build
-			whitespace = getTextFromRegexp(line_content, /(.*):/)
+			whitespace = get_text_from_regexp(line_content, /(.*):/)
 			link_coll_depth = (whitespace.length)/3 #+2?
 
 			ordering.insert(line_number, ObjectPlace.new("lcoll", nil))
@@ -232,7 +232,7 @@ class Work < ActiveRecord::Base
 				#link_coll.node = parent_node
 				#parent_node.link_colls << link_coll
 				
-				link_names = getTextFromRegexp(line_content, /:(.*)/)
+				link_names = get_text_from_regexp(line_content, /:(.*)/)
 				link_coll.set_links(link_names)
 
 				link_coll.depth = link_coll_depth
@@ -526,8 +526,8 @@ class Work < ActiveRecord::Base
 		order_a = self.order.split("///,") #o is the array of strings
 		ordering = []
 		order_a.each do |o|
-			model = getTextFromRegexp(o, /([a-z]*)_/) #gets everything before underscore (only letters)
-			id = getTextFromRegexp(o, /_([0-9]*)/) #gets everything after underscore (only digits)
+			model = get_text_from_regexp(o, /([a-z]*)_/) #gets everything before underscore (only letters)
+			id = get_text_from_regexp(o, /_([0-9]*)/) #gets everything after underscore (only digits)
 			ordering.push(ObjectPlace.new(model, id))
 		end
 		return ordering
@@ -575,7 +575,7 @@ class Work < ActiveRecord::Base
 			#if the occurence of <*> is before the first occurence of " then it's a new
 			#@angleBracketLocation = line.index(/[ ,\t]*<.*>/)
 		
-			first_char = getTextFromRegexp(line, /[ ,\t]*(.)/)
+			first_char = get_text_from_regexp(line, /[ ,\t]*(.)/)
 		
 			#if a new node should be made
 			if first_char == '.'
@@ -626,7 +626,7 @@ class Work < ActiveRecord::Base
 				build_note(new_note, line)
 
 				#this is a bug. it just gets attached to the previous node without regard for depth
-				binding.pry
+				#binding.pry
 				parentNodeDepth = stack.pop
 				parentNode = Node.find(parentNodeDepth.node_idnum)
 				stack.push(parentNodeDepth)
@@ -647,7 +647,7 @@ class Work < ActiveRecord::Base
 				parent_node = Node.find(parent_node_depth.node_idnum)
 				stack.push(parent_node_depth)
 
-				whitespace = getTextFromRegexp(line, /(.*):/)
+				whitespace = get_text_from_regexp(line, /(.*):/)
 				link_coll_depth = (whitespace.length)/3 #+2?
 
 				if parent_node != nil
@@ -655,7 +655,7 @@ class Work < ActiveRecord::Base
 					#link_coll.node = parent_node
 					#parent_node.link_colls << link_coll
 					
-					link_names = getTextFromRegexp(line, /:(.*)/)
+					link_names = get_text_from_regexp(line, /:(.*)/)
 					link_coll.set_links(link_names)
 
 					link_coll.depth = link_coll_depth
@@ -672,19 +672,7 @@ class Work < ActiveRecord::Base
 		#o = populate_ordering
 		set_order(o)
 	end
-
-	#builds a note, getting its parent, attaching its data, and then returns the note
-	def build_note(note, text)
-		content = getTextFromRegexp(text, /-(.*)/)
-		#content = text.match(/-(.*)/).captures.first
-		note.body = content
-
-		whitespace = getTextFromRegexp(text, /(.*)-/)
-		#whitespace = text.match(/(.*)-/).captures.first
-		note.depth = (whitespace.length)/3 #+2?
-
-		return note
-	end
+	
 
 	#builds a node with category, title, and returns it
 	def build_node(node, text)
@@ -709,18 +697,7 @@ class Work < ActiveRecord::Base
 			category = Category.find_by name: :uncategorized
 		end
 		node.category = category
-	#	category_id = 0
-	#	Category.all.each do |cat|
-	#		if (category.downcase) == (cat.name).downcase
-	#			category = Category.where("name = ?", cat.name).first
-	#		end
-	#	end
-	#	if category_id == 0
-	#		category_id = (Category.where(name: "Uncategorized").first).id
-	#	end
-	#	node.category_id = category_id
-		
-		#title = getTextFromRegexp(text, /,(.*)/)
+	
 		title = title.strip	
 		
 		node.title = title
@@ -728,51 +705,19 @@ class Work < ActiveRecord::Base
 		return node
 	end
 
-	#builds a node (including type, title, category) and returns it
-	def old_build_node(node, text)
-		withinBrackets = getTextFromRegexp(text, /(<.*>)/)
-		#withinBrackets = text.match(/<.*>/).to_s
-		
-		#get type, convert it to a constant, and makes a new node of that type
-		type = getTextFromRegexp(withinBrackets, /<(.*)\./)
-		#type = withinBrackets.match(/<(.*)\./).captures.first
-		
-		type[0] = type[0].capitalize
-		if @@types.include? type
-			type = (type + "Node")
-		else
-			type = "BasicNode"
-		end
-		
-		node.type = type
+	#builds a note, getting its parent, attaching its data, and then returns the note
+	def build_note(note, text)
+		content = get_text_from_regexp(text, /-(.*)/)
+		#content = text.match(/-(.*)/).captures.first
+		note.body = content
 
-		#get the category string, use it to pull a category id
-		category = getTextFromRegexp(withinBrackets, /\.(.*)>/)
-		#category = withinBrackets.match(/\.(.*)>/).captures.first
-		category_id = 0
-		Category.all.each do |cat|
-			if (category.downcase) == (cat.name).downcase
-				category_id = (Category.where("name = ?", cat.name).first).id
-			end
-		end
-		if category_id == 0
-			category_id = (Category.where(name: "Uncategorized").first).id
-		end
-		node.category_id = category_id
-		#puts category_id
+		whitespace = get_text_from_regexp(text, /(.*)-/)
+		#whitespace = text.match(/(.*)-/).captures.first
+		note.depth = (whitespace.length)/3 #+2?
 
-		title = getTextFromRegexp(text, />(.*)/)
-		#title = text.match(/>(.*)/).captures.first
-		title = title.strip	
-
-		whitespace = getTextFromRegexp(text, /(.*)</)
-		#whitespace = text.match(/(.*)</).captures.first
-		node.depth = (whitespace.length)/3 #+2?
-		#puts title
-		node.title = title
-		node.work_id = self.id
-		return node
+		return note
 	end
+
 
 	#fills ordering according to stored nodes and notes. OUTDATED, KEEPING FOR PARSETEXT, USE get_ordering
 	#this only works if the node ids line up to the order, so not if any inserted
@@ -791,7 +736,7 @@ class Work < ActiveRecord::Base
 
 
 	#takes a string and a regexp, returns the result or nothing if no result
-	def getTextFromRegexp(text, expression)
+	def get_text_from_regexp(text, expression)
 		wanted = ""
 		if text != nil
 			matched = text.match(expression)
