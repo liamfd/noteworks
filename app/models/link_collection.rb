@@ -6,7 +6,7 @@ class LinkCollection < ActiveRecord::Base
   	
   	chunks = text.split(",")
   	chunks.each do |chunk|
-  		n = Node.find_by(title: chunk)
+  		n = Node.find_by(title: chunk.strip)
       if n != nil#if there's an actual link there
         link = self.links.build
       	#link.link_collection_id = self.id

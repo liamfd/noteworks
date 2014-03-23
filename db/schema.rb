@@ -11,14 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140322161758) do
+ActiveRecord::Schema.define(version: 20140323224500) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "color"
+    t.integer  "work_id"
   end
+
+  add_index "categories", ["work_id"], name: "index_categories_on_work_id"
 
   create_table "link_collections", force: true do |t|
     t.integer  "node_id"

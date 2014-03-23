@@ -4,6 +4,8 @@ class Work < ActiveRecord::Base
 	has_many :nodes, dependent: :destroy
 	has_many :links, dependent: :destroy
 
+	has_many :categories, dependent: :destroy
+
 	ObjectPlace = Struct.new(:model, :id)
 	NodeDepth = Struct.new(:node_idnum, :depth)
 
@@ -24,7 +26,6 @@ class Work < ActiveRecord::Base
    		#end
    	#fix the infinite loop, then you can have this back
 	end
-
 
 
 	#parser shit
@@ -685,8 +686,51 @@ class Work < ActiveRecord::Base
 		return note
 	end
 
-	#builds a node (including type, title, category) and returns it
+	#builds a node with category, title, and returns it
 	def build_node(node, text)
+		node.type = :BasicNode
+
+		whitespace = text.partition(".").first
+		pure_text = text.partition(".").last
+		node.depth = (whitespace.length)/3 #+2?
+
+		#get the category string, use it to pull a category id
+		if pure_text.include?(",") #split by the comma if there is one
+			category_name = pure_text.partition(",").first
+			title = pure_text.partition(",").last
+		else #default to splitting by the first whitespace
+			category_name = pure_text.partition(" ").first
+			title = pure_text.partition(" ").last
+		end
+
+		#need to make these only the categories that belong to the user
+		category = Category.find_by name: category_name.downcase
+		binding.pry
+		if category == nil
+			category = Category.find_by name: :uncategorized
+		end
+		node.category = category
+	#	category_id = 0
+	#	Category.all.each do |cat|
+	#		if (category.downcase) == (cat.name).downcase
+	#			category = Category.where("name = ?", cat.name).first
+	#		end
+	#	end
+	#	if category_id == 0
+	#		category_id = (Category.where(name: "Uncategorized").first).id
+	#	end
+	#	node.category_id = category_id
+		
+		#title = getTextFromRegexp(text, /,(.*)/)
+		title = title.strip	
+		
+		node.title = title
+		node.work_id = self.id
+		return node
+	end
+
+	#builds a node (including type, title, category) and returns it
+	def old_build_node(node, text)
 		withinBrackets = getTextFromRegexp(text, /(<.*>)/)
 		#withinBrackets = text.match(/<.*>/).to_s
 		
