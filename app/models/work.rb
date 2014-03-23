@@ -801,14 +801,20 @@ class Work < ActiveRecord::Base
 		new_element_id = sub_element_value[:id]
 		#element.include?()
 		#element_equal_id = element_array.find_all {|element| element[:id] == new_element_id}
+		replaced = false
 		element_array.map! do |element|
-			binding.pry
 			if element[:id].to_s == new_element_id.to_s
+				replaced = true
 				element = sub_element_value
 			else
 				element = element
 			end
 		end
+
+		if !replaced
+			hash[element_array_key].append(sub_element_value)
+		end
+
 		return hash
 
 	end
