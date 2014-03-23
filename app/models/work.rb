@@ -193,7 +193,7 @@ class Work < ActiveRecord::Base
 				elsif child[:node].is_a?(LinkCollection)
 					binding.pry
 					#if it's a link collection, remove all those links, gonna reassign
-					LinkCollection.links.each do |link|
+					child[:node].links.each do |link|
 						remove_edges.append({ id: link.id, source: link.parent_id.to_s, target: link.child_id.to_s })
 					end
 				end
