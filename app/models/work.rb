@@ -101,7 +101,7 @@ class Work < ActiveRecord::Base
 	def delete_element(lines_number)
 		deleted_element_hash = {modify_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
-		lines_number.each do |number|
+		lines_number.reverse.each do |number|
 			deleted_element_hash = deleted_element_hash.merge(remove_element(number))
 		end
 		#return deleted_element_hash
@@ -227,27 +227,29 @@ class Work < ActiveRecord::Base
 			set_order(ordering)
 			parent_node = find_element_parent(link_coll_depth, line_number, ordering)
 
-			if parent_node != nil #only create these if it does have that parent
+			if parent_node != nil
 				link_coll = parent_node.link_collections.build
-				#link_coll.node = parent_node
-				#parent_node.link_colls << link_coll
-				
-				link_names = get_text_from_regexp(line_content, /:(.*)/)
-				link_coll.set_links(link_names)
-
-				link_coll.depth = link_coll_depth
-				link_coll.save
-
-				if link_coll.links != nil && link_coll.links.any?
-					link_coll.links.each do |link|
-						to_modify[:add_edges].append(link.to_cytoscape_hash)
-					end
-				end
-			
-				#update id in ordering
-				ordering[line_number].id = link_coll.id
-				set_order(ordering)
+			else
+				link_coll = LinkCollection.new
 			end
+			#link_coll.node = parent_node
+			#parent_node.link_colls << link_coll
+			
+			link_names = get_text_from_regexp(line_content, /:(.*)/)
+			link_coll.set_links(link_names)
+
+			link_coll.depth = link_coll_depth
+			link_coll.save
+
+			if link_coll.links != nil && link_coll.links.any?
+				link_coll.links.each do |link|
+					to_modify[:add_edges].append(link.to_cytoscape_hash)
+				end
+			end
+		
+			#update id in ordering
+			ordering[line_number].id = link_coll.id
+			set_order(ordering)
 
 			return to_modify
 
@@ -672,7 +674,7 @@ class Work < ActiveRecord::Base
 		#o = populate_ordering
 		set_order(o)
 	end
-	
+
 
 	#builds a node with category, title, and returns it
 	def build_node(node, text)
