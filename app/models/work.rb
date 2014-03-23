@@ -589,7 +589,7 @@ class Work < ActiveRecord::Base
 		Link.destroy_all(work_id: self.id)
 
 		stack = Array.new
-		
+		o = []
 		markup.each_line do |line|
 			#parser rules: any amount of whitespace followed immediately by < means new node. Otherwise, new note.
 			#<TYPE.CATEGORY>TITLE
@@ -639,6 +639,7 @@ class Work < ActiveRecord::Base
 					#make the child's parent the parentNode's id.
 				end
 				new_node.save
+				o.push(ObjectPlace.new("node", new_node.id))
 
 			#if it's a note
 			elsif first_char == '-'
@@ -653,7 +654,7 @@ class Work < ActiveRecord::Base
 				new_note.node_id = parentNode.id
 				parentNode.add_note_to_combined(new_note)
 				new_note.save
-				
+				o.push(ObjectPlace.new("note", new_note.id))				
 			#for special chars
 			elsif first_char == ':'
 
@@ -663,7 +664,7 @@ class Work < ActiveRecord::Base
 
 				#this is a bug. it just gets attached to the previous node without regard for depth
 				parent_node_depth = stack.pop
-				parent_node = Node.find(parentNodeDepth.node_idnum)
+				parent_node = Node.find(parent_node_depth.node_idnum)
 				stack.push(parent_node_depth)
 
 				whitespace = getTextFromRegexp(line, /(.*):/)
@@ -674,31 +675,23 @@ class Work < ActiveRecord::Base
 					#link_coll.node = parent_node
 					#parent_node.link_colls << link_coll
 					
-					link_names = getTextFromRegexp(line_content, /:(.*)/)
+					link_names = getTextFromRegexp(line, /:(.*)/)
 					link_coll.set_links(link_names)
 
 					link_coll.depth = link_coll_depth
+					binding.pry
 					link_coll.save
 					#update id in ordering
 				end
-
+				o.push(ObjectPlace.new("lcoll", link_coll.id))
 			else
-				#this currently does the same as the dash
-				new_note = Note.new()
-				build_note(new_note, line)
-				
-				parentNodeDepth = stack.pop
-				parentNode = Node.find(parentNodeDepth.node_idnum)
-				stack.push(parentNodeDepth)
-				
-				new_note.node_id = parentNode.id
-				parentNode.add_note_to_combined(new_note)
-				new_note.save
+				o.push(ObjectPlace.new("null", nil))
 			end
 		end
 
 		#should fix this so I can get rid of populate_ordering, only works here because things are produced in order, can do it as I go
-		o = populate_ordering
+		#o = populate_ordering
+		binding.pry
 		set_order(o)
 	end
 
