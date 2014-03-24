@@ -674,6 +674,7 @@ class Work < ActiveRecord::Base
 					link_coll.save
 					#update id in ordering
 				end
+				binding.pry
 				o.push(ObjectPlace.new("lcoll", link_coll.id))
 			else
 				o.push(ObjectPlace.new("null", nil))
