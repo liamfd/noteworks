@@ -29,58 +29,67 @@ class Work < ActiveRecord::Base
 
 
 	#parser shit
-	def modify_element(line_number, line_content)
-		from_insert = {}
-		from_remove = {}
-		to_modify = {}
+	def modify_element(lines_number, lines_content)
+		from_insert_total = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		from_remove_total = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		to_modify = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		
+		lines_number.zip(lines_content).each do |number, content|
+			
+			from_insert = {}
+			from_remove = {}
+			
+			first_char = get_text_from_regexp(content, /[ ,\t]*(.)/)
+			ordering = get_ordering
 
-		first_char = get_text_from_regexp(line_content, /[ ,\t]*(.)/)
-		ordering = get_ordering
+			ordering_el = ordering[number]
+			curr_el = get_element_in_ordering(number, ordering);
 
-		ordering_el = ordering[line_number]
-		curr_el = get_element_in_ordering(line_number, ordering);
+			#bug if it goes from node to note, or anything else
+			if first_char == '.' && ordering_el.model == "node" && curr_el.is_a?(Node)
 
-		#bug if it goes from node to note, or anything else
-		if first_char == '.' && ordering_el.model == "node" && curr_el.is_a?(Node)
+				from_remove = remove_element(number, false)
+				from_insert = insert_element(number, content, curr_el)
 
-			from_remove = remove_element(line_number, false)
-			from_insert = insert_element(line_number, line_content, curr_el)
+				#consolidates these into modify in insert
+				if from_remove[:remove_nodes].first[:id] == from_insert[:add_nodes].first[:id]
+					from_insert[:modify_nodes].append(from_insert[:add_nodes].first)
+					from_insert[:add_nodes] = []
+					from_remove[:remove_nodes] = []
+				end
 
-			#consolidates these into modify in insert
-			if from_remove[:remove_nodes].first[:id] == from_insert[:add_nodes].first[:id]
-				from_insert[:modify_nodes].append(from_insert[:add_nodes].first)
-				from_insert[:add_nodes] = []
-				from_remove[:remove_nodes] = []
+					#WHILE I SHOULD BE DOING THIS WITH THE EDGES, ADD/REMOVE IS THE SAME,
+					#AND IDEALLY THEY WILL BE UNNECESSARY WHEN THE JS IS PROPER, AS THE NODE
+					#WILL REMAIN ON MODIFY, EDGES CAN BE LEFT ALONE
+					#if from_insert[:add_edges] == from_remove[:remove_edges]
+					#	from_insert[:modify_edges] = from_insert[:add_edges]
+					#	from_insert[:add_edges] = []
+					#	from_remove[:remove_edges] = []
+					#end
+					#from_insert[:add_edges].zip(from_remove[:remove_edges]).each do |add_edge, rem_edge|
+					#	if ((add_edge[:source] == rem_edge[:source]) && (add_edge[:target] == rem_edge[:target]))
+					#		mod_edges << add_edge
+					#	end
+					#end
+
+	 		#if you have a note and are modding it
+			elsif first_char == '-' && ordering_el.model == "note" && curr_el.is_a?(Note)
+				from_remove = remove_element(number, false)
+				from_insert = insert_element(number, content, curr_el)
+			
+			#if it's not the same or not formatted right, you want to get rid of what's there 
+			#and insert whatever's appropriate
+			else 
+				from_remove = remove_element(number, true)
+				from_insert = insert_element(number, content)
 			end
 
-				#WHILE I SHOULD BE DOING THIS WITH THE EDGES, ADD/REMOVE IS THE SAME,
-				#AND IDEALLY THEY WILL BE UNNECESSARY WHEN THE JS IS PROPER, AS THE NODE
-				#WILL REMAIN ON MODIFY, EDGES CAN BE LEFT ALONE
-				#if from_insert[:add_edges] == from_remove[:remove_edges]
-				#	from_insert[:modify_edges] = from_insert[:add_edges]
-				#	from_insert[:add_edges] = []
-				#	from_remove[:remove_edges] = []
-				#end
-				#from_insert[:add_edges].zip(from_remove[:remove_edges]).each do |add_edge, rem_edge|
-				#	if ((add_edge[:source] == rem_edge[:source]) && (add_edge[:target] == rem_edge[:target]))
-				#		mod_edges << add_edge
-				#	end
-				#end
+			from_insert_total = merge_two_hashes(from_insert_total, from_insert)
+			from_remove_total = merge_two_hashes(from_remove_total, from_remove)
 
- 		#if you have a note and are modding it
-		elsif first_char == '-' && ordering_el.model == "note" && curr_el.is_a?(Note)
-			from_remove = remove_element(line_number, false)
-			from_insert = insert_element(line_number, line_content, curr_el)
-		
-		#if it's not the same or not formatted right, you want to get rid of what's there 
-		#and insert whatever's appropriate
-		else 
-			from_remove = remove_element(line_number, true)
-			from_insert = insert_element(line_number, line_content)
 		end
-
 		#to_modify = format_hash_for_AJAX(from_insert, from_remove)
-		to_modify = merge_two_hashes(from_insert, from_remove)
+		to_modify = merge_two_hashes(from_insert_total, from_remove_total)
 
 		#return node
 		return uniqify_arrays_in_hash(to_modify, :id)
