@@ -121,6 +121,7 @@ class Work < ActiveRecord::Base
 
 	#insert a new element, into the markup, ordering, and relations
 	def insert_element(line_number, line_content, in_element=nil)
+		#TODO pass this
 		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		ordering = get_ordering
