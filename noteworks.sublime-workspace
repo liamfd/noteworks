@@ -4,12 +4,88 @@
 		"selected_items":
 		[
 			[
+				"from",
+				"from_insert"
+			],
+			[
+				"from_",
+				"from_insert"
+			],
+			[
+				"delee",
+				"deleted_element_hash"
+			],
+			[
 				"link",
-				"link"
+				"link_collections"
+			],
+			[
+				"cate",
+				"category_name"
+			],
+			[
+				"uni",
+				"uniqify_arrays_in_hash"
+			],
+			[
+				"sub",
+				"sub_key"
+			],
+			[
+				"remo",
+				"remove_nodes"
+			],
+			[
+				"add",
+				"add_nodes"
+			],
+			[
+				"add_",
+				"add_node"
+			],
+			[
+				"new",
+				"new_element_hash"
+			],
+			[
+				"to",
+				"to_modify"
+			],
+			[
+				"merge",
+				"merge_two_hashes"
+			],
+			[
+				"to_",
+				"to_change"
 			],
 			[
 				"remove",
-				"remove_edges"
+				"remove_node"
+			],
+			[
+				"modify",
+				"modify_nodes"
+			],
+			[
+				"modi",
+				"modify_nodes"
+			],
+			[
+				"insert",
+				"insert_overwrite_in_hash"
+			],
+			[
+				"eleme",
+				"element_array_key"
+			],
+			[
+				"element",
+				"element_array"
+			],
+			[
+				"L",
+				"LinkCollection"
 			],
 			[
 				"Link",
@@ -36,10 +112,6 @@
 				"parent_node"
 			],
 			[
-				"add",
-				"add_link"
-			],
-			[
 				"lin",
 				"link_collection_id"
 			],
@@ -48,32 +120,12 @@
 				"ordering_el"
 			],
 			[
-				"insert",
-				"insert_element"
-			],
-			[
 				"delet",
 				"delete_element"
 			],
 			[
-				"new",
-				"new_element_hash"
-			],
-			[
 				"lines",
 				"lines_content"
-			],
-			[
-				"from",
-				"from_remove"
-			],
-			[
-				"modify",
-				"modify_edges"
-			],
-			[
-				"from_",
-				"from_remove"
 			],
 			[
 				"curr",
@@ -164,14 +216,6 @@
 				"nodes"
 			],
 			[
-				"to_",
-				"to_modify"
-			],
-			[
-				"to",
-				"to_json"
-			],
-			[
 				"pos_",
 				"pos_x"
 			],
@@ -222,10 +266,6 @@
 			[
 				"id",
 				"id"
-			],
-			[
-				"cate",
-				"category"
 			],
 			[
 				"combined",
@@ -474,46 +514,6 @@
 			[
 				"teamGrid",
 				"teamGridIcon"
-			],
-			[
-				"min",
-				"min-height"
-			],
-			[
-				"word",
-				"word-wrap"
-			],
-			[
-				"sc",
-				"secondary"
-			],
-			[
-				"Re",
-				"Redd"
-			],
-			[
-				"img",
-				"imgWrapper"
-			],
-			[
-				"backgroun",
-				"background-color"
-			],
-			[
-				"time",
-				"timelineEvent"
-			],
-			[
-				"timelin",
-				"timelineEventMixin"
-			],
-			[
-				"timelineE",
-				"timelineEvent"
-			],
-			[
-				"font",
-				"font-size"
 			]
 		]
 	},
@@ -523,7 +523,15 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 29856,
+				"buffer_size": 25294,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/models/link_collection.rb",
+			"settings":
+			{
+				"buffer_size": 642,
 				"line_ending": "Unix"
 			}
 		},
@@ -531,18 +539,7 @@
 			"file": "app/models/link.rb",
 			"settings":
 			{
-				"buffer_size": 517,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "class LinkCollection < ActiveRecord::Base\n  belongs_to :node, inverse_of: :link_collections\n  has_many :links, inverse_of: :link_collection, dependent: :destroy\n\n  def set_links(text)\n  	\n  	chunks = text.split(\",\")\n  	chunks.each do |chunk|\n  		n = Node.find_by(title: chunk)\n      if n != nil#if there's an actual link there\n        link = self.links.build\n      	#link.link_collection_id = self.id\n      	link.parent_id = self.node.id\n        link.child_id = n.id\n      	link.save\n      end\n	  end\n  #	self.links << link\n  end\n\nend\n",
-			"file": "app/models/link_collection.rb",
-			"file_size": 535,
-			"file_write_time": 1395515173000000,
-			"settings":
-			{
-				"buffer_size": 535,
+				"buffer_size": 661,
 				"line_ending": "Unix"
 			}
 		},
@@ -582,27 +579,10 @@
 			}
 		},
 		{
-			"contents": "<h1>Listing nodes</h1>\n\n<table>\n  <thead>\n    <tr>\n      <th>Title</th>\n      <th>Category</th>\n      <th>Work</th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n\n  <tbody>\n    <% @nodes.each do |node| %>\n      <tr>\n        <td><%= node.title %></td>\n        <td><%= node.category.name %></td>\n        <td>+<%= node.work.name %></td>\n        <td><%= link_to 'Show', node %></td>\n        <td><%= link_to 'Edit', edit_node_path(node) %></td>\n        <td><%= link_to 'Destroy', node, method: :delete, data: { confirm: 'Are you sure?' } %></td>\n      </tr>\n    <% end %>\n  </tbody>\n</table>\n\n<br>\n\n<%= link_to 'New Node', new_node_path %>\n",
 			"file": "app/views/nodes/index.html.erb",
-			"file_size": 657,
-			"file_write_time": 1395278226000000,
 			"settings":
 			{
 				"buffer_size": 658,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"settings":
-			{
-				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		}
@@ -663,6 +643,10 @@
 	},
 	"file_history":
 	[
+		"/home/liam/projs/noteworks/README.md",
+		"/home/liam/projs/noteworks/app/models/category.rb",
+		"/home/liam/projs/noteworks/b_remove_element.txt",
+		"/home/liam/projs/noteworks/vendor/b_remove_element.txt",
 		"/home/liam/projs/noteworks/app/models/link_collection.rb",
 		"/home/liam/projs/noteworks/spec/models/link_collection_spec.rb",
 		"/home/liam/projs/noteworks/spec/factories/links.rb",
@@ -677,7 +661,6 @@
 		"/home/liam/projs/noteworks/.gitignore",
 		"/home/liam/projs/noteworks/spec/models/work_spec.rb",
 		"/home/liam/projs/noteworks/spec/spec_helper.rb",
-		"/home/liam/projs/noteworks/README.md",
 		"/home/liam/projs/noteworks/app/controllers/nodes_controller.rb",
 		"/home/liam/projs/noteworks/test/controllers/nodes_controller_test.rb",
 		"/home/liam/projs/noteworks/test/fixtures/works.yml",
@@ -713,7 +696,6 @@
 		"/home/liam/projs/tff/tffproto/resources/sass/utils/todo.txt",
 		"/home/liam/projs/noteworks/todolist.txt",
 		"/home/liam/.config/sublime-text-2/Packages/Default/Default (Linux).sublime-keymap",
-		"/home/liam/projs/noteworks/app/models/category.rb",
 		"/home/liam/projs/noteworks/word-wrap-test.html",
 		"/home/liam/projs/noteworks/vendor/assets/javascripts/cytoscape.js-2.0.4/cytoscape.js",
 		"/home/liam/projs/noteworks/vendor/assets/javascripts/cytoscape.js-2.0.4/cytoscape-2-1.js",
@@ -788,9 +770,7 @@
 		"/home/liam/projs/noteweb/app/models/node.rb",
 		"/home/liam/projs/noteweb/app/views/nodes/index.html.erb",
 		"/home/liam/projs/noteweb/Gemfile",
-		"/home/liam/projs/noteweb/app/models/work.rb",
-		"/home/liam/projs/noteweb/app/views/nodes/show.html.erb",
-		"/home/liam/projs/noteweb/app/views/works/nodedisplay.html.erb"
+		"/home/liam/projs/noteweb/app/models/work.rb"
 	],
 	"find":
 	{
@@ -808,6 +788,14 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"line_number",
+			"line_content",
+			"getTextFromRegexp",
+			"binding.pry",
+			"<",
+			"name",
+			"binding",
+			"el",
 			"insert_ele",
 			"get_ordering",
 			"populate_",
@@ -927,15 +915,7 @@
 			"drawNodeText",
 			";\n",
 			"drawNode",
-			".pxValue",
-			"\"height\"\n\"height\"",
-			"\"height\"",
-			"\"height\"\n\"height\"",
-			"\"height\"",
-			"element._private.style",
-			"drawText",
-			"getNodeHeight",
-			"nodeHeight"
+			".pxValue"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -943,6 +923,9 @@
 		"regex": false,
 		"replace_history":
 		[
+			"number",
+			"content",
+			"get_text_from_regexp",
 			"get_element_in_ordering",
 			"print_ordering",
 			"set_order",
@@ -1027,15 +1010,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 29856,
+						"buffer_size": 25294,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								22437,
-								22437
+								22395,
+								22395
 							]
 						],
 						"settings":
@@ -1136,25 +1119,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 15472.0,
+						"translation.y": 14138.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "app/models/link.rb",
+					"file": "app/models/link_collection.rb",
 					"settings":
 					{
-						"buffer_size": 517,
+						"buffer_size": 642,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								240,
-								240
+								613,
+								613
 							]
 						],
 						"settings":
@@ -1263,18 +1246,18 @@
 				},
 				{
 					"buffer": 2,
-					"file": "app/models/link_collection.rb",
+					"file": "app/models/link.rb",
 					"settings":
 					{
-						"buffer_size": 535,
+						"buffer_size": 661,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								529,
-								529
+								535,
+								535
 							]
 						],
 						"settings":
@@ -1393,8 +1376,8 @@
 						"selection":
 						[
 							[
-								639,
-								639
+								1880,
+								1880
 							]
 						],
 						"settings":
@@ -1496,7 +1479,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 924.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1736,7 +1719,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1932.0,
+						"translation.y": 1848.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1980,240 +1963,6 @@
 						"zoom_level": 1.0
 					},
 					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"incomplete_sync": null,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"remote_loading": false,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": true,
-							"sublimelinter_gutter_marks_theme": "simple",
-							"sublimelinter_mark_style": "none",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"synced": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"incomplete_sync": null,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"remote_loading": false,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": true,
-							"sublimelinter_gutter_marks_theme": "simple",
-							"sublimelinter_mark_style": "none",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"synced": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
 				}
 			]
 		}
@@ -2286,6 +2035,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 235.0,
+	"side_bar_width": 170.0,
 	"status_bar_visible": true
 }

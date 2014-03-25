@@ -30,9 +30,9 @@ class Work < ActiveRecord::Base
 
 	#parser shit
 	def modify_element(lines_number, lines_content)
-		from_insert_total = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
-		from_remove_total = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
-		to_modify = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		from_insert_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		from_remove_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		
 		lines_number.zip(lines_content).each do |number, content|
 			
@@ -53,6 +53,7 @@ class Work < ActiveRecord::Base
 
 				#consolidates these into modify in insert
 				if from_remove[:remove_nodes].first[:id] == from_insert[:add_nodes].first[:id]
+					binding.pry
 					from_insert[:modify_nodes].append(from_insert[:add_nodes].first)
 					from_insert[:add_nodes] = []
 					from_remove[:remove_nodes] = []
@@ -84,12 +85,12 @@ class Work < ActiveRecord::Base
 				from_insert = insert_element(number, content)
 			end
 
-			from_insert_total = merge_two_hashes(from_insert_total, from_insert)
 			from_remove_total = merge_two_hashes(from_remove_total, from_remove)
-
+			from_insert_total = merge_two_hashes(from_insert_total, from_insert)
+			binding.pry
 		end
 		#to_modify = format_hash_for_AJAX(from_insert, from_remove)
-		to_modify = merge_two_hashes(from_insert_total, from_remove_total)
+		to_modify = merge_two_hashes(from_remove_total, from_insert_total)
 
 		#return node
 		return uniqify_arrays_in_hash(to_modify, :id)
@@ -97,7 +98,7 @@ class Work < ActiveRecord::Base
 
 	#to be called from the AJAX, takes insertNewElement's response and formats it
 	def add_new_element(lines_number, lines_content)
-		new_element_hash = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		new_element_hash = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		
 		lines_number.zip(lines_content).each do |number, content|
 			new_element_hash = merge_two_hashes(new_element_hash , insert_element(number, content))
@@ -109,7 +110,7 @@ class Work < ActiveRecord::Base
 
 	#to be called from the AJAX, takes remove_element's response and formats it
 	def delete_element(lines_number)
-		deleted_element_hash = {modify_nodes: [], add_nodes: [], removed_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
+		deleted_element_hash = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		lines_number.reverse.each do |number|
 			deleted_element_hash = merge_two_hashes(deleted_element_hash , remove_element(number))
@@ -188,7 +189,7 @@ class Work < ActiveRecord::Base
 				end
 				owner_id = nil #resets it to make the above check false for non-nodes
 			end
-
+			new_node.combine_notes
 			to_modify[:add_nodes].append(new_node.to_cytoscape_hash[:node])
 			to_modify[:add_edges] = new_node.to_cytoscape_hash[:edges]
 			to_modify[:remove_edges] = remove_edges
@@ -299,6 +300,7 @@ class Work < ActiveRecord::Base
 				
 				#this does a lot of things, including redoing the notes, but only happens if it's a node getting deleted?
 				change_parent(child[:node], new_parent)
+
 				if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
 					new_parent_edge = child[:node].parent_relationships.first
 					if (new_parent_edge != nil)
@@ -320,7 +322,6 @@ class Work < ActiveRecord::Base
 					end
 					#to_modify[:remove_edges].append(child[:node].links.to_cytoscape_hash)
 				
-
 				end
 			end
 
