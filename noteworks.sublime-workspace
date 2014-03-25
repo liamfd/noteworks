@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"pare",
+				"parent_id"
+			],
+			[
+				"mod_edge",
+				"mod_edge"
+			],
+			[
 				"from",
 				"from_insert"
 			],
@@ -242,10 +250,6 @@
 			[
 				"re",
 				"relations"
-			],
-			[
-				"pare",
-				"parentNode"
 			],
 			[
 				"work",
@@ -510,10 +514,6 @@
 			[
 				"tim",
 				"timelineVertical"
-			],
-			[
-				"teamGrid",
-				"teamGridIcon"
 			]
 		]
 	},
@@ -523,7 +523,15 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 25345,
+				"buffer_size": 25378,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/assets/javascripts/works.js",
+			"settings":
+			{
+				"buffer_size": 23945,
 				"line_ending": "Unix"
 			}
 		},
@@ -539,7 +547,7 @@
 			"file": "app/models/link.rb",
 			"settings":
 			{
-				"buffer_size": 661,
+				"buffer_size": 750,
 				"line_ending": "Unix"
 			}
 		},
@@ -552,21 +560,10 @@
 			}
 		},
 		{
-			"contents": "// Place all the behaviors and hooks related to the matching controller here.\n// All this logic will automatically be available in application.js.\n// You can use CoffeeScript in this file: http://coffeescript.org/\nvar i = 0;\nvar lineText = \"\";\nvar prevLine = 0;\nvar num_lines = 0;\nvar test_data;\nvar changes_made;\n\n\n$( document ).ready(function() {\n  num_lines = getNumLines();\n  changes_made = false;\n  test_data = {};\n\n//  $ ('#work_markup').get(0).onkeypress= pressFunction;\n  $ ('#work_markup').get(0).onkeyup= upFunction;\n  $ ('#work_markup').get(0).onclick= clickFunction;\n\n  var ele = gon.elements;\n  ele = JSON.stringify(ele);\n  $( \".test\" ).text(ele);\n});\n\n\n//function called on keyup. Should fix it. Mostly just determine between deletes and insertions.\nfunction upFunction(e){\n  var code = e.code || e.which;\n  //alert(code);\n  //I believe these two are equivalent\n  //var el = $(\"#editable\")[0];\n  var el = this;\n  if (el == undefined)\n    return;\n\n  var curr_num_lines = getNumLines();\n  var num_lines_changed = num_lines - curr_num_lines;\n  console.log(\"curr_num_lines\" + curr_num_lines);\n  console.log(\"num_lines\" + num_lines);\n  console.log(\"num_lines_changed\" + num_lines_changed);\n\n  var text;\n  currLine = getCurrentLine(el);\n  text = getLineText(prevLine);\n\n  console.log(\"currLine:\" + currLine);\n  console.log(\"prevLine:\" + prevLine);\n  console.log(\"text:\" + text);\n\n  if ((code < 37) || (code > 40)){ //if it's not an arrow key\n    changes_made = true;\n  }\n\n\n  if (code == 13){ //if it's an enter, update old line, add new (can hit enter anywhere in line)\n    //the new line is always the current line. even if entering at the beginning, your generating a new line, \n    //and moving shit to it\n\n    curr_text = getLineText(currLine);\n    addElement(currLine, curr_text);\n    \n    console.log(\"ENTER\");\n\n    prev_text = getLineText(prevLine); //in case a change is made on the previous line, before/after linebreak\n    updateElement(prevLine, prev_text);\n\n    num_lines = curr_num_lines;\n    prevLine = currLine; //The this doesn't get updated auto on enter\n  }\n\n  else if ((code == 8) && (curr_num_lines < num_lines)){ //if it's backspace and a whole line gone\n    delElement(prevLine);\n    num_lines--;\n    prevLine = currLine;\n    \n    //console.log(\"backspaced line\" + prevLine);\n  }\n\n  else if ((code == 46) && (curr_num_lines < num_lines)){ //if it's a del and a whole line gone\n    /* FOR NOW, DELETE DISABLED, UNTIL I SOLVE THE END OF LINE VS BEGINNING OF LINE ISSUE */\n    //delElement(currLine); //the server still thinks an extra thing is there\n    num_lines--;\n    prevLine = currLine; //probably unnecessary\n   // console.log(\"deleted line\" + currLine);\n  }\n\n  else if (checkLineChanged(currLine)){ //otherwise, if I've just changed lines\n    if (changes_made){ //if he's not just arrowing around\n      text = getLineText(prevLine);\n      updateElement(prevLine, text);\n      console.log(\"doing shit!\");\n      changes_made = false;\n    }\n\n\n    //starting at the line after the original spot, until the current spot (insertion ends)\n//    for (var i = prevLine+1; i <= currLine; i++){\n //     curr_text = getLineText(i);\n     // addElement(i, curr_text);\n  //    console.log(\"Changing \" , i);\n  //  }\n\n    prevLine = currLine;\n   // console.log(\"switched from \" + prevLine + \"to \" + currLine);\n  }\n\n\n  console.log(\"--------------\");\n\n  return;\n}\n\n//function called on click. Gets the current line and sends it to checkChanged\nfunction clickFunction(e){\n  var currLine = getCurrentLine(this);\n//  checkLineChanged(currLine);\n//  if (this == undefined)\n//    return;\n  prevLine = currLine;\n}\n\n//ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller\nfunction updateElement(line_num, text){\n  console.log(\"update\");\n  $.ajax({\n    type:\"GET\",\n    url:\"mod_element\",\n    data: {line_number: line_num, line_content: text},\n    dataType:\"json\",\n    success: function(data){\n      modInGraph(data);\n    }\n  });\n}\n\n//ajax call that takes in a line number and its text, and sends them to the addelement function in the works controller\nfunction addElement(line_num, text){\n  console.log(\"add\");\n  $.ajax({\n    type:\"GET\",\n    url:\"add_element\",\n    data: {line_number: line_num, line_content: text},\n    dataType:\"json\",\n    success: function(data){\n      modInGraph(data);\n    }\n  });\n}\n\n//ajax call that takes in a line number and sends it to the delelement function in the works controller\nfunction delElement(line_num){\n  console.log(\"del\");\n  $.ajax({\n    type:\"GET\",\n    url:\"del_element\",\n    data: {line_number: line_num},\n    dataType:\"json\",\n    success: function(data){\n      modInGraph(data);\n    }\n  });\n}\n\n\n//function that runs if the ajax is successful, will eventually update the graph\nfunction modInGraph(data){\n  $(\"#test_box\").text(JSON.stringify(data));\n  \n  //console.log(\"data=\" + data);\n  test_data = data;\n  var pos_y; //these two will be random\n  var pos_x;\n  var edge_id_string;\n\n\n  //delete the edges bieng modified (WILL PROBABLY DROP THIS)\n  for (i = 0; i < data.modify_edges.length; i++){\n    mod_edge = data.modify_edges[i];\n    if ((mod_edge != null) && (mod_edge != undefined)){\n      edge_id_string = \"#\" + mod_edge.id;\n      cy.remove(edge_id_string);\n    }\n  }\n\n  //modify the mod notes. Saves position, removes, adds back in with new data\n  var mod_node;\n  for (i = 0, len = data.modify_nodes.length; i < len; ++i){\n    mod_node = data.modify_nodes[i];\n    if ((mod_node != null) && (mod_node != undefined)){\n      //save the position, so the replacement can be set at it\n      var mod_graph_node = cy.$(\"#\" + mod_node.id);\n      pos_x = mod_graph_node.position().x;\n      pos_y = mod_graph_node.position().y;\n    \n      cy.remove(mod_graph_node);\n      mod_node.id = mod_node.id.toString();\n      cy.add({\n        group: \"nodes\",\n        data: mod_node,\n        position:{ x: pos_x, y: pos_y}\n      }).addClass(\"starting\");\n    \n    }\n  }\n\n  //add the edges being modified (WILL PROBABLY DROP THIS AS WELL)\n  for (i = 0; i < data.modify_edges.length; i++){\n    mod_edge = data.modify_edges[i];\n    console.log(add_edge);\n    if ((mod_edge != null) && (mod_edge != undefined)){\n      mod_edge.id = data.mod_edges[i].id.toString();\n      mod_edge.source = data.mod_edges[i].source.toString();\n      mod_edge.target = data.mod_edges[i].target.toString();\n      console.log(mod_edge);\n     \n      //maybe have this check instead that both nodes exist in the graph, otherwise you get an error\n      if ((mod_edge.source != undefined) && (mod_edge.target != undefined) && (mod_edge.id != undefined)){ //ignore if edge goes nowhere\n        cy.add({\n          group: \"edges\",\n          data: mod_edge\n        });\n      }\n    }\n  }\n\n  pos_y = 50; //these two will be random\n  pos_x = 60;\n\n  //delete the edges\n  for (i = 0; i < data.remove_edges.length; i++){\n    rem_edge = data.remove_edges[i];\n    if ((rem_edge != null) && (rem_edge != undefined)){\n      edge_id_string = \"#\" + rem_edge.id;\n      cy.remove(edge_id_string);\n    }\n  }\n\n  //delete the nodes\n  var rem_node;\n  for (i = 0, len = data.remove_nodes.length; i < len; ++i){\n    rem_node = data.remove_nodes[i];\n    if ((rem_node != null) && (rem_node != undefined)){\n      //save the position, so the replacement can be set at it\n      var rem_graph_node = cy.$(\"#\" + rem_node.id);\n      //pos_x = rem_graph_node.position().x;\n      //pos_y = rem_graph_node.position().y;\n    \n      cy.remove(rem_graph_node);\n    }\n  }\n \n  //var add_node = data.add.node;\n  //add the edges\n  for (i = 0, len = data.add_nodes.length; i < len; ++i){\n    add_node = data.add_nodes[i];\n    if ((add_node != null) && (add_node != undefined)) {\n      //add the new node\n      add_node.id = add_node.id.toString();\n    //  data.add.node.id = data.add.node.id.toString(); //convert the id to a string\n      cy.add({\n        group: \"nodes\",\n        data: add_node,\n        position:{ x: pos_x, y: pos_y}\n      }).addClass(\"starting\");\n    }\n  }\n\n  //add the new edges, first converting their values to strings\n  for (i = 0; i < data.add_edges.length; i++){\n    add_edge = data.add_edges[i];\n    console.log(add_edge);\n    if ((add_edge != null) && (add_edge != undefined)){\n      add_edge.id = data.add_edges[i].id.toString();\n      add_edge.source = data.add_edges[i].source.toString();\n      add_edge.target = data.add_edges[i].target.toString();\n      console.log(add_edge);\n     \n      //maybe have this check instead that both nodes exist in the graph, otherwise you get an error\n      if ((add_edge.source != undefined) && (add_edge.target != undefined) && (add_edge.id != undefined)){ //ignore if edge goes nowhere\n        cy.add({\n          group: \"edges\",\n          data: add_edge\n        });\n      }\n    }\n  }\n\n  \n\n}\n\n\n//gets the caret pos this is for text areas\n(function ($, undefined) {\n    $.fn.getCursorPosition = function() {\n        var el = $(this).get(0);\n        var pos = 0;\n        if('selectionStart' in el) {\n            pos = el.selectionStart;\n        } else if('selection' in document) {\n            el.focus();\n            var Sel = document.selection.createRange();\n            var SelLength = document.selection.createRange().text.length;\n            Sel.moveStart('character', -el.value.length);\n            pos = Sel.text.length - SelLength;\n        }\n        return pos;\n    };\n  })(jQuery);\n\n//using the text and the caret position, gets the line number\nfunction getCurrentLine(el){\n  //var caretPos = getCaretCharacterOffsetWithin(el);\n  var caretPos = $(\"#work_markup\").getCursorPosition();\n  if (caretPos == null)\n    return -1;\n  //console.log(caretPos);\n\n  var currLine = 0;\n  var text = \"\";\n  if (el != undefined){\n    text = el.value;\n  }\n  //var text = \"soup\"\n  for (var i = 0; i < caretPos; i++){\n    if (text[i] == \"\\n\"){\n      currLine++;\n    }\n  }\n  //if it's a newline...\n  //console.log(\"currLine: \" + currLine);\n  return currLine;\n}\n\n//returns the text at the given line, by breaking it into an array of strings (one each line) returning the one at lineNum\nfunction getLineText(lineNum){\n  var lines = $(\"#work_markup\").val().split(/\\r\\n|\\r|\\n/);\n//  console.log(\"888\" + lines[lineNum]);\n  return lines[lineNum];\n\n}\n\n//figure out what you want this to do\nfunction checkLineChanged(currLine){\n  if (currLine != prevLine){\n    return true;\n  }\n  return false;\n}\n\n//returns the number of lines in work_markup's text, by splitting with a regexp and taking length\nfunction getNumLines(){\n  var num_lines = $(\"#work_markup\").val().split(/\\r\\n|\\r|\\n/).length;\n  return num_lines;\n}\n\n\n\n\n\n\n\n/* CYTOSCAPE STUFF */\n$(loadCy = function(){\n  options = {\n    layout: {\n      name: 'arbor',\n      liveUpdate: true, // whether to show the layout as it's running\n      ready: undefined, // callback on layoutready \n      stop: undefined, // callback on layoutstop\n      maxSimulationTime: 4000, // max length in ms to run the layout\n      fit: true, // reset viewport to fit defaualt simulationBounds\n      padding: [ 50, 50, 50, 50 ], // top, right, bottom, left\n      simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by defaualt\n      ungrabifyWhileSimulating: true, // so you can't drag nodes during layout\n\n      // forces used by arbor (use arbor defaualt on undefined)\n      repulsion: undefined,\n      stiffness: undefined,\n      friction: undefined,\n      gravity: true,\n      fps: undefined,\n      precision: undefined,\n\n      // static numbers or functions that dynamically return what these\n      // values should be for each element\n      nodeMass: undefined,\n      edgeLength: undefined,\n\n      stepSize: 1, // size of timestep in simulation\n\n      // function that returns true if the system is stable to indicate\n      // that the layout can be stopped\n      stableEnergy: function( energy ){\n          var e = energy;\n          return (e.max <= 0.5) || (e.mean <= 0.3);\n      }\n    },\n\n    showOverlay: false,\n    panningEnabled: true,\n    boxSelectionEnabled: false,\n    minZoom: 0.5,\n    maxZoom: 2,\n\n    style: cytoscape.stylesheet()\n      .selector('node')\n        .css({\n          'content': 'data(title)',\n          'font-family': 'helvetica',\n          'font-size': 14,\n          \n          'width': 'mapData(weight, 30, 80, 20, 50)',\n          'height': 'mapData(height, 0, 200, 10, 45)',\n          'z-index' : 1\n        })\n    \n      .selector(':selected')\n        .css({\n          'background-color': '#000',\n          'line-color': '#000',\n          'target-arrow-color': '#000',\n          'text-outline-color': '#000'\n        })\n      .selector('edge')\n        .css({\n          'width': 3,\n          'target-arrow-shape': 'none'\n        })\n      .selector('.starting')\n        .css({\n          'text-outline-width': 3,\n          'text-outline-color': 'data(color)',\n          'border-color':'data(color)',\n          'border-width':3,\n          'background-color': '#fff',\n          'text-valign': 'center',\n          'text-halign' : 'center',\n          'color': '#fff',\n          'font-size':\"16px\",\n          'height':\"30px\",\n         \n          //this needs to be there, otherwise it doesn't draw the notes correctly the first time.\n          'note-font-size': \"16px\",\n          'note-font-weight': \"bold\",\n          'note-text-outline-width': 0,\n          \n        })\n      .selector('.focused')\n       .css({\n          'width' : '300px',\n          'height' : 'auto',\n          'shape' : 'roundrectangle',\n          'border-width' : \"3px\",\n          'border-color' : \"data(color)\",\n          'background-color' : '#fff',\n          'background-opacity' : 1,\n          \"opacity\" : 1,\n          \"z-index\" : 5,\n\n          'content' : 'data(title)',\n          'text-outline-width': 3,\n          'text-outline-color': 'data(color)',\n          'color': '#fff',\n          'text-valign' : \"top\",\n          'font-size':\"18px\",\n\n          'notes': 'data(notes)',\n          'note-text-outline-width': 0,\n          'note-text-outline-color':\"#fff\",\n          'note-color': '#444',\n          'note-font-size': \"16px\",\n          'note-font-weight': \"bold\",\n        })\n      .selector('.less-focused')\n        .css({\n          'z-index' : 3,\n          'background-color':\"#dddddd\"\n        })\n\n      .selector('.faded')\n        .css({\n          'opacity': 0.9,\n          'text-opacity': 0.9,\n          'z-index': 1,\n       }),\n   \n    elements:gon.elements,\n\n    ready: function(){\n      window.cy = this;\n      cy.elements().unselectify();\n\n      //centers the node further from the middle when clicking edge\n      cy.on('tap', 'edge', function(e){\n        var edge = e.cyTarget;\n        var src = edge.source();\n        var targ = edge.target();\n\n        //center of canvas\n        var cont = $('#cy')[0];\n        //var cont = document.getElementById(cy);\n        var cent_x = (cont.offsetWidth)/2;\n        var cent_y = (cont.offsetHeight)/2;\n     \n        //x and y of the two nodes\n        var src_x = src.renderedPosition(\"x\");\n        var src_y = src.renderedPosition(\"y\");\n        var targ_x = targ.renderedPosition(\"x\");\n        var targ_y = targ.renderedPosition(\"y\");\n       \n        //distance function, sans sqrt\n        var src_dist = (cent_x - src_x) * (cent_x - src_x) + (cent_y - src_y) * (cent_y - src_y);\n        var targ_dist = (cent_x - targ_x) * (cent_x - targ_x) + (cent_y - targ_y) * (cent_y - targ_y);\n\n        //whichever node is further away, center it\n        if (src_dist >= targ_dist){\n          cy.center(src);\n        } else {\n          cy.center(targ);\n        }\n\n      });\n      \n      //bring focus to the element as they're clicked, prioritizing the most recent click\n      cy.on('tap', 'node', function(e){\n        var curr_node = e.cyTarget; \n        var prev_foci = cy.elements('node.focused');\n\n        prev_foci.not(curr_node).addClass('less-focused'); //middleground all focused nodes except current\n\n        if (curr_node.hasClass('less-focused')){ //if it's been middlegrounded, foreground\n          curr_node.removeClass('less-focused');\n        } \n        else { //otherwise, swap between foreground and background\n          curr_node.toggleClass('focused');\n        }\n      });\n\n      //resets the nodes when background is clicked\n      cy.on('tap', function(e){\n        if( e.cyTarget === cy ){\n          cy.elements().removeClass('focused');\n          cy.elements().removeClass('less-focused');\n        }\n      });\n\n      cy.on('load', function(e) {\n        cy.elements().addClass(\"starting\");\n      });\n\n    }\n  };\n  $('#cy').cytoscape(options);\n});\n\n\nfunction EDgetLineText(currLine){\n  var text = $('#editable').get(0).innerText;\n  //console.log(\"currLine: \" + currLine);\n  if (currLine != 0){\n    var lines = $(\"#editable > *\");\n    if (lines[currLine-1] != null)\n      return lines[currLine-1].innerText;\n    else //if the line number is not a real one\n      return \"\";\n  }\n\n  else{ //if it's line 0, there is no jquery object\n    //returns as soon as there's a newline. if it never hits one, just returns the entire thing\n    var i;\n    for (i = 0; i < text.length; i++){\n      if (text[i] == \"\\n\")\n        return text.substring(0, i);\n    }\n    return text;\n  }\n}\n\nfunction EDgetCurrentLine(el, caretPos){\n  //var caretPos = getCaretCharacterOffsetWithin(el);\n  if (caretPos == null){\n    alert(\"wat\");\n    return 0;\n  }\n  var currLine = 0;\n\n  var text = el.innerText;\n  var text_html = el.innerHTML;\n  var i;\n\n  for (i = 0; i <= caretPos; i++){\n    if (text[i] == \"\\n\"){\n      currLine++;\n      caretPos++;\n    }\n    else{\n    }\n  }\n\n  //for text input, fixes the issue with the extra newline at the end\n  if (currLine >= 0 && text[caretPos-1] == \"\\n\"){\n    currLine--;\n  }\n  //solves issue with end of line moving cursor via arrows\n  if (text[caretPos] == \"\\n\"){\n    currLine--;\n  }\n  //if it's a newline...\n  return currLine;\n\n}\n\n\nfunction EDpressFunction(e){\n  var code = e.keyCode || e.which;\n\n  var el = $(\"#editable\")[0];\n  var caretPos = getCaretCharacterOffsetWithin(el);\n\n  var currLine = getCurrentLine(el, caretPos);\n  \n  if (code == 13){\n    currLine++;\n  }\n\n  checkChangedLine(currLine);\n  //so, whenever I make changes to a line that's not a backspace, send its complete self to the parser, to do its best with\n    //on the parser side, I don't want to just endlessly create shit... don't change to new element unless ordered to?\n  //keep track of previous line number, so if backspace is hit, I can know whether or not a whole line is gone. \n}\n\nfunction EDupFunction(e){\n  code = e.code || e.which;\n  \n  //I believe these two are equivalent\n  //var el = $(\"#editable\")[0];\n  var el = this;\n  var caretPos = getCaretCharacterOffsetWithin(el);\n  var currLine = 0;\n\n  var sel = rangy.getSelection();\n  var cursorOffset = sel.focusOffset;\n  \n  //delete never changes the LINE\n  //if the key pressed wasn't an arrow or a del/backsp.\n  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){\n    currLine = getCurrentLine(el, caretPos);\n\n    //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line\n    if (cursorOffset == 0 && caretPos != 0){\n     currLine++;\n    }\n    checkChangedLine(currLine);\n  }\n  //else if (code == 13){\n  //  currLine = getCurrentLine(el, caretPos);\n  //  currLine++; //since it's an enter\n  //  checkChangedLine(currLine);\n  //}\n\n  return;\n}\n\nfunction EDclickFunction(e){\n  var caretPos = getCaretCharacterOffsetWithin(this);\n  var currLine = getCurrentLine(this, caretPos);\n\n  var sel = rangy.getSelection();\n  var cursorOffset = sel.focusOffset;\n\n  //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line\n  if (cursorOffset == 0 && caretPos != 0){\n   currLine++;\n  }\n  checkChangedLine(currLine);\n}\n\n\n//GETTING THE CARET POSITION\nfunction getCaretCharacterOffsetWithin(element) {\n    var caretOffset = 0;\n    var doc = element.ownerDocument || element.document;\n    var win = doc.defaultView || doc.parentWindow;\n    var sel;\n    if (typeof win.getSelection != \"undefined\") {\n        var range = win.getSelection().getRangeAt(0);\n        var preCaretRange = range.cloneRange();\n        preCaretRange.selectNodeContents(element);\n        preCaretRange.setEnd(range.endContainer, range.endOffset);\n        caretOffset = preCaretRange.toString().length;\n    } else if ( (sel = doc.selection) && sel.type != \"Control\") {\n        var textRange = sel.createRange();\n        var preCaretTextRange = doc.body.createTextRange();\n        preCaretTextRange.moveToElementText(element);\n        preCaretTextRange.setEndPoint(\"EndToEnd\", textRange);\n        caretOffset = preCaretTextRange.text.length;\n    }\n    return caretOffset;\n}\n\n//$(#editable).keypress(function(){\n // alert(\"shoo\");\n//});\n\n//THIS IS THE FORMATTING I USED IN THE VIEW\n/* \n$('#cy').cytoscape({\n  layout: {\n    name: 'arbor',\n    liveUpdate: false, // whether to show the layout as it's running\n    ready: undefined, // callback on layoutready \n    stop: undefined, // callback on layoutstop\n    maxSimulationTime: 4000, // max length in ms to run the layout\n    fit: true, // reset viewport to fit defaualt simulationBounds\n    padding: [ 50, 50, 50, 50 ], // top, right, bottom, left\n    simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by defaualt\n    ungrabifyWhileSimulating: true, // so you can't drag nodes during layout\n\n    // forces used by arbor (use arbor defaualt on undefined)\n    repulsion: undefined,\n    stiffness: undefined,\n    friction: undefined,\n    gravity: true,\n    fps: undefined,\n    precision: undefined,\n\n    // static numbers or functions that dynamically return what these\n    // values should be for each element\n    nodeMass: undefined,\n    edgeLength: undefined,\n\n    stepSize: 1, // size of timestep in simulation\n\n    // function that returns true if the system is stable to indicate\n    // that the layout can be stopped\n    stableEnergy: function( energy ){\n        var e = energy;\n        return (e.max <= 0.5) || (e.mean <= 0.3);\n    }\n  },\n\n  style: cytoscape.stylesheet()\n    .selector('node')\n      .css({\n        'content': 'data(title)',\n        'text-valign': 'center',\n        'color': 'white',\n        'text-outline-width': 2,\n        'text-outline-color': '//888'\n      })\n    .selector('edge')\n      .css({\n        'target-arrow-shape': 'triangle'\n      })\n    .selector(':selected')\n      .css({\n        'background-color': 'black',\n        'line-color': 'black',\n        'target-arrow-color': 'black',\n        'source-arrow-color': 'black'\n\n      })\n\n    .selector('.faded')\n      .css({\n        'opacity': 0.25,\n        'text-opacity': 0\n      })\n\n    .selector('.largeNode')\n      .css({\n        'width' : '100px',\n        'height' : '100px'\n      }),\n\n  elements: {\n    nodes: [\n      { data: { id: 'j', title: 'Jerry' } },\n      { data: { id: 'e', title: 'Elaine' } },\n      { data: { id: 'k', title: 'Kramer' } },\n      { data: { id: 'g', title: 'George' } }\n    ],\n    edges: [\n      { data: { source: 'j', target: 'e' } },\n      { data: { source: 'j', target: 'k' } },\n      { data: { source: 'j', target: 'g' } },\n      { data: { source: 'e', target: 'j' } },\n      { data: { source: 'e', target: 'k' } },\n      { data: { source: 'k', target: 'j' } },\n      { data: { source: 'k', target: 'e' } },\n      { data: { source: 'k', target: 'g' } },\n      { data: { source: 'g', target: 'j' } }\n    ]\n  },\n  \n    ready: function(){\n      window.cy = this;\n      \n      cy.elements().unselectify();\n      \n      cy.on('tap', 'node', function(e){\n        var node = e.cyTarget;\n        var neighborhood = node.neighborhood().add(node);\n        \n        cy.nodes().addClass('faded');\n        cy.nodes().removeClass('faded');\n        node.toggleClass('largeNode');\n      });\n      \n      cy.on('tap', function(e){\n        if( e.cyTarget === cy ){\n          cy.nodes().removeClass('faded');\n          cy.nodes().removeClass('largeNode');\n        }\n      });\n\n  }\n\n}); */",
-			"file": "app/assets/javascripts/works.js",
-			"file_size": 23926,
-			"file_write_time": 1395372792000000,
-			"settings":
-			{
-				"buffer_size": 23918,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "app/controllers/works_controller.rb",
 			"settings":
 			{
-				"buffer_size": 3421,
+				"buffer_size": 3498,
 				"line_ending": "Unix"
 			}
 		},
@@ -774,7 +771,7 @@
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 38.0
 	},
 	"find_in_files":
 	{
@@ -788,6 +785,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"binding.pry",
+			"add_edge",
 			"removed",
 			"bindin",
 			")\n",
@@ -913,9 +912,7 @@
 			"drawNode",
 			"lines.length",
 			"lines",
-			"lines.length()",
-			"getLines",
-			"drawNodeText"
+			"lines.length()"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1002,7 +999,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -1010,15 +1007,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 25345,
+						"buffer_size": 25378,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7118,
-								7118
+								12381,
+								12381
 							]
 						],
 						"settings":
@@ -1119,13 +1116,133 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3499.0,
+						"translation.y": 7304.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "app/assets/javascripts/works.js",
+					"settings":
+					{
+						"buffer_size": 23945,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6758,
+								6758
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"incomplete_sync": null,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"remote_loading": false,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"synced": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7309.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
 					"file": "app/models/link_collection.rb",
 					"settings":
 					{
@@ -1245,19 +1362,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 3,
 					"file": "app/models/link.rb",
 					"settings":
 					{
-						"buffer_size": 661,
+						"buffer_size": 750,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								535,
-								535
+								31,
+								31
 							]
 						],
 						"settings":
@@ -1365,7 +1482,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 4,
 					"file": "app/models/node.rb",
 					"settings":
 					{
@@ -1485,139 +1602,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "app/assets/javascripts/works.js",
-					"settings":
-					{
-						"buffer_size": 23918,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5057,
-								5057
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"incomplete_sync": null,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"remote_loading": false,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": true,
-							"sublimelinter_gutter_marks_theme": "simple",
-							"sublimelinter_mark_style": "none",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"synced": false,
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3680.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
 					"buffer": 5,
 					"file": "app/controllers/works_controller.rb",
 					"settings":
 					{
-						"buffer_size": 3421,
+						"buffer_size": 3498,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2898,
-								2898
+								2811,
+								2811
 							]
 						],
 						"settings":
@@ -1719,7 +1716,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1848.0,
+						"translation.y": 2376.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

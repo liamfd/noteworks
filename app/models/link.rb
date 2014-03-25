@@ -27,7 +27,7 @@ class Link < ActiveRecord::Base
   end
 
   def to_cytoscape_hash
-    cyto_hash = {id: self.id.to_s, source: self.parent_id.to_s, target: self.child_id.to_s}
+    cyto_hash = {id: self.id, source: self.parent_id.to_s, target: self.child_id.to_s}
     return cyto_hash
   end
 end
