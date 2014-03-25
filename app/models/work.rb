@@ -53,7 +53,7 @@ class Work < ActiveRecord::Base
 
 				#consolidates these into modify in insert
 				if from_remove[:remove_nodes].first[:id] == from_insert[:add_nodes].first[:id]
-					binding.pry
+					#binding.pry
 					from_insert[:modify_nodes].append(from_insert[:add_nodes].first)
 					from_insert[:add_nodes] = []
 					from_remove[:remove_nodes] = []
@@ -87,7 +87,7 @@ class Work < ActiveRecord::Base
 
 			from_remove_total = merge_two_hashes(from_remove_total, from_remove)
 			from_insert_total = merge_two_hashes(from_insert_total, from_insert)
-			binding.pry
+			#binding.pry
 		end
 		#to_modify = format_hash_for_AJAX(from_insert, from_remove)
 		to_modify = merge_two_hashes(from_remove_total, from_insert_total)
@@ -346,9 +346,11 @@ class Work < ActiveRecord::Base
 				el.delete
 			end
 
-			owner.combine_notes
-			to_modify[:modify_nodes].append(owner.to_cytoscape_hash[:node])
-			to_modify[:modify_edges] = owner.to_cytoscape_hash[:edges]
+			if owner != nil
+				owner.combine_notes
+				to_modify[:modify_nodes].append(owner.to_cytoscape_hash[:node])
+				to_modify[:modify_edges] = owner.to_cytoscape_hash[:edges]
+			end	
 		
 		elsif (el.is_a?(LinkCollection))
 			#binding.pry
@@ -675,7 +677,7 @@ class Work < ActiveRecord::Base
 					link_coll.save
 					#update id in ordering
 				end
-				binding.pry
+				#binding.pry
 				o.push(ObjectPlace.new("lcoll", link_coll.id))
 			else
 				o.push(ObjectPlace.new("null", nil))

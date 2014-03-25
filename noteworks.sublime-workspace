@@ -523,7 +523,7 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 25294,
+				"buffer_size": 25345,
 				"line_ending": "Unix"
 			}
 		},
@@ -788,6 +788,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"removed",
+			"bindin",
+			")\n",
 			"line_number",
 			"line_content",
 			"getTextFromRegexp",
@@ -912,10 +915,7 @@
 			"lines",
 			"lines.length()",
 			"getLines",
-			"drawNodeText",
-			";\n",
-			"drawNode",
-			".pxValue"
+			"drawNodeText"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1010,15 +1010,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 25294,
+						"buffer_size": 25345,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								22395,
-								22395
+								7118,
+								7118
 							]
 						],
 						"settings":
@@ -1119,7 +1119,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 14138.0,
+						"translation.y": 3499.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

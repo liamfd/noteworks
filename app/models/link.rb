@@ -19,7 +19,11 @@ class Link < ActiveRecord::Base
   end
 
   def change_parent(new_parent)
-    self.update_attributes(parent_id: new_parent.id)
+    if new_parent != nil
+      self.update_attributes(parent_id: new_parent.id)
+    else
+      self.update_attributes(parent_id: nil)
+    end
   end
 
   def to_cytoscape_hash

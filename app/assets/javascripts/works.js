@@ -122,7 +122,7 @@ function clickFunction(e){
 
 //ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
 function updateElement(line_num, text){
-  console.log("update");
+  console.log("update" + line_num + text);
   $.ajax({
     type:"GET",
     url:"mod_element",
@@ -174,14 +174,14 @@ function modInGraph(data){
   var edge_id_string;
 
 
-  /*//delete the edges bieng modified (WILL PROBABLY DROP THIS)
+  //delete the edges bieng modified (WILL PROBABLY DROP THIS)
   for (i = 0; i < data.modify_edges.length; i++){
     mod_edge = data.modify_edges[i];
     if ((mod_edge != null) && (mod_edge != undefined)){
       edge_id_string = "#" + mod_edge.id;
       cy.remove(edge_id_string);
     }
-  }*/
+  }
 
   //modify the mod notes. Saves position, removes, adds back in with new data
   var mod_node;
@@ -205,13 +205,13 @@ function modInGraph(data){
   }
 
   //add the edges being modified (WILL PROBABLY DROP THIS AS WELL)
-  /*for (i = 0; i < data.modify_edges.length; i++){
+  for (i = 0; i < data.modify_edges.length; i++){
     mod_edge = data.modify_edges[i];
-    console.log(add_edge);
+    console.log(mod_edge);
     if ((mod_edge != null) && (mod_edge != undefined)){
-      mod_edge.id = data.mod_edges[i].id.toString();
-      mod_edge.source = data.mod_edges[i].source.toString();
-      mod_edge.target = data.mod_edges[i].target.toString();
+      mod_edge.id = data.modify_edges[i].id.toString();
+      mod_edge.source = data.modify_edges[i].source.toString();
+      mod_edge.target = data.modify_edges[i].target.toString();
       console.log(mod_edge);
      
       //maybe have this check instead that both nodes exist in the graph, otherwise you get an error
@@ -222,7 +222,7 @@ function modInGraph(data){
         });
       }
     }
-  }*/
+  }
 
   pos_y = 50; //these two will be random
   pos_x = 60;
