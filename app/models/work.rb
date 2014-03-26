@@ -46,7 +46,7 @@ class Work < ActiveRecord::Base
 			curr_el = get_element_in_ordering(number, ordering);
 
 			#bug if it goes from node to note, or anything else
-			if first_char == '.' && ordering_el.model == "node" && curr_el.is_a?(Node)
+			if first_char == '.' && ordering_el.model == "Node" && curr_el.is_a?(Node)
 
 				from_remove = remove_element(number, false)
 				from_insert = insert_element(number, content, curr_el)
@@ -74,7 +74,7 @@ class Work < ActiveRecord::Base
 					#end
 
 	 		#if you have a note and are modding it
-			elsif first_char == '-' && ordering_el.model == "note" && curr_el.is_a?(Note)
+			elsif first_char == '-' && ordering_el.model == "Note" && curr_el.is_a?(Note)
 				from_remove = remove_element(number, false)
 				from_insert = insert_element(number, content, curr_el)
 			
@@ -144,7 +144,7 @@ class Work < ActiveRecord::Base
 			new_node.save
 
 			#update the ordering
-			ordering.insert(line_number, ObjectPlace.new("node", new_node.id))
+			ordering.insert(line_number, ObjectPlace.new("Node", new_node.id))
 			set_order(ordering)
 
 			#FIND PARENT
@@ -206,7 +206,7 @@ class Work < ActiveRecord::Base
 
 			build_note(new_note, line_content)
 			new_note.save
-			ordering.insert(line_number, ObjectPlace.new("note", new_note.id))
+			ordering.insert(line_number, ObjectPlace.new("Note", new_note.id))
 			set_order(ordering)
 
 			#FIND PARENT
@@ -235,7 +235,7 @@ class Work < ActiveRecord::Base
 			whitespace = get_text_from_regexp(line_content, /(.*):/)
 			link_coll_depth = (whitespace.length)/3 #+2?
 
-			ordering.insert(line_number, ObjectPlace.new("lcoll", nil))
+			ordering.insert(line_number, ObjectPlace.new("LinkCollection", nil))
 			set_order(ordering)
 			parent_node = find_element_parent(link_coll_depth, line_number, ordering)
 
@@ -399,7 +399,7 @@ class Work < ActiveRecord::Base
 	def find_element_parent(el_depth, index, ordering)
 		i = index - 1
 		while i >= 0 #until the beginning
-			if ordering[i].model == "node" #if it's a node, not just a note
+			if ordering[i].model == "Node" #if it's a node, not just a note
 				curr_node = Node.find(ordering[i].id)
 				if el_depth > curr_node.depth #if curr_node has a lesser depth, it's its parent
 					return curr_node
@@ -542,7 +542,7 @@ class Work < ActiveRecord::Base
 		order_a = self.order.split("///,") #o is the array of strings
 		ordering = []
 		order_a.each do |o|
-			model = get_text_from_regexp(o, /([a-z]*)_/) #gets everything before underscore (only letters)
+			model = get_text_from_regexp(o, /([a-zA-Z]*)_/) #gets everything before underscore (only letters)
 			id = get_text_from_regexp(o, /_([0-9]*)/) #gets everything after underscore (only digits)
 			ordering.push(ObjectPlace.new(model, id))
 		end
@@ -554,13 +554,12 @@ class Work < ActiveRecord::Base
 			return nil
 		end
 
-		if ordering[index].model == "node"
+		if ordering[index].model == "Node"
 			curr_el = Node.find(ordering[index].id)
-		elsif ordering[index].model == "note"
+		elsif ordering[index].model == "Note"
 			curr_el = Note.find(ordering[index].id)
-		elsif ordering[index].model == "lcoll"
+		elsif ordering[index].model == "LinkCollection"
 			curr_el = LinkCollection.find(ordering[index].id)
-
 		elsif ordering[index].model == "null"
 			curr_el = "null"
 		end
@@ -569,15 +568,59 @@ class Work < ActiveRecord::Base
 
 	def print_ordering(ordering)
 		ordering.each do |item|
-			if item.model == "node"
+			if item.model == "Node"
 				node = Node.find(item.id)
 				puts "." + node.depth.to_s + node.title
-			elsif item.model == "note"
+			elsif item.model == "Note"
 				note = Note.find(item.id)
 				puts "-" + note.depth.to_s + note.body
 			end
 		end
 	end
+
+
+	#function that, using order and the models, generates the markup and returns it
+	def generate_markup
+		ordering = get_ordering
+
+
+		ordering.each do |obj_place|
+			element = obj_place.model.contantize.find(obj_place.id) #find the element referred to in the objectplace	
+			whitespace = ""
+			type_char = ""
+			info = ""
+
+			#get the whitespace, which is three spaces for every depth
+			(element.depth*3).times do
+				whitespace << " "
+			end
+
+			if element.is_a?(Node)
+				type_char = "."
+				category_text = element.Category.name
+				delimiter = ","
+				title = element.title
+				info << category_text << delimiter << title
+
+			elsif element.is_a?(Note)
+				type_char = "-"
+				body = element.body
+				info = body
+
+			elsif element.is_a?(LinkCollection)
+				type_char = ":"
+				links = ""
+				element.links.each do |link|
+					links << link.node.title
+				end
+
+				info = body
+			end
+
+		end
+
+	end
+
 
 	def parse_text
 		Node.destroy_all(work_id: self.id)
@@ -634,7 +677,7 @@ class Work < ActiveRecord::Base
 					#make the child's parent the parentNode's id.
 				end
 				new_node.save
-				o.push(ObjectPlace.new("node", new_node.id))
+				o.push(ObjectPlace.new("Node", new_node.id))
 
 			#if it's a note
 			elsif first_char == '-'
@@ -650,11 +693,11 @@ class Work < ActiveRecord::Base
 				new_note.node_id = parentNode.id
 				parentNode.add_note_to_combined(new_note)
 				new_note.save
-				o.push(ObjectPlace.new("note", new_note.id))				
+				o.push(ObjectPlace.new("Note", new_note.id))				
 			#for special chars
 			elsif first_char == ':'
 
-				#ordering.insert(line_number, ObjectPlace.new("lcoll", nil))
+				#ordering.insert(line_number, ObjectPlace.new("LinkCollection", nil))
 				#set_order(ordering)
 				#parent_node = find_element_parent(link_coll_depth, line_number, ordering)
 
@@ -679,7 +722,7 @@ class Work < ActiveRecord::Base
 					#update id in ordering
 				end
 				#binding.pry
-				o.push(ObjectPlace.new("lcoll", link_coll.id))
+				o.push(ObjectPlace.new("LinkCollection", link_coll.id))
 			else
 				o.push(ObjectPlace.new("null", nil))
 			end
@@ -741,11 +784,11 @@ class Work < ActiveRecord::Base
 	def populate_ordering
 		ordering = Array.new
 		self.nodes.each do |node|
-			ordering.push(ObjectPlace.new("node", node.id))
-			#puts "node" + node.id.to_s
+			ordering.push(ObjectPlace.new("Node", node.id))
+			#puts "Node" + node.id.to_s
 			node.notes.each do |note|
-				ordering.push(ObjectPlace.new("note", note.id))
-				#puts "note" + note.id.to_s
+				ordering.push(ObjectPlace.new("Note", note.id))
+				#puts "Note" + note.id.to_s
 			end
 		end
 		return ordering
