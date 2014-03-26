@@ -582,10 +582,10 @@ class Work < ActiveRecord::Base
 	#function that, using order and the models, generates the markup and returns it
 	def generate_markup
 		ordering = get_ordering
-
+		markup_text = ""
 
 		ordering.each do |obj_place|
-			element = obj_place.model.contantize.find(obj_place.id) #find the element referred to in the objectplace	
+			element = obj_place.model.constantize.find(obj_place.id) #find the element referred to in the objectplace	
 			whitespace = ""
 			type_char = ""
 			info = ""
@@ -595,29 +595,147 @@ class Work < ActiveRecord::Base
 				whitespace << " "
 			end
 
+			#if it's a node, gets its category and title, builds a string with a comma
 			if element.is_a?(Node)
 				type_char = "."
-				category_text = element.Category.name
-				delimiter = ","
+				category_text = element.category.name.capitalize
+				delimiter = ", "
 				title = element.title
-				info << category_text << delimiter << title
+				info << category_text + delimiter + title
 
+			#if it's a note, gets its body
 			elsif element.is_a?(Note)
 				type_char = "-"
 				body = element.body
 				info = body
 
+			#if it's a LinkCollection, builds the string with the link's child names comma separated
 			elsif element.is_a?(LinkCollection)
 				type_char = ":"
-				links = ""
+				links_text = ""
 				element.links.each do |link|
-					links << link.node.title
+					if link.child != nil
+						links_text << link.child.title + " , "
+					end
 				end
-
-				info = body
+				if links_text != ""
+					links_text = links_text[0..-4] #removes the trailing spaces and comma
+				end
+				info = links_text
 			end
-
+			markup_text << whitespace + type_char + info + "\r\n"
 		end
+		return markup_text
+	end
+
+
+	def parse_ordering
+		Node.destroy_all(work_id: self.id)
+		Link.destroy_all(work_id: self.id)
+		stack = Array.new
+
+		#moves through each element in the ordering
+		ordering.each do |obj_place|
+
+			#if a new node should be made
+			if obj_place.model == "Node"
+				new_node = Node.new
+				build_node(new_node, line)
+				new_node.save
+
+				#get the parent.
+				depth = new_node.depth
+
+				newNodeDepth = NodeDepth.new(new_node.id, depth)
+				
+				if depth == 0 #if it's a base element
+					stack.push(newNodeDepth)
+				else
+					currNodeDepth = stack.pop
+					while depth <= currNodeDepth.depth do #while you're less deep, therefore it aint yo momma 
+						currNodeDepth = stack.pop
+					end #at this point, @currNodeDepth is the nearest element that's not as deep as the new one, it's parent
+					parentNode = Node.find(currNodeDepth.node_idnum)
+					if parentNode.id == new_node.id #if it didn't find any parent
+						parent_id = nil
+					else
+						parent_id = parentNode.id
+					end
+
+					#creates the link, and the sets the parent and child relation
+					relation = Link.new(child_id: new_node.id, parent_id: parent_id, work_id: self.id)
+					relation.save
+					new_node.parent_relationships << relation
+					parentNode.child_relationships << relation
+
+					stack.push(currNodeDepth)#push the parent back in, in case it has siblings
+					stack.push(newNodeDepth)#push self in, in case it has children
+
+					#@new_node.parent_relationships.build(child_id: @new_node.id, parent_id:@parentNode.id)
+					#@new_node.parents << @parentNode
+					#@parent_node.child=
+					#make this nodes id into the parents child.
+					#make the child's parent the parentNode's id.
+				end
+				new_node.save
+				new_ordering.push(ObjectPlace.new("Node", new_node.id))
+
+			#if it's a note
+			elsif obj_place.model == "Note"
+			
+				new_note = Note.new()
+				build_note(new_note, line)
+
+				#this is a bug. it just gets attached to the previous node without regard for depth
+				#binding.pry
+				parentNodeDepth = stack.pop
+				parentNode = Node.find(parentNodeDepth.node_idnum)
+				stack.push(parentNodeDepth)
+				
+				new_note.node_id = parentNode.id
+				parentNode.add_note_to_combined(new_note)
+				new_note.save
+				new_ordering.push(ObjectPlace.new("Note", new_note.id))				
+		
+			#for special chars
+			elsif obj_place.model == "LinkCollection"
+
+				#ordering.insert(line_number, ObjectPlace.new("LinkCollection", nil))
+				#set_order(ordering)
+				#parent_node = find_element_parent(link_coll_depth, line_number, ordering)
+
+				#this is a bug. it just gets attached to the previous node without regard for depth
+				parent_node_depth = stack.pop
+				parent_node = Node.find(parent_node_depth.node_idnum)
+				stack.push(parent_node_depth)
+
+				whitespace = get_text_from_regexp(line, /(.*):/)
+				link_coll_depth = (whitespace.length)/3 #+2?
+
+				if parent_node != nil
+					link_coll = parent_node.link_collections.build
+					#link_coll.node = parent_node
+					#parent_node.link_colls << link_coll
+					
+					link_names = get_text_from_regexp(line, /:(.*)/)
+					link_coll.set_links(link_names)
+
+					link_coll.depth = link_coll_depth
+					link_coll.save
+					#update id in ordering
+				end
+				#binding.pry
+				new_ordering.push(ObjectPlace.new("LinkCollection", link_coll.id))
+			else
+				o.push(ObjectPlace.new("null", nil))
+			end
+		end
+
+		#should fix this so I can get rid of populate_ordering, only works here because things are produced in order, can do it as I go
+		#o = populate_ordering
+		set_order(o)
+
+
 
 	end
 
@@ -754,7 +872,7 @@ class Work < ActiveRecord::Base
 		#need to make these only the categories that belong to the user
 		category = Category.find_by name: category_name.downcase
 		if category == nil
-			category = Category.find_by name: :uncategorized
+			category = Category.create(name: category_name.downcase)
 		end
 		node.category = category
 	

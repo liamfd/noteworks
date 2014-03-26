@@ -15,7 +15,7 @@
 
   <div class="field">
     <%= f.label :markup %><br>
-    <%= f.text_area :markup, size:"100x20"%>
+    <%= f.text_area :markup, size:"100x20", value: @work.generate_markup%>
   </div>
   <div class="actions">
     <%= f.submit %>
