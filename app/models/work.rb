@@ -235,6 +235,9 @@ class Work < ActiveRecord::Base
 			#build link collection
 			link_coll = self.link_collections.build
 
+			whitespace = get_text_from_regexp(line_content, /(.*):/)
+			link_coll_depth = (whitespace.length)/3 #+2?
+			
 			ordering.insert(line_number, ObjectPlace.new("LinkCollection", nil))
 			parent_node = find_element_parent(link_coll_depth, line_number, ordering)
 

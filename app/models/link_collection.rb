@@ -12,11 +12,10 @@ class LinkCollection < ActiveRecord::Base
 
       if child_node == nil #if the child doesn't exist, create it at the very end
         place = self.work.get_ordering.length
-        child_node = self.work.add_new_element([place], [".,"+chunk])
+        self.work.add_new_element([place], [".,"+chunk])
+        child_node = self.work.get_element_in_ordering(place, self.work.get_ordering)
       end
-      
-      binding.pry
-
+  
       link = self.links.build
       #if it has a parent, give the link that parent. otherwise, set it to nil
       if self.node != nil
@@ -24,7 +23,7 @@ class LinkCollection < ActiveRecord::Base
       else
         link.parent_id = nil
       end
-      link.child_id = self.work.get_element_in_ordering(place, self.work.get_ordering)
+      link.child = child_node
     	link.save
     
 	  end
