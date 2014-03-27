@@ -3,6 +3,7 @@ class Work < ActiveRecord::Base
 
 	has_many :nodes, dependent: :destroy
 	has_many :links, dependent: :destroy
+	has_many :link_collections, inverse_of: :work
 
 	has_many :categories, dependent: :destroy
 
@@ -232,34 +233,18 @@ class Work < ActiveRecord::Base
 
 		elsif first_char == ':'
 			#build link collection
-			#link_coll = self.link_collections.build
-			whitespace = get_text_from_regexp(line_content, /(.*):/)
-			link_coll_depth = (whitespace.length)/3 #+2?
+			link_coll = self.link_collections.build
 
 			ordering.insert(line_number, ObjectPlace.new("LinkCollection", nil))
-			set_order(ordering)
 			parent_node = find_element_parent(link_coll_depth, line_number, ordering)
 
-			if parent_node != nil
-				link_coll = parent_node.link_collections.build
-			else
-				link_coll = LinkCollection.new
-			end
-			#link_coll.node = parent_node
-			#parent_node.link_colls << link_coll
-			
-			link_names = get_text_from_regexp(line_content, /:(.*)/)
-			link_coll.set_links(link_names)
-
-			link_coll.depth = link_coll_depth
-			link_coll.save
+			build_link_collection(link_coll, line_content, parent_node)
 
 			if link_coll.links != nil && link_coll.links.any?
 				link_coll.links.each do |link|
 					to_modify[:add_edges].append(link.to_cytoscape_hash)
 				end
 			end
-		
 			#update id in ordering
 			ordering[line_number].id = link_coll.id
 			set_order(ordering)
@@ -474,18 +459,7 @@ class Work < ActiveRecord::Base
 					relation.delete
 				end #if it doesn't exist and doesn't need to, do nothing
 			end
-			
-			#relation = child.parent_relationships.first #hierarchy relationship should always be first
-			#if (parent != nil)
-			#	relation.parent_id = parent.id
-			#	relation.save
-			#	#parent.child_relationships << relation
-			#else
-			#	relation.parent_id = nil
-			#	relation.save
-			#end
-			
-
+		
 		elsif child.is_a?(Note)
 			prev_parent_id = child.node_id
 			if (parent != nil) #if it has a new parent parent already
@@ -824,22 +798,9 @@ class Work < ActiveRecord::Base
 				parent_node_depth = stack.pop
 				parent_node = Node.find(parent_node_depth.node_idnum)
 				stack.push(parent_node_depth)
-
-				whitespace = get_text_from_regexp(line, /(.*):/)
-				link_coll_depth = (whitespace.length)/3 #+2?
-
-				if parent_node != nil
-					link_coll = parent_node.link_collections.build
-					#link_coll.node = parent_node
-					#parent_node.link_colls << link_coll
-					
-					link_names = get_text_from_regexp(line, /:(.*)/)
-					link_coll.set_links(link_names)
-
-					link_coll.depth = link_coll_depth
-					link_coll.save
-					#update id in ordering
-				end
+				
+				link_coll = self.link_collections.build
+				build_link_collection(link_coll, line, parent_node)
 				#binding.pry
 				o.push(ObjectPlace.new("LinkCollection", link_coll.id))
 			else
@@ -897,6 +858,25 @@ class Work < ActiveRecord::Base
 		return note
 	end
 
+	def build_link_collection(link_coll, text, parent_node)
+		#build link collection
+		whitespace = get_text_from_regexp(text, /(.*):/)
+		link_coll_depth = (whitespace.length)/3 #+2?
+
+		#link_coll = self.link_collections.build
+
+		#if it has a parent node, set it to it
+		if parent_node != nil
+			link_coll.node = parent_node
+			parent_node.reload
+		end
+		
+		link_names = get_text_from_regexp(text, /:(.*)/)
+		link_coll.set_links(link_names)
+
+		link_coll.depth = link_coll_depth
+		link_coll.save
+	end
 
 	#fills ordering according to stored nodes and notes. OUTDATED, KEEPING FOR PARSETEXT, USE get_ordering
 	#this only works if the node ids line up to the order, so not if any inserted
