@@ -3,9 +3,9 @@ class Category < ActiveRecord::Base
 	belongs_to :work
 
     before_save :color_randomizer
+    before_destroy :set_nodes_category_to_default
 
-    def before_destroy
-    	binding.pry
+    def set_nodes_category_to_default
     	default_category = work.categories.find_by name: ""
     	self.nodes.each do |node|
     		node.update_attributes(category: default_category)
