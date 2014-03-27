@@ -30,6 +30,7 @@ class Work < ActiveRecord::Base
 
 	#parser shit
 	def modify_element(lines_number, lines_content)
+		#TODO: Consolidate these 
 		from_insert_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		from_remove_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
@@ -451,8 +452,9 @@ class Work < ActiveRecord::Base
 
 	def change_parent(child, parent)
 		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
-
-			relation = child.parent_relationships.first #hierarchy relationship should always be first
+			
+			#relation = child.parent_relationships.first #hierarchy relationship should always be first <- no longer true potentially
+			relation = child.parent_relationships.find_by link_collection: nil #the first one not explicitly defined, so hierarchy
 			if (parent != nil) #if there is a parent for it
 
 				if relation != nil #if it already has a parent relation. should be .any?
@@ -734,8 +736,6 @@ class Work < ActiveRecord::Base
 		#should fix this so I can get rid of populate_ordering, only works here because things are produced in order, can do it as I go
 		#o = populate_ordering
 		set_order(o)
-
-
 
 	end
 

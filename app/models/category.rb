@@ -2,8 +2,6 @@ class Category < ActiveRecord::Base
 	has_many :nodes
 	belongs_to :work
 
-	validates :name, presence: true
-
     before_save :color_randomizer
 
 	#bottom, private
