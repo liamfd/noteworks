@@ -326,7 +326,7 @@ class Work < ActiveRecord::Base
 				
 				end
 			end
-
+		#	binding.pry
 			el.parent_relationships.delete_all
 			if del_obj #delete unless explicitly told not to (when it's called from modify)
 				el.delete
@@ -454,14 +454,14 @@ class Work < ActiveRecord::Base
 		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
 			
 			#relation = child.parent_relationships.first #hierarchy relationship should always be first <- no longer true potentially
-			relation = child.parent_relationships.find_by link_collection: nil #the first one not explicitly defined, so hierarchy
+			relation = child.parent_relationships.find_by link_collection_id: nil #the first one not explicitly defined, so hierarchy
 			if (parent != nil) #if there is a parent for it
 
 				if relation != nil #if it already has a parent relation. should be .any?
 					relation.parent_id = parent.id
 					relation.save
 					child.save
-					parent.save
+					parent.savead
 				else #if it doesn't have a parent already
 					relation = Link.new(child_id: child.id, parent_id: parent.id, work_id: self.id)
 					relation.save
@@ -587,6 +587,7 @@ class Work < ActiveRecord::Base
 		markup_text = ""
 
 		ordering.each do |obj_place|
+			next if obj_place.model == "null"
 			element = obj_place.model.constantize.find(obj_place.id) #find the element referred to in the objectplace	
 			whitespace = ""
 			type_char = ""
@@ -870,9 +871,9 @@ class Work < ActiveRecord::Base
 		end
 
 		#need to make these only the categories that belong to the user
-		category = Category.find_by name: category_name.downcase
+		category = self.categories.find_by name: category_name.downcase
 		if category == nil
-			category = Category.create(name: category_name.downcase)
+			category = self.categories.create(name: category_name.downcase)
 		end
 		node.category = category
 	
