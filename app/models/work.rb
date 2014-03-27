@@ -888,7 +888,7 @@ class Work < ActiveRecord::Base
 	def build_note(note, text)
 		content = get_text_from_regexp(text, /-(.*)/)
 		#content = text.match(/-(.*)/).captures.first
-		note.body = content
+		note.body = content.rstrip
 
 		whitespace = get_text_from_regexp(text, /(.*)-/)
 		#whitespace = text.match(/(.*)-/).captures.first

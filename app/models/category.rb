@@ -14,6 +14,8 @@ class Category < ActiveRecord::Base
 
 	#bottom, private
    def color_randomizer
-   		self.color ||= "#" + "%06x" % (rand * 0xffffff)
+   		if self.color == nil
+   			self.color ||= "#" + "%06x" % (rand * 0xffffff)
+   		end
    end
 end
