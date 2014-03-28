@@ -17,6 +17,7 @@ $( document ).ready(function() {
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
   $ ('#work_markup').get(0).onkeyup= upFunction;
   $ ('#work_markup').get(0).onclick= clickFunction;
+  $ ('#work_markup').get(0).onselect= selectFunction;
 
   var ele = gon.elements;
   ele = JSON.stringify(ele);
@@ -119,6 +120,19 @@ function clickFunction(e){
 //    return;
   prevLine = currLine;
 }
+
+
+function selectFunction(e){
+
+  console.log(e.srcElement);
+  var range = getInputSelection(e.srcElement);
+  var start_line = getLineNumber(range.start, e.srcElement);
+  var end_line = getLineNumber(range.end, e.srcElement);
+
+  console.log(start_line +"  " + end_line);
+
+}
+
 
 //ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
 function updateElement(line_num, text){
@@ -292,8 +306,6 @@ function modInGraph(data){
     }
   }
 
-  
-
 }
 
 
@@ -318,8 +330,12 @@ function modInGraph(data){
 //using the text and the caret position, gets the line number
 function getCurrentLine(el){
   //var caretPos = getCaretCharacterOffsetWithin(el);
-  var caretPos = $("#work_markup").getCursorPosition();
-  if (caretPos == null)
+  var caret_pos = $("#work_markup").getCursorPosition();
+  return getLineNumber(caret_pos, el);
+
+
+
+  /*if (caretPos == null)
     return -1;
   //console.log(caretPos);
 
@@ -336,7 +352,28 @@ function getCurrentLine(el){
   }
   //if it's a newline...
   //console.log("currLine: " + currLine);
-  return currLine;
+  return currLine;*/
+}
+
+
+function getLineNumber(pos, el){
+  if (pos == null)
+    return -1;
+  //console.log(caretPos);
+
+  var curr_line = 0;
+  var text = "";
+  if (el != undefined){
+    text = el.value;
+  }
+
+  //go through, checking for a newline, adding one for each
+  for (var i = 0; i < pos; i++){
+    if (text[i] == "\n"){
+      curr_line++;
+    }
+  }
+  return curr_line;
 }
 
 //returns the text at the given line, by breaking it into an array of strings (one each line) returning the one at lineNum
@@ -705,6 +742,58 @@ function getCaretCharacterOffsetWithin(element) {
     }
     return caretOffset;
 }
+
+//GETTING THE SELECTION
+function getInputSelection(el) {
+    var start = 0, end = 0, normalizedValue, range,
+        textInputRange, len, endRange;
+
+    if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
+        start = el.selectionStart;
+        end = el.selectionEnd;
+    } else {
+        range = document.selection.createRange();
+
+        if (range && range.parentElement() == el) {
+            len = el.value.length;
+            normalizedValue = el.value.replace(/\r\n/g, "\n");
+
+            // Create a working TextRange that lives only in the input
+            textInputRange = el.createTextRange();
+            textInputRange.moveToBookmark(range.getBookmark());
+
+            // Check if the start and end of the selection are at the very end
+            // of the input, since moveStart/moveEnd doesn't return what we want
+            // in those cases
+            endRange = el.createTextRange();
+            endRange.collapse(false);
+
+            if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
+                start = end = len;
+            } else {
+                start = -textInputRange.moveStart("character", -len);
+                start += normalizedValue.slice(0, start).split("\n").length - 1;
+
+                if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
+                    end = len;
+                } else {
+                    end = -textInputRange.moveEnd("character", -len);
+                    end += normalizedValue.slice(0, end).split("\n").length - 1;
+                }
+            }
+        }
+    }
+
+    return {
+        start: start,
+        end: end
+    };
+}
+
+
+
+
+
 
 //$(#editable).keypress(function(){
  // alert("shoo");

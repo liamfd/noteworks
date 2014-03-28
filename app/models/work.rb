@@ -731,6 +731,7 @@ class Work < ActiveRecord::Base
 	def parse_text
 		Node.destroy_all(work_id: self.id)
 		Link.destroy_all(work_id: self.id)
+		LinkCollection.destroy_all(work_id: self.id)
 
 		stack = Array.new
 		o = []
