@@ -237,21 +237,31 @@ class Work < ActiveRecord::Base
 
 			whitespace = get_text_from_regexp(line_content, /(.*):/)
 			link_coll_depth = (whitespace.length)/3 #+2?
-			
+
 			ordering.insert(line_number, ObjectPlace.new("LinkCollection", nil))
+			set_order(ordering)
+
 			parent_node = find_element_parent(link_coll_depth, line_number, ordering)
 
-			build_link_collection(link_coll, line_content, parent_node)
+			#this function builds all the links, plus if any are defined to a non-existing node, it adds and returns it
+			new_nodes = build_link_collection(link_coll, line_content, parent_node)
 
+			#adds any newly created links to be returned
 			if link_coll.links != nil && link_coll.links.any?
 				link_coll.links.each do |link|
 					to_modify[:add_edges].append(link.to_cytoscape_hash)
 				end
 			end
-			#update id in ordering
+
+			#adds any newly added nodes to be returned
+			new_nodes.each do |node|
+				to_modify[:add_nodes].append(node.to_cytoscape_hash[:node])
+			end
+		
+			#update id in ordering, pull it again to start in case it's been changed
+			ordering = get_ordering
 			ordering[line_number].id = link_coll.id
 			set_order(ordering)
-
 			return to_modify
 
 		else
@@ -875,10 +885,11 @@ class Work < ActiveRecord::Base
 		end
 		
 		link_names = get_text_from_regexp(text, /:(.*)/)
-		link_coll.set_links(link_names)
+		new_nodes = link_coll.set_links(link_names)
 
 		link_coll.depth = link_coll_depth
 		link_coll.save
+		return new_nodes
 	end
 
 	#fills ordering according to stored nodes and notes. OUTDATED, KEEPING FOR PARSETEXT, USE get_ordering
