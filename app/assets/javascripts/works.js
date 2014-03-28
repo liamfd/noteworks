@@ -103,13 +103,21 @@ function upFunction(e){
       changes_made = false;
     }
 
+    prevLine = currLine;
+  }
+
+
+  console.log(num_lines_changed);
+  console.log(num_lines_selected);
   if (num_lines_changed != 0 || num_lines_selected != 1){ //if the current number of lines has changed, or we selected some
+    
+    console.log(num_lines_changed);
     if (num_lines_changed > 0){ // if some have been added
-      num_lines_added = num_lines_changed;
+     // num_lines_added = num_lines_changed;
       num_lines_modified = num_lines_selected;
-      console.log("added" + num_lines_added);
+     // console.log("added" + num_lines_added);
       console.log("modified"+num_lines_modified);
-      
+
       mod_line_nums = [];
       mod_line_text = [];
       add_line_nums = [];
@@ -131,16 +139,41 @@ function upFunction(e){
       }
     }
 
-    else if (num_lines_changed < 0){
+    else if (num_lines_changed < 0){ //if some have been deleted
+      num_lines_deleted = Math.abs(num_lines_changed); //unneeded
+      num_lines_modified = num_lines_selected-num_lines_deleted; //modifying all selected lines not being deleted
+      console.log("added" + num_lines_deleted);
+      console.log("modified"+num_lines_modified);
 
+      mod_line_nums = [];
+      mod_line_text = [];
+      delete_line_nums = [];
+      delete_line_text = [];
+      //counting all the lines being changed
+
+      //runs from the prev_line up past curr_line to all ones being deleted
+      for (i=0; i <= curr_line - prev_line + num_lines_deleted; i++){
+        line_ind = prev_line+i;
+        console.log(i);
+        if (i < num_lines_modified){ //before the threshold where you start adding
+          mod_line_nums.push(line_ind);
+          mod_line_text.push(getLineText(line_ind));
+          console.log("mod");
+        }
+        else{
+          delete_line_nums.push(line_ind);
+         // delete_line_text.push(getLineText(line_ind));
+          console.log("del");
+        }
+      }
     }
 
     else{ //must be the case that num_lines_selected wasn't 0
 
 
     }
-
-  }
+  //update curr_num_lines or num_lines
+  
 
 
 
