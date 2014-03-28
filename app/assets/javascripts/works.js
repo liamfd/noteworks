@@ -7,6 +7,7 @@ var prevLine = 0;
 var num_lines = 0;
 var test_data;
 var changes_made;
+var num_lines_selected = 1; //default is one, when no selection count the cursor
 
 
 $( document ).ready(function() {
@@ -29,25 +30,28 @@ $( document ).ready(function() {
 function upFunction(e){
   var code = e.code || e.which;
   //alert(code);
-  //I believe these two are equivalent
-  //var el = $("#editable")[0];
+
   var el = this;
   if (el == undefined)
     return;
 
   var curr_num_lines = getNumLines();
-  var num_lines_changed = num_lines - curr_num_lines;
-  console.log("curr_num_lines" + curr_num_lines);
+  var num_lines_changed = curr_num_lines - num_lines;
+/*  console.log("curr_num_lines" + curr_num_lines);
   console.log("num_lines" + num_lines);
   console.log("num_lines_changed" + num_lines_changed);
-
+*/
   var text;
   currLine = getCurrentLine(el);
+  curr_line = currLine;
+  prev_line = prevLine;
   text = getLineText(prevLine);
 
-  console.log("currLine:" + currLine);
+  /*console.log("currLine:" + currLine);
   console.log("prevLine:" + prevLine);
   console.log("text:" + text);
+*/
+//  alert(code);
 
   if ((code < 37) || (code > 40)){ //if it's not an arrow key
     changes_made = true;
@@ -63,15 +67,16 @@ function upFunction(e){
     
     console.log("ENTER");
 
-    prev_text = getLineText(prevLine); //in case a change is made on the previous line, before/after linebreak
-    updateElement(prevLine, prev_text);
+//    prev_text = getLineText(prevLine); //in case a change is made on the previous line, before/after linebreak
+  //  updateElement(prevLine, prev_text);
 
-    num_lines = curr_num_lines;
-    prevLine = currLine; //The this doesn't get updated auto on enter
+    //num_lines = curr_num_lines;
+    //prevLine = currLine; //The this doesn't get updated auto on enter
+  
   }
 
   else if ((code == 8) && (curr_num_lines < num_lines)){ //if it's backspace and a whole line gone
-    delElement(prevLine);
+    //delElement(prevLine);
     num_lines--;
     prevLine = currLine;
     
@@ -84,15 +89,60 @@ function upFunction(e){
     num_lines--;
     prevLine = currLine; //probably unnecessary
    // console.log("deleted line" + currLine);
+
+
+   /* MOD THE CURRENT LINE, DELETE THE SUBSEQUENT. SO IF ABOVE, YOU REDO AN IDENTICAL LINE, DELETE THE FOLLOWING WRONG ONE. IF
+   ON THE LINE, YOU'RE MOVING THE NEXT UP TO THE CURRENT AND MODIFYING IT SO NOW ITS IDENTICAL, THEN REMOVING THE OLD COPY OF THE NEXT ONE*/
   }
 
   else if (checkLineChanged(currLine)){ //otherwise, if I've just changed lines
     if (changes_made){ //if he's not just arrowing around
       text = getLineText(prevLine);
-      updateElement(prevLine, text);
+      //updateElement(prevLine, text);
       console.log("doing shit!");
       changes_made = false;
     }
+
+  if (num_lines_changed != 0 || num_lines_selected != 1){ //if the current number of lines has changed, or we selected some
+    if (num_lines_changed > 0){ // if some have been added
+      num_lines_added = num_lines_changed;
+      num_lines_modified = num_lines_selected;
+      console.log("added" + num_lines_added);
+      console.log("modified"+num_lines_modified);
+      
+      mod_line_nums = [];
+      mod_line_text = [];
+      add_line_nums = [];
+      add_line_text = [];
+      //counting all the lines being changed
+      for (i=0; i <= curr_line - prev_line; i++){
+        line_ind = prev_line+i;
+        console.log(i);
+        if (i < num_lines_modified){ //before the threshold where you start adding
+          mod_line_nums.push(line_ind);
+          mod_line_text.push(getLineText(line_ind));
+          console.log("mod");
+        }
+        else{
+          add_line_nums.push(line_ind);
+          add_line_text.push(getLineText(line_ind));
+          console.log("add");
+        }
+      }
+    }
+
+    else if (num_lines_changed < 0){
+
+    }
+
+    else{ //must be the case that num_lines_selected wasn't 0
+
+
+    }
+
+  }
+
+
 
 
     //starting at the line after the original spot, until the current spot (insertion ends)
@@ -121,16 +171,18 @@ function clickFunction(e){
   prevLine = currLine;
 }
 
-
+//returns the number of lines being selected
 function selectFunction(e){
 
-  console.log(e.srcElement);
+  console.log(e);
   var range = getInputSelection(e.srcElement);
+  console.log("Range: " + range.start + "," + range.end);
   var start_line = getLineNumber(range.start, e.srcElement);
   var end_line = getLineNumber(range.end, e.srcElement);
 
   console.log(start_line +"  " + end_line);
-
+  num_lines_selected = Math.abs(end_line - start_line) + 1;
+  return (num_lines_selected); //returns the number of lines highlighted, +1 so counts the first line
 }
 
 
