@@ -26,7 +26,11 @@ $( document ).ready(function() {
 });
 
 
-//function called on keyup. Should fix it. Mostly just determine between deletes and insertions.
+/**
+* Function called on keyup. This function now uses the changes in length and the selections made to determine whether changes
+* have been made, and calls the appropriate functions. An improvement over the original, which used specific buttons presses
+* to determine changes.
+*/
 function upFunction(e){
   var code = e.code || e.which;
   //alert(code);
@@ -69,8 +73,8 @@ function upFunction(e){
     //  console.log("modified"+num_lines_modified);
 
       total_changes = getChanges(num_lines_changed, num_lines_modified);
-    //  console.log("added_lines" + total_changes.change_line_nums);
-    // console.log("mod_lines" + total_changes.mod_line_nums);
+      console.log("added_lines" + total_changes.change_line_nums);
+      console.log("mod_lines" + total_changes.mod_line_nums);
     }
 
     //if deleting
@@ -88,22 +92,18 @@ function upFunction(e){
     //  console.log("changed" + num_lines_changed);
     
       total_changes = getChanges(num_lines_changed, num_lines_modified);
-    //  console.log("deleted_lines" + total_changes.change_line_nums);
-    //  console.log("mod_lines" + total_changes.mod_line_nums);
+      console.log("deleted_lines" + total_changes.change_line_nums);
+      console.log("mod_lines" + total_changes.mod_line_nums);
     }
-
-   // console.log("switched from " + prevLine + "to " + currLine);
   }
 
   else if (checkLineChanged(currLine)){ //otherwise, if I've just changed lines
     if (changes_made){ //if he's not just arrowing around
       text = getLineText(prevLine);
+      console.log("updating element at " + prev_line);
       //updateElement(prevLine, text);
-      console.log("doing shit!");
       changes_made = false;
     }
-
-    prevLine = currLine;
   }
 
   prevLine = currLine;
@@ -127,16 +127,16 @@ function getChanges(change_length, mod_point){
   //runs from the prev_line up past curr_line to all ones being changed (added or deleted)
   for (i=0; i < change_length; i++){
     line_ind = starting_ind+i;
-    console.log("i:" + i + " line_ind:" + line_ind);
+  //  console.log("i:" + i + " line_ind:" + line_ind);
     if (i < mod_point){ //before the threshold where you start adding
       mod_line_nums.push(line_ind);
       mod_line_text.push(getLineText(line_ind));
-      console.log("mod");
+    //  console.log("mod");
     }
     else{
       change_line_nums.push(line_ind);
       change_line_text.push(getLineText(line_ind));
-      console.log("change");
+    //  console.log("change");
     }
   }
   return{
