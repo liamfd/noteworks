@@ -62,10 +62,10 @@ function upFunction(e){
     //the new line is always the current line. even if entering at the beginning, your generating a new line, 
     //and moving shit to it
 
-    curr_text = getLineText(currLine);
-    addElement(currLine, curr_text);
+  //  curr_text = getLineText(currLine);
+  //  addElement(currLine, curr_text);
     
-    console.log("ENTER");
+   // console.log("ENTER");
 
 //    prev_text = getLineText(prevLine); //in case a change is made on the previous line, before/after linebreak
   //  updateElement(prevLine, prev_text);
@@ -107,11 +107,11 @@ function upFunction(e){
   }
 
 
-  console.log(num_lines_changed);
-  console.log(num_lines_selected);
+  console.log("num_lines_changed:" + num_lines_changed);
+  console.log("num_lines_selected:" + num_lines_selected);
+
   if (num_lines_changed != 0 || num_lines_selected != 1){ //if the current number of lines has changed, or we selected some
     
-    console.log(num_lines_changed);
     if (num_lines_changed > 0){ // if some have been added
      // num_lines_added = num_lines_changed;
       num_lines_modified = num_lines_selected;
@@ -140,12 +140,17 @@ function upFunction(e){
     }
 
     else if (num_lines_changed < 0){ //if some have been deleted
-      num_lines_deleted = Math.abs(num_lines_changed); //unneeded
-      num_lines_modified = num_lines_selected-num_lines_deleted; //modifying all selected lines not being deleted
-      console.log("added" + num_lines_deleted);
-      console.log("modified"+num_lines_modified);
+      num_lines_deleted = Math.abs(num_lines_changed);
+      //always at least modify the first line, perhaps more
+      num_lines_modified = Math.max(1, num_lines_selected-num_lines_deleted); //modifying all selected lines not being deleted
+      num_lines_changed = curr_line + num_lines_deleted - prev_line;
+      
+      console.log("deleted" + num_lines_deleted);
+      console.log("modified"+ num_lines_modified);
 
-      mod_line_nums = [];
+      total_changes = getChanges(num_lines_changed, num_lines_modified);
+
+    /*  mod_line_nums = [];
       mod_line_text = [];
       delete_line_nums = [];
       delete_line_text = [];
@@ -154,7 +159,7 @@ function upFunction(e){
       //runs from the prev_line up past curr_line to all ones being deleted
       for (i=0; i <= curr_line - prev_line + num_lines_deleted; i++){
         line_ind = prev_line+i;
-        console.log(i);
+        console.log("i:" + i + " line_ind:" + line_ind);
         if (i < num_lines_modified){ //before the threshold where you start adding
           mod_line_nums.push(line_ind);
           mod_line_text.push(getLineText(line_ind));
@@ -165,27 +170,16 @@ function upFunction(e){
          // delete_line_text.push(getLineText(line_ind));
           console.log("del");
         }
-      }
+      }*/
     }
 
     else{ //must be the case that num_lines_selected wasn't 0
 
 
     }
-  //update curr_num_lines or num_lines
-  
-
-
-
-
-    //starting at the line after the original spot, until the current spot (insertion ends)
-//    for (var i = prevLine+1; i <= currLine; i++){
- //     curr_text = getLineText(i);
-     // addElement(i, curr_text);
-  //    console.log("Changing " , i);
-  //  }
-
     prevLine = currLine;
+    num_lines = curr_num_lines;
+    num_lines_selected = 1;
    // console.log("switched from " + prevLine + "to " + currLine);
   }
 
@@ -193,6 +187,36 @@ function upFunction(e){
   console.log("--------------");
 
   return;
+}
+
+//returns a collection of the changed lines, those modified and those added or deleted ("changed")
+function getChanges(change_length, mod_point){
+  mod_line_nums = [];
+  mod_line_text = [];
+  change_line_nums = [];
+  change_line_text = [];
+
+  //runs from the prev_line up past curr_line to all ones being changed (added or deleted)
+  for (i=0; i <= change_length; i++){
+    line_ind = prev_line+i;
+    console.log("i:" + i + " line_ind:" + line_ind);
+    if (i < mod_point){ //before the threshold where you start adding
+      mod_line_nums.push(line_ind);
+      mod_line_text.push(getLineText(line_ind));
+      console.log("mod");
+    }
+    else{
+      change_line_nums.push(line_ind);
+      change_line_text.push(getLineText(line_ind));
+      console.log("change");
+    }
+  }
+  return{
+    mod_line_nums: mod_line_nums,
+    mod_line_text: mod_line_text,
+    change_line_nums: change_line_nums,
+    change_line_text: change_line_text
+  };
 }
 
 //function called on click. Gets the current line and sends it to checkChanged
