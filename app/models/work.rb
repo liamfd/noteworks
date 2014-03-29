@@ -464,7 +464,7 @@ class Work < ActiveRecord::Base
 					relation.parent_id = parent.id
 					relation.save
 					child.save
-					parent.savead
+					parent.save
 				else #if it doesn't have a parent already
 					relation = Link.new(child_id: child.id, parent_id: parent.id, work_id: self.id)
 					relation.save
@@ -624,7 +624,7 @@ class Work < ActiveRecord::Base
 		return markup_text
 	end
 
-	def parse_text
+	def parse_text(text)
 		Node.destroy_all(work_id: self.id)
 		Link.destroy_all(work_id: self.id)
 		LinkCollection.destroy_all(work_id: self.id)
@@ -632,7 +632,7 @@ class Work < ActiveRecord::Base
 		stack = Array.new
 		new_ordering= []
 		link_colls_queue = []
-		markup.each_line do |line|
+		text.each_line do |line|
 			#parser rules: any amount of whitespace followed immediately by < means new node. Otherwise, new note.
 			#<TYPE.CATEGORY>TITLE
 			#if the occurence of <*> is before the first occurence of " then it's a new
@@ -730,7 +730,6 @@ class Work < ActiveRecord::Base
 
 		#should fix this so I can get rid of populate_ordering, only works here because things are produced in order, can do it as I go
 		#o = populate_ordering
-		set_order(o)
 	end
 
 
