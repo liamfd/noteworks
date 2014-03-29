@@ -53,46 +53,46 @@ function upFunction(e){
 */
 //  alert(code);
 
-  if ((code < 37) || (code > 40)){ //if it's not an arrow key
+  if ((code < 37) || (code > 40)){ //if it's not an arrow key, assume something has been changed
     changes_made = true;
   }
 
+  console.log("num_lines_changed:" + num_lines_changed);
+  console.log("num_lines_selected:" + num_lines_selected);
 
-  if (code == 13){ //if it's an enter, update old line, add new (can hit enter anywhere in line)
-    //the new line is always the current line. even if entering at the beginning, your generating a new line, 
-    //and moving shit to it
-
-  //  curr_text = getLineText(currLine);
-  //  addElement(currLine, curr_text);
+  if (num_lines_changed !== 0 || num_lines_selected !== 1){ //if the current number of lines has changed, or we selected some
     
-   // console.log("ENTER");
+    //if adding or only modifying
+    if (num_lines_changed >= 0){ // if some have been added
+      num_lines_changed = curr_line - prev_line+1; //only works b/c you always add down, use the +1 to account for last line
+      num_lines_modified = num_lines_selected;
+    //  console.log("modified"+num_lines_modified);
 
-//    prev_text = getLineText(prevLine); //in case a change is made on the previous line, before/after linebreak
-  //  updateElement(prevLine, prev_text);
+      total_changes = getChanges(num_lines_changed, num_lines_modified);
+    //  console.log("added_lines" + total_changes.change_line_nums);
+    // console.log("mod_lines" + total_changes.mod_line_nums);
+    }
 
-    //num_lines = curr_num_lines;
-    //prevLine = currLine; //The this doesn't get updated auto on enter
-  
-  }
+    //if deleting
+    else if (num_lines_changed < 0){ //if some have been deleted
+      num_lines_deleted = Math.abs(num_lines_changed);
+      //always at least modify the first line, perhaps more
+      num_lines_modified = Math.max(1, num_lines_selected-num_lines_deleted); //modifying all selected lines not being deleted
+      num_lines_changed = num_lines_deleted + num_lines_modified;// + Math.abs(curr_line-prev_line);
+      //the first line will always be modified, and it always goes up to this
+      //so if deleting one line, you always modify the first and delete the second. otherwise, modify the first, deal with rest
+      //because when you delete, you wind up on the first line being deleted, so always mod that, don't delete it
 
-  else if ((code == 8) && (curr_num_lines < num_lines)){ //if it's backspace and a whole line gone
-    //delElement(prevLine);
-  //  num_lines--;
-  //  prevLine = currLine;
+    //  console.log("deleted" + num_lines_deleted);
+    //  console.log("modified"+ num_lines_modified);
+    //  console.log("changed" + num_lines_changed);
     
-    //console.log("backspaced line" + prevLine);
-  }
+      total_changes = getChanges(num_lines_changed, num_lines_modified);
+    //  console.log("deleted_lines" + total_changes.change_line_nums);
+    //  console.log("mod_lines" + total_changes.mod_line_nums);
+    }
 
-  else if ((code == 46) && (curr_num_lines < num_lines)){ //if it's a del and a whole line gone
-    /* FOR NOW, DELETE DISABLED, UNTIL I SOLVE THE END OF LINE VS BEGINNING OF LINE ISSUE */
-    //delElement(currLine); //the server still thinks an extra thing is there
-  //  num_lines--;
-  //  prevLine = currLine; //probably unnecessary
-  // // console.log("deleted line" + currLine);
-
-
-   /* MOD THE CURRENT LINE, DELETE THE SUBSEQUENT. SO IF ABOVE, YOU REDO AN IDENTICAL LINE, DELETE THE FOLLOWING WRONG ONE. IF
-   ON THE LINE, YOU'RE MOVING THE NEXT UP TO THE CURRENT AND MODIFYING IT SO NOW ITS IDENTICAL, THEN REMOVING THE OLD COPY OF THE NEXT ONE*/
+   // console.log("switched from " + prevLine + "to " + currLine);
   }
 
   else if (checkLineChanged(currLine)){ //otherwise, if I've just changed lines
@@ -106,46 +106,9 @@ function upFunction(e){
     prevLine = currLine;
   }
 
-
-  console.log("num_lines_changed:" + num_lines_changed);
-  console.log("num_lines_selected:" + num_lines_selected);
-
-  if (num_lines_changed != 0 || num_lines_selected != 1){ //if the current number of lines has changed, or we selected some
-    
-    if (num_lines_changed >= 0){ // if some have been added
-      num_lines_changed = curr_line - prev_line;
-      num_lines_modified = num_lines_selected;
-      console.log("modified"+num_lines_modified);
-
-      total_changes = getChanges(num_lines_changed, num_lines_modified);
-      console.log("added_lines" + total_changes.change_line_nums);
-      console.log("mod_lines" + total_changes.mod_line_nums);
-    }
-
-    else if (num_lines_changed < 0){ //if some have been deleted
-      num_lines_deleted = Math.abs(num_lines_changed);
-      //always at least modify the first line, perhaps more
-      num_lines_modified = Math.max(1, num_lines_selected-num_lines_deleted); //modifying all selected lines not being deleted
-      num_lines_changed = num_lines_deleted; //the first line will always be modified, and it always goes up to this
-      //so if deleting one line, you always modify the first and delete the second. otherwise, modify the first, deal with rest
-      //because when you delete, you wind up on the first line being deleted, so always mod that, don't delete it
-
-      console.log("deleted" + num_lines_deleted);
-      console.log("modified"+ num_lines_modified);
-      console.log("curr_line" + curr_line);
-      console.log("prev_line" + prev_line);
-
-      total_changes = getChanges(num_lines_changed, num_lines_modified);
-      console.log("deleted_lines" + total_changes.change_line_nums);
-      console.log("mod_lines" + total_changes.mod_line_nums);
-    }
-
-    prevLine = currLine;
-    num_lines = curr_num_lines;
-    num_lines_selected = 1;
-   // console.log("switched from " + prevLine + "to " + currLine);
-  }
-
+  prevLine = currLine;
+  num_lines = curr_num_lines;
+  num_lines_selected = 1;
 
   console.log("--------------");
 
@@ -159,9 +122,11 @@ function getChanges(change_length, mod_point){
   change_line_nums = [];
   change_line_text = [];
 
+  var starting_ind = Math.min(prev_line, curr_line);
+
   //runs from the prev_line up past curr_line to all ones being changed (added or deleted)
-  for (i=0; i <= change_length; i++){
-    line_ind = prev_line+i;
+  for (i=0; i < change_length; i++){
+    line_ind = starting_ind+i;
     console.log("i:" + i + " line_ind:" + line_ind);
     if (i < mod_point){ //before the threshold where you start adding
       mod_line_nums.push(line_ind);
