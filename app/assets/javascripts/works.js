@@ -34,38 +34,28 @@ $( document ).ready(function() {
 function upFunction(e){
   var code = e.code || e.which;
   //alert(code);
-
   var el = this;
   if (el == undefined)
     return;
 
   var curr_num_lines = getNumLines();
   var num_lines_changed = curr_num_lines - num_lines;
-/*  console.log("curr_num_lines" + curr_num_lines);
-  console.log("num_lines" + num_lines);
-  console.log("num_lines_changed" + num_lines_changed);
-*/
+
   var text;
   currLine = getCurrentLine(el);
   curr_line = currLine;
   prev_line = prevLine;
   text = getLineText(prevLine);
 
-  /*console.log("currLine:" + currLine);
-  console.log("prevLine:" + prevLine);
-  console.log("text:" + text);
-*/
-//  alert(code);
-
   if ((code < 37) || (code > 40)){ //if it's not an arrow key, assume something has been changed
     changes_made = true;
   }
 
-  console.log("num_lines_changed:" + num_lines_changed);
-  console.log("num_lines_selected:" + num_lines_selected);
-  console.log("changes made?" + changes_made);
+ // console.log("num_lines_changed:" + num_lines_changed);
+ // console.log("num_lines_selected:" + num_lines_selected);
+ // console.log("changes made?" + changes_made);
   if (changes_made){
-    console.log("line changed?" + checkLineChanged(currLine));
+  //  console.log("line changed?" + checkLineChanged(currLine));
     if (num_lines_changed !== 0 || num_lines_selected !== 1){ //if the current number of lines has changed, or we selected some
       //if adding or only modifying
       if (num_lines_changed > 0){ // if some have been added
@@ -181,7 +171,7 @@ function selectFunction(e){
   var range = getInputSelection(e.srcElement);
   console.log("Range: " + range.start + "," + range.end);
   var start_line = getLineNumber(range.start, e.srcElement);
-  var end_line = getLineNumber(range.end, e.srcElement);
+  var end_line = getLineNumber(range.end-1, e.srcElement); //end is inclusive, make it exclusive with -1
 
   console.log(start_line +"  " + end_line);
   num_lines_selected = Math.abs(end_line - start_line) + 1;
@@ -283,8 +273,6 @@ function modInGraph(data){
     }
   }
 
-  
-
   pos_y = 50; //these two will be random
   pos_x = 60;
 
@@ -351,7 +339,7 @@ function modInGraph(data){
       console.log(add_edge);
      
       //maybe have this check instead that both nodes exist in the graph, otherwise you get an error
-      console.log("source:" + add_edge.source + " target" + add_edge.target + " id: " + add_edge.id)
+      console.log("source:" + add_edge.source + " target" + add_edge.target + " id: " + add_edge.id);
       if ( add_edge.source !== "" && add_edge.target !== "" && add_edge.id !== "" ){ //ignore if edge goes nowhere
         cy.add({
           group: "edges",
@@ -387,9 +375,6 @@ function getCurrentLine(el){
   //var caretPos = getCaretCharacterOffsetWithin(el);
   var caret_pos = $("#work_markup").getCursorPosition();
   return getLineNumber(caret_pos, el);
-
-
-
   /*if (caretPos == null)
     return -1;
   //console.log(caretPos);
@@ -424,10 +409,13 @@ function getLineNumber(pos, el){
 
   //go through, checking for a newline, adding one for each
   for (var i = 0; i < pos; i++){
-    if (text[i] == "\n"){
+    if (text[i] === "\n"){
       curr_line++;
+    //  console.log("newline!");
     }
+ //   console.log(text[i]+"|");
   }
+  console.log("|" + text[i] + "|");
   return curr_line;
 }
 
