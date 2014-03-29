@@ -77,8 +77,8 @@ function upFunction(e){
 
   else if ((code == 8) && (curr_num_lines < num_lines)){ //if it's backspace and a whole line gone
     //delElement(prevLine);
-    num_lines--;
-    prevLine = currLine;
+  //  num_lines--;
+  //  prevLine = currLine;
     
     //console.log("backspaced line" + prevLine);
   }
@@ -86,9 +86,9 @@ function upFunction(e){
   else if ((code == 46) && (curr_num_lines < num_lines)){ //if it's a del and a whole line gone
     /* FOR NOW, DELETE DISABLED, UNTIL I SOLVE THE END OF LINE VS BEGINNING OF LINE ISSUE */
     //delElement(currLine); //the server still thinks an extra thing is there
-    num_lines--;
-    prevLine = currLine; //probably unnecessary
-   // console.log("deleted line" + currLine);
+  //  num_lines--;
+  //  prevLine = currLine; //probably unnecessary
+  // // console.log("deleted line" + currLine);
 
 
    /* MOD THE CURRENT LINE, DELETE THE SUBSEQUENT. SO IF ABOVE, YOU REDO AN IDENTICAL LINE, DELETE THE FOLLOWING WRONG ONE. IF
@@ -126,10 +126,14 @@ function upFunction(e){
       num_lines_deleted = Math.abs(num_lines_changed);
       //always at least modify the first line, perhaps more
       num_lines_modified = Math.max(1, num_lines_selected-num_lines_deleted); //modifying all selected lines not being deleted
-      num_lines_changed = curr_line + num_lines_deleted - prev_line;
-      
+      num_lines_changed = num_lines_deleted; //the first line will always be modified, and it always goes up to this
+      //so if deleting one line, you always modify the first and delete the second. otherwise, modify the first, deal with rest
+      //because when you delete, you wind up on the first line being deleted, so always mod that, don't delete it
+
       console.log("deleted" + num_lines_deleted);
       console.log("modified"+ num_lines_modified);
+      console.log("curr_line" + curr_line);
+      console.log("prev_line" + prev_line);
 
       total_changes = getChanges(num_lines_changed, num_lines_modified);
       console.log("deleted_lines" + total_changes.change_line_nums);
@@ -184,6 +188,7 @@ function clickFunction(e){
 //  checkLineChanged(currLine);
 //  if (this == undefined)
 //    return;
+  num_lines_selected = 1; //returns to default, in case just clicking, if it is selected that's taken care of in subsequent onselect
   prevLine = currLine;
 }
 
