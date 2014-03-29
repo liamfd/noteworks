@@ -63,63 +63,66 @@ function upFunction(e){
 
   console.log("num_lines_changed:" + num_lines_changed);
   console.log("num_lines_selected:" + num_lines_selected);
+  console.log("changes made?" + changes_made);
+  if (changes_made){
+    console.log("line changed?" + checkLineChanged(currLine));
+    if (num_lines_changed !== 0 || num_lines_selected !== 1){ //if the current number of lines has changed, or we selected some
+      //if adding or only modifying
+      if (num_lines_changed > 0){ // if some have been added
+        num_lines_changed = curr_line - prev_line+1; //only works b/c you always add down, use the +1 to account for last line
+        num_lines_modified = num_lines_selected;
 
-  if (num_lines_changed !== 0 || num_lines_selected !== 1){ //if the current number of lines has changed, or we selected some
-    
-    //if adding or only modifying
-    if (num_lines_changed > 0){ // if some have been added
-      num_lines_changed = curr_line - prev_line+1; //only works b/c you always add down, use the +1 to account for last line
-      num_lines_modified = num_lines_selected;
+      //  console.log("modified"+num_lines_modified);
 
-    //  console.log("modified"+num_lines_modified);
+        total_changes = getChanges(num_lines_changed, num_lines_modified);
+        console.log("added_lines" + total_changes.change_line_nums);
+        console.log("mod_lines" + total_changes.mod_line_nums);
+        modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
+        addElement(total_changes.change_line_nums, total_changes.change_line_text);
+      }
 
-      total_changes = getChanges(num_lines_changed, num_lines_modified);
-      console.log("added_lines" + total_changes.change_line_nums);
-      console.log("mod_lines" + total_changes.mod_line_nums);
-      modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
-      addElement(total_changes.change_line_nums, total_changes.change_line_text);
+      //if deleting
+      else if (num_lines_changed < 0){ //if some have been deleted
+        num_lines_deleted = Math.abs(num_lines_changed);
+        // if deleting one line, you always modify the first and delete the second. otherwise, modify the first, deal with rest
+        num_lines_modified = Math.max(1, num_lines_selected-num_lines_deleted); //modifying all selected lines not being deleted
+        num_lines_changed = num_lines_deleted + num_lines_modified;// + Math.abs(curr_line-prev_line);
+        
+      //  console.log("deleted" + num_lines_deleted);
+      //  console.log("modified"+ num_lines_modified);
+      //  console.log("changed" + num_lines_changed);
+      
+        total_changes = getChanges(num_lines_changed, num_lines_modified);
+        console.log("deleted_lines" + total_changes.change_line_nums);
+        console.log("mod_lines" + total_changes.mod_line_nums);
+        
+        modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
+        delElement(total_changes.change_line_nums, total_changes.change_line_text);
+      }
+      else{
+        num_lines_changed = curr_line - prev_line+1; //use the +1 to account for last line
+        num_lines_modified = num_lines_selected;
+
+      //  console.log("modified"+num_lines_modified);
+
+        total_changes = getChanges(num_lines_changed, num_lines_modified);
+        console.log("mod_lines" + total_changes.mod_line_nums);
+        
+        modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
+      }
+      changes_made = false;
     }
 
-    //if deleting
-    else if (num_lines_changed < 0){ //if some have been deleted
-      num_lines_deleted = Math.abs(num_lines_changed);
-      // if deleting one line, you always modify the first and delete the second. otherwise, modify the first, deal with rest
-      num_lines_modified = Math.max(1, num_lines_selected-num_lines_deleted); //modifying all selected lines not being deleted
-      num_lines_changed = num_lines_deleted + num_lines_modified;// + Math.abs(curr_line-prev_line);
-      
-    //  console.log("deleted" + num_lines_deleted);
-    //  console.log("modified"+ num_lines_modified);
-    //  console.log("changed" + num_lines_changed);
-    
-      total_changes = getChanges(num_lines_changed, num_lines_modified);
-      console.log("deleted_lines" + total_changes.change_line_nums);
-      console.log("mod_lines" + total_changes.mod_line_nums);
-      
-      modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
-      delElement(total_changes.change_line_nums, total_changes.change_line_text);
-    }
-    else{
-      num_lines_changed = curr_line - prev_line+1; //use the +1 to account for last line
-      num_lines_modified = num_lines_selected;
-
-    //  console.log("modified"+num_lines_modified);
-
-      total_changes = getChanges(num_lines_changed, num_lines_modified);
-      console.log("mod_lines" + total_changes.mod_line_nums);
-      
-      modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
-    }
-  }
-
-  else if (checkLineChanged(currLine)){ //otherwise, if I've just changed lines
-    if (changes_made){ //if he's not just arrowing around
+    else if (checkLineChanged(currLine)){ //otherwise, if he's just changed lines
+     // if (changes_made){ //if he's not just arrowing around
       text = getLineText(prevLine);
       console.log("updating element at " + prev_line);
       modElement(prevLine, text);
+    //    changes_made = false;
+    //  }
       changes_made = false;
     }
   }
-
   prevLine = currLine;
   num_lines = curr_num_lines;
   num_lines_selected = 1;

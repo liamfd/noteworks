@@ -1,9 +1,11 @@
 <h1><%=@work.name%>'s Terminal</h1>
 
-<%= render 'nodedisplay' %>
-<br/>
-<br/>
+<div id="cy"></div>
+
 <%= render 'terminal' %>
+
+<%= render 'nodedisplay' %>
+
 
 <%= link_to 'Show', @work %>
 <%= link_to 'Back', works_path %>
