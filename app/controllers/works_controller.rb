@@ -92,10 +92,17 @@ class WorksController < ApplicationController
   def mod_element
     line_number = params[:line_number]
     line_content = params[:line_content]
-    #binding.pry
 
-   # gon.changed = @modded_element.to_json
-    modded_element_json = @work.modify_element(Array.wrap(line_number.to_i), Array.wrap(line_content.to_s))
+    #wrap input in array if needed, map the vals to the correct type
+    line_numbers = Array.wrap(line_number)
+    line_contents = Array.wrap(line_content)
+    line_numbers.map! { |num| num.to_i }
+    line_contents.map! {|cont| cont.to_s}
+    ##binding.pry
+
+    modded_element_json = @work.modify_element(line_numbers, line_contents)
+    gon.changed = @modded_element.to_json
+   
     respond_to do |format|
       format.json {render :json => modded_element_json}
     end
@@ -104,9 +111,16 @@ class WorksController < ApplicationController
   def add_element
     line_number = params[:line_number]
     line_content = params[:line_content]
+   
+    #wrap input in array if needed, map the vals to the correct type
+    line_numbers = Array.wrap(line_number)
+    line_contents = Array.wrap(line_content)
+    line_numbers.map! {|num| num.to_i}
+    line_contents.map! {|cont| cont.to_s}
+    #binding.pry
 
+    @modded_element = @work.add_new_element(line_numbers, line_contents)
     gon.changed = @modded_element.to_json
-    @modded_element = @work.add_new_element(Array.wrap(line_number.to_i), Array.wrap(line_content.to_s))
 
     respond_to do |format|
       format.js {render :json => @modded_element}
@@ -116,8 +130,12 @@ class WorksController < ApplicationController
   def del_element
     line_number = params[:line_number]
 
+    #wrap input in array if needed, map the vals to the correct type
+    line_numbers = Array.wrap(line_number)
+    line_numbers.map! {|num| num.to_i}
+   
+    @modded_element = @work.delete_element(line_numbers)
     gon.changed = @modded_element.to_json
-    @modded_element = @work.delete_element(Array.wrap(line_number.to_i))
 
     respond_to do |format|
       format.js {render :json => @modded_element}

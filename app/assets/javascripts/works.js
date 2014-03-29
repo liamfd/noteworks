@@ -67,26 +67,26 @@ function upFunction(e){
   if (num_lines_changed !== 0 || num_lines_selected !== 1){ //if the current number of lines has changed, or we selected some
     
     //if adding or only modifying
-    if (num_lines_changed >= 0){ // if some have been added
+    if (num_lines_changed > 0){ // if some have been added
       num_lines_changed = curr_line - prev_line+1; //only works b/c you always add down, use the +1 to account for last line
       num_lines_modified = num_lines_selected;
+
     //  console.log("modified"+num_lines_modified);
 
       total_changes = getChanges(num_lines_changed, num_lines_modified);
       console.log("added_lines" + total_changes.change_line_nums);
       console.log("mod_lines" + total_changes.mod_line_nums);
+      modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
+      addElement(total_changes.change_line_nums, total_changes.change_line_text);
     }
 
     //if deleting
     else if (num_lines_changed < 0){ //if some have been deleted
       num_lines_deleted = Math.abs(num_lines_changed);
-      //always at least modify the first line, perhaps more
+      // if deleting one line, you always modify the first and delete the second. otherwise, modify the first, deal with rest
       num_lines_modified = Math.max(1, num_lines_selected-num_lines_deleted); //modifying all selected lines not being deleted
       num_lines_changed = num_lines_deleted + num_lines_modified;// + Math.abs(curr_line-prev_line);
-      //the first line will always be modified, and it always goes up to this
-      //so if deleting one line, you always modify the first and delete the second. otherwise, modify the first, deal with rest
-      //because when you delete, you wind up on the first line being deleted, so always mod that, don't delete it
-
+      
     //  console.log("deleted" + num_lines_deleted);
     //  console.log("modified"+ num_lines_modified);
     //  console.log("changed" + num_lines_changed);
@@ -94,6 +94,20 @@ function upFunction(e){
       total_changes = getChanges(num_lines_changed, num_lines_modified);
       console.log("deleted_lines" + total_changes.change_line_nums);
       console.log("mod_lines" + total_changes.mod_line_nums);
+      
+      modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
+      delElement(total_changes.change_line_nums, total_changes.change_line_text);
+    }
+    else{
+      num_lines_changed = curr_line - prev_line+1; //use the +1 to account for last line
+      num_lines_modified = num_lines_selected;
+
+    //  console.log("modified"+num_lines_modified);
+
+      total_changes = getChanges(num_lines_changed, num_lines_modified);
+      console.log("mod_lines" + total_changes.mod_line_nums);
+      
+      modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
     }
   }
 
@@ -101,7 +115,7 @@ function upFunction(e){
     if (changes_made){ //if he's not just arrowing around
       text = getLineText(prevLine);
       console.log("updating element at " + prev_line);
-      //updateElement(prevLine, text);
+      modElement(prevLine, text);
       changes_made = false;
     }
   }
@@ -173,7 +187,7 @@ function selectFunction(e){
 
 
 //ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
-function updateElement(line_num, text){
+function modElement(line_num, text){
   console.log("update" + line_num + text);
   $.ajax({
     type:"GET",
