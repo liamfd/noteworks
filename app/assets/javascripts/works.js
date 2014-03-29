@@ -112,31 +112,14 @@ function upFunction(e){
 
   if (num_lines_changed != 0 || num_lines_selected != 1){ //if the current number of lines has changed, or we selected some
     
-    if (num_lines_changed > 0){ // if some have been added
-     // num_lines_added = num_lines_changed;
+    if (num_lines_changed >= 0){ // if some have been added
+      num_lines_changed = curr_line - prev_line;
       num_lines_modified = num_lines_selected;
-     // console.log("added" + num_lines_added);
       console.log("modified"+num_lines_modified);
 
-      mod_line_nums = [];
-      mod_line_text = [];
-      add_line_nums = [];
-      add_line_text = [];
-      //counting all the lines being changed
-      for (i=0; i <= curr_line - prev_line; i++){
-        line_ind = prev_line+i;
-        console.log(i);
-        if (i < num_lines_modified){ //before the threshold where you start adding
-          mod_line_nums.push(line_ind);
-          mod_line_text.push(getLineText(line_ind));
-          console.log("mod");
-        }
-        else{
-          add_line_nums.push(line_ind);
-          add_line_text.push(getLineText(line_ind));
-          console.log("add");
-        }
-      }
+      total_changes = getChanges(num_lines_changed, num_lines_modified);
+      console.log("added_lines" + total_changes.change_line_nums);
+      console.log("mod_lines" + total_changes.mod_line_nums);
     }
 
     else if (num_lines_changed < 0){ //if some have been deleted
@@ -149,34 +132,10 @@ function upFunction(e){
       console.log("modified"+ num_lines_modified);
 
       total_changes = getChanges(num_lines_changed, num_lines_modified);
-
-    /*  mod_line_nums = [];
-      mod_line_text = [];
-      delete_line_nums = [];
-      delete_line_text = [];
-      //counting all the lines being changed
-
-      //runs from the prev_line up past curr_line to all ones being deleted
-      for (i=0; i <= curr_line - prev_line + num_lines_deleted; i++){
-        line_ind = prev_line+i;
-        console.log("i:" + i + " line_ind:" + line_ind);
-        if (i < num_lines_modified){ //before the threshold where you start adding
-          mod_line_nums.push(line_ind);
-          mod_line_text.push(getLineText(line_ind));
-          console.log("mod");
-        }
-        else{
-          delete_line_nums.push(line_ind);
-         // delete_line_text.push(getLineText(line_ind));
-          console.log("del");
-        }
-      }*/
+      console.log("deleted_lines" + total_changes.change_line_nums);
+      console.log("mod_lines" + total_changes.mod_line_nums);
     }
 
-    else{ //must be the case that num_lines_selected wasn't 0
-
-
-    }
     prevLine = currLine;
     num_lines = curr_num_lines;
     num_lines_selected = 1;
