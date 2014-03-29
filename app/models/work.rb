@@ -235,16 +235,21 @@ class Work < ActiveRecord::Base
 			#build link collection
 			link_coll = self.link_collections.build
 
+			#get its depth
 			whitespace = get_text_from_regexp(line_content, /(.*):/)
 			link_coll_depth = (whitespace.length)/3 #+2?
 
+			#get its parent node
 			ordering.insert(line_number, ObjectPlace.new("LinkCollection", nil))
 			set_order(ordering)
-
 			parent_node = find_element_parent(link_coll_depth, line_number, ordering)
 
 			#this function builds all the links, plus if any are defined to a non-existing node, it adds and returns it
-			new_nodes = build_link_collection(link_coll, line_content, parent_node)
+			build_link_collection(link_coll, line_content, parent_node)
+
+			#build its child links
+			link_names = get_text_from_regexp(line_content, /:(.*)/)
+			new_nodes = link_coll.set_links(link_names)
 
 			#adds any newly created links to be returned
 			if link_coll.links != nil && link_coll.links.any?
@@ -506,7 +511,7 @@ class Work < ActiveRecord::Base
 		end
 	end
 
-
+	#using an array of strings, joins and saves them as markup
 	def set_markup(markup_lines)
 		m = markup_lines.join("\r\n") #join with \r\n
 		self.update_attribute :markup, m
@@ -538,6 +543,7 @@ class Work < ActiveRecord::Base
 		return ordering
 	end
 
+	#using an index and the relevant ordering, retreives and returns the corresponding element
 	def get_element_in_ordering(index, ordering)
 		if index >= ordering.length
 			return nil
@@ -618,123 +624,14 @@ class Work < ActiveRecord::Base
 		return markup_text
 	end
 
-
-	def parse_ordering
-		Node.destroy_all(work_id: self.id)
-		Link.destroy_all(work_id: self.id)
-		stack = Array.new
-
-		#moves through each element in the ordering
-		ordering.each do |obj_place|
-
-			#if a new node should be made
-			if obj_place.model == "Node"
-				new_node = Node.new
-				build_node(new_node, line)
-				new_node.save
-
-				#get the parent.
-				depth = new_node.depth
-
-				newNodeDepth = NodeDepth.new(new_node.id, depth)
-				
-				if depth == 0 #if it's a base element
-					stack.push(newNodeDepth)
-				else
-					currNodeDepth = stack.pop
-					while depth <= currNodeDepth.depth do #while you're less deep, therefore it aint yo momma 
-						currNodeDepth = stack.pop
-					end #at this point, @currNodeDepth is the nearest element that's not as deep as the new one, it's parent
-					parentNode = Node.find(currNodeDepth.node_idnum)
-					if parentNode.id == new_node.id #if it didn't find any parent
-						parent_id = nil
-					else
-						parent_id = parentNode.id
-					end
-
-					#creates the link, and the sets the parent and child relation
-					relation = Link.new(child_id: new_node.id, parent_id: parent_id, work_id: self.id)
-					relation.save
-					new_node.parent_relationships << relation
-					parentNode.child_relationships << relation
-
-					stack.push(currNodeDepth)#push the parent back in, in case it has siblings
-					stack.push(newNodeDepth)#push self in, in case it has children
-
-					#@new_node.parent_relationships.build(child_id: @new_node.id, parent_id:@parentNode.id)
-					#@new_node.parents << @parentNode
-					#@parent_node.child=
-					#make this nodes id into the parents child.
-					#make the child's parent the parentNode's id.
-				end
-				new_node.save
-				new_ordering.push(ObjectPlace.new("Node", new_node.id))
-
-			#if it's a note
-			elsif obj_place.model == "Note"
-			
-				new_note = Note.new()
-				build_note(new_note, line)
-
-				#this is a bug. it just gets attached to the previous node without regard for depth
-				#binding.pry
-				parentNodeDepth = stack.pop
-				parentNode = Node.find(parentNodeDepth.node_idnum)
-				stack.push(parentNodeDepth)
-				
-				new_note.node_id = parentNode.id
-				parentNode.add_note_to_combined(new_note)
-				new_note.save
-				new_ordering.push(ObjectPlace.new("Note", new_note.id))				
-		
-			#for special chars
-			elsif obj_place.model == "LinkCollection"
-
-				#ordering.insert(line_number, ObjectPlace.new("LinkCollection", nil))
-				#set_order(ordering)
-				#parent_node = find_element_parent(link_coll_depth, line_number, ordering)
-
-				#this is a bug. it just gets attached to the previous node without regard for depth
-				parent_node_depth = stack.pop
-				parent_node = Node.find(parent_node_depth.node_idnum)
-				stack.push(parent_node_depth)
-
-				whitespace = get_text_from_regexp(line, /(.*):/)
-				link_coll_depth = (whitespace.length)/3 #+2?
-
-				if parent_node != nil
-					link_coll = parent_node.link_collections.build
-					#link_coll.node = parent_node
-					#parent_node.link_colls << link_coll
-					
-					link_names = get_text_from_regexp(line, /:(.*)/)
-					link_coll.set_links(link_names)
-
-					link_coll.depth = link_coll_depth
-					link_coll.save
-					#update id in ordering
-				end
-				#binding.pry
-				new_ordering.push(ObjectPlace.new("LinkCollection", link_coll.id))
-			else
-				o.push(ObjectPlace.new("null", nil))
-			end
-		end
-
-		#should fix this so I can get rid of populate_ordering, only works here because things are produced in order, can do it as I go
-		#o = populate_ordering
-		set_order(o)
-
-	end
-
-
 	def parse_text
 		Node.destroy_all(work_id: self.id)
 		Link.destroy_all(work_id: self.id)
 		LinkCollection.destroy_all(work_id: self.id)
 
 		stack = Array.new
-		o = []
+		new_ordering= []
+		link_colls_queue = []
 		markup.each_line do |line|
 			#parser rules: any amount of whitespace followed immediately by < means new node. Otherwise, new note.
 			#<TYPE.CATEGORY>TITLE
@@ -784,7 +681,7 @@ class Work < ActiveRecord::Base
 					#make the child's parent the parentNode's id.
 				end
 				new_node.save
-				o.push(ObjectPlace.new("Node", new_node.id))
+				new_ordering.push(ObjectPlace.new("Node", new_node.id))
 
 			#if it's a note
 			elsif first_char == '-'
@@ -800,7 +697,7 @@ class Work < ActiveRecord::Base
 				new_note.node_id = parentNode.id
 				parentNode.add_note_to_combined(new_note)
 				new_note.save
-				o.push(ObjectPlace.new("Note", new_note.id))				
+				new_ordering.push(ObjectPlace.new("Note", new_note.id))				
 			#for special chars
 			elsif first_char == ':'
 
@@ -814,12 +711,21 @@ class Work < ActiveRecord::Base
 				stack.push(parent_node_depth)
 				
 				link_coll = self.link_collections.build
-				build_link_collection(link_coll, line, parent_node)
+				build_link_collection(link_coll, line, parent_node)	
+				link_colls_queue.append({link_coll: link_coll, text: get_text_from_regexp(line, /:(.*)/)})
 				#binding.pry
-				o.push(ObjectPlace.new("LinkCollection", link_coll.id))
+				new_ordering.push(ObjectPlace.new("LinkCollection", link_coll.id))
 			else
-				o.push(ObjectPlace.new("null", nil))
+				new_ordering.push(ObjectPlace.new("null", nil))
 			end
+		end
+
+		set_order(new_ordering)
+		#at the end, build those links (appending the newly made nodes if needed.) This way, all nodes are mode before it thinks
+		#it needs to be doing this shit
+		link_colls_queue.each do |link_coll_pair|
+			#build its child links
+			link_coll_pair[:link_coll].set_links(link_coll_pair[:text])
 		end
 
 		#should fix this so I can get rid of populate_ordering, only works here because things are produced in order, can do it as I go
@@ -885,12 +791,12 @@ class Work < ActiveRecord::Base
 			parent_node.reload
 		end
 		
-		link_names = get_text_from_regexp(text, /:(.*)/)
-		new_nodes = link_coll.set_links(link_names)
+		#link_names = get_text_from_regexp(text, /:(.*)/)
+		#new_nodes = link_coll.set_links(link_names)
 
 		link_coll.depth = link_coll_depth
 		link_coll.save
-		return new_nodes
+		#return new_nodes
 	end
 
 	#fills ordering according to stored nodes and notes. OUTDATED, KEEPING FOR PARSETEXT, USE get_ordering
