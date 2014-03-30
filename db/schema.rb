@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140323224500) do
+ActiveRecord::Schema.define(version: 20140330225500) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
@@ -70,6 +70,16 @@ ActiveRecord::Schema.define(version: 20140323224500) do
   end
 
   add_index "notes", ["node_id"], name: "index_notes_on_node_id"
+
+  create_table "place_holders", force: true do |t|
+    t.integer  "work_id"
+    t.string   "text"
+    t.integer  "depth"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "place_holders", ["work_id"], name: "index_place_holders_on_work_id"
 
   create_table "positions", force: true do |t|
     t.integer  "x"

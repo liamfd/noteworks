@@ -3,8 +3,8 @@ class Work < ActiveRecord::Base
 
 	has_many :nodes, dependent: :destroy
 	has_many :links, dependent: :destroy
-	has_many :link_collections, inverse_of: :work
-
+	has_many :link_collections, inverse_of: :work, dependent: :destroy
+	has_many :place_holders, dependent: :destroy
 	has_many :categories, dependent: :destroy
 
 	ObjectPlace = Struct.new(:model, :id)
@@ -273,7 +273,8 @@ class Work < ActiveRecord::Base
 			return to_modify
 
 		else
-			ordering.insert(line_number, ObjectPlace.new("null", nil))
+			place_holder = self.place_holders.create(text:line_content)
+			ordering.insert(line_number, ObjectPlace.new("PlaceHolder", place_holder.id))
 			set_order(ordering)
 			return {}
 		end
@@ -387,7 +388,8 @@ class Work < ActiveRecord::Base
 		else #if it's not formatted right
 			#remove_node = {}
 			#remove_edges = []
-
+			place_holder = get_element_in_ordering(line_number, ordering)
+			place_holder.destroy
 			#update the ordering
 			ordering.delete_at(line_number)
 			set_order(ordering)
@@ -422,7 +424,7 @@ class Work < ActiveRecord::Base
 		children = Array.new
 		i = index + 1
 		curr_el = get_element_in_ordering(i, ordering)
-		while (curr_el == "null") #ignore nil elements
+		while (curr_el == "PlaceHolder") #ignore nil elements
 			i = i+1
 			curr_el = get_element_in_ordering(i, ordering)
 		end
@@ -448,7 +450,7 @@ class Work < ActiveRecord::Base
 
 			i = i+1
 			curr_el = get_element_in_ordering(i, ordering)
-			while (curr_el == "null") #ignore nil elements
+			while (curr_el == "PlaceHolder") #ignore nil elements
 				i = i+1
 				curr_el = get_element_in_ordering(i, ordering)
 			end
@@ -558,8 +560,10 @@ class Work < ActiveRecord::Base
 			curr_el = Note.find(ordering[index].id)
 		elsif ordering[index].model == "LinkCollection"
 			curr_el = LinkCollection.find(ordering[index].id)
-		elsif ordering[index].model == "null"
-			curr_el = "null"
+		elsif ordering[index].model == "PlaceHolder"
+			curr_el = PlaceHolder.find(ordering[index].id)
+		else
+			curr_el = nil
 		end
 		return curr_el
 	end
@@ -583,7 +587,7 @@ class Work < ActiveRecord::Base
 		markup_text = ""
 
 		ordering.each do |obj_place|
-			next if obj_place.model == "null"
+
 			element = obj_place.model.constantize.find(obj_place.id) #find the element referred to in the objectplace	
 			whitespace = ""
 			type_char = ""
@@ -621,6 +625,10 @@ class Work < ActiveRecord::Base
 					links_text = links_text[0..-4] #removes the trailing spaces and comma
 				end
 				info = links_text
+			elsif element.is_a?(PlaceHolder) #it's a place_holder
+				whitespace = ""
+				type_char = ""
+				info = element.text
 			end
 			markup_text << whitespace + type_char + info + "\r\n"
 		end
@@ -733,7 +741,8 @@ class Work < ActiveRecord::Base
 				#binding.pry
 				new_ordering.push(ObjectPlace.new("LinkCollection", link_coll.id))
 			else
-				new_ordering.push(ObjectPlace.new("null", nil))
+				place_holder = work.place_holders.create(text:line_content)
+				new_ordering.push(ObjectPlace.new("PlaceHolder", place_holder.id))
 			end
 		end
 
