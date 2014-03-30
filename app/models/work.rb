@@ -28,6 +28,9 @@ class Work < ActiveRecord::Base
    	#fix the infinite loop, then you can have this back
 	end
 
+	def valid_links
+		self.links.select {|l| l.parent_id != nil && l.child_id != nil}
+	end
 
 	#parser shit
 	def modify_element(lines_number, lines_content)
