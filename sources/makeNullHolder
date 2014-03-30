@@ -1,0 +1,1 @@
+rails g model PlaceHolder work:references text:string depth:integer
