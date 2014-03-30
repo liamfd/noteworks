@@ -1,0 +1,17 @@
+
+%h2 Listing nodes
+
+%table
+  %thead
+    %tr
+      %th Title
+      %th Category
+      %th Parent
+
+  %tbody
+    - @work.nodes.each do |node|
+      %tr
+        %td= node.title
+        %td= node.category.name
+        -if node.parents.take != nil
+          %td= node.parents.first.title

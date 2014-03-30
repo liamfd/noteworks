@@ -1,0 +1,13 @@
+%h1= "#{@work.name}'s Terminal"
+
+#cy
+
+.terminal
+  = render 'terminal'
+
+.nodedisplay
+  = render 'nodedisplay'
+
+
+<%= link_to 'Show', @work %>
+<%= link_to 'Back', works_path %>

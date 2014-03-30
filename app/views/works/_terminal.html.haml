@@ -1,0 +1,16 @@
+%div
+  =form_for(@work, url: {action: "updatenotes"}) do |f|
+    %h2 Terminal
+    %h2#field
+    = f.text_area :markup, size:"100x20", value: @work.generate_markup
+
+    .actions
+      - f.submit
+
+%div
+  %h3 Categories
+  - @work.categories.each do |cat|
+    %div= cat.name
+
+%p.test
+#test_box

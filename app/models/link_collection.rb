@@ -3,7 +3,6 @@ class LinkCollection < ActiveRecord::Base
   belongs_to :work, inverse_of: :link_collections
   has_many :links, inverse_of: :link_collection, dependent: :destroy
 
-
   #this function takes in text, uses it to build links, plus if any are defined to a non-existing node, it adds and returns the node
   def set_links(text)
   	chunks = text.split(",")
@@ -14,14 +13,6 @@ class LinkCollection < ActiveRecord::Base
   		child_node = Node.find_by(title: chunk.strip)
 
       if child_node == nil #if the child doesn't exist, create it at the very end
-      #  child_node = self.work.nodes.build
-      #  self.work.build_node(child_node, ".,"+chunk)
-      #  child_node.save
-
-      #  ordering = self.work.get_ordering
-      #  ordering.push(ObjectPlace.new("Node", new_node.id))
-      #  self.work.set_order(ordering)
-
         place = self.work.get_ordering.length
         self.work.add_new_element([place], [".,"+chunk])
         child_node = self.work.get_element_in_ordering(place, self.work.get_ordering)
@@ -35,6 +26,7 @@ class LinkCollection < ActiveRecord::Base
       else
         link.parent_id = nil
       end
+      link.work = self.work
       link.child = child_node
     	link.save
 	  end
