@@ -690,12 +690,18 @@ class Work < ActiveRecord::Base
 
 				#this is a bug. it just gets attached to the previous node without regard for depth
 				#binding.pry
-				parentNodeDepth = stack.pop
-				parentNode = Node.find(parentNodeDepth.node_idnum)
-				stack.push(parentNodeDepth)
+				if (new_note.depth != 0 && !stack.empty?) #if it could have a parent and there are possibilities
+
+					currNodeDepth = stack.pop
+					while new_note.depth <= currNodeDepth.depth do #while you're less deep, therefore it aint yo momma 
+						currNodeDepth = stack.pop
+					end #at this point, @currNodeDepth is the nearest element that's not as deep as the new one, it's parent
+					parentNode = Node.find(currNodeDepth.node_idnum)
+					stack.push(currNodeDepth)
 				
-				new_note.node_id = parentNode.id
-				parentNode.add_note_to_combined(new_note)
+					new_note.node_id = parentNode.id
+					parentNode.add_note_to_combined(new_note)
+				end
 				new_note.save
 				new_ordering.push(ObjectPlace.new("Note", new_note.id))				
 			#for special chars
@@ -705,13 +711,21 @@ class Work < ActiveRecord::Base
 				#set_order(ordering)
 				#parent_node = find_element_parent(link_coll_depth, line_number, ordering)
 
-				#this is a bug. it just gets attached to the previous node without regard for depth
-				parent_node_depth = stack.pop
-				parent_node = Node.find(parent_node_depth.node_idnum)
-				stack.push(parent_node_depth)
+				whitespace = get_text_from_regexp(text, /(.*):/)
+				link_coll_depth = (whitespace.length)/3 #+2?
+				parentNode = nil
+				if (link_coll_depth != 0 && !stack.empty?) #if it could have a parent and there are possibilities
+
+					currNodeDepth = stack.pop
+					while link_coll_depth <= currNodeDepth.depth do #while you're less deep, therefore it aint yo momma 
+						currNodeDepth = stack.pop
+					end #at this point, @currNodeDepth is the nearest element that's not as deep as the new one, it's parent
+					parentNode = Node.find(currNodeDepth.node_idnum)
+					stack.push(currNodeDepth)
+				end
 				
 				link_coll = self.link_collections.build
-				build_link_collection(link_coll, line, parent_node)	
+				build_link_collection(link_coll, line, parentNode)	
 				link_colls_queue.append({link_coll: link_coll, text: get_text_from_regexp(line, /:(.*)/)})
 				#binding.pry
 				new_ordering.push(ObjectPlace.new("LinkCollection", link_coll.id))
