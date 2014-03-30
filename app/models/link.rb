@@ -14,6 +14,10 @@ class Link < ActiveRecord::Base
     }
   end
 
+  def fully_connected?
+    parent_id != nil && child_id != nil
+  end
+
   def change_child(new_child)
     self.update_attributes(child_id: new_child.id)
   end
