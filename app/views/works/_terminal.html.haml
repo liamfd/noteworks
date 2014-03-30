@@ -5,12 +5,13 @@
     = f.text_area :markup, size:"100x20", value: @work.generate_markup
 
     .actions
-      - f.submit
+      = f.submit
 
 %div
   %h3 Categories
   - @work.categories.each do |cat|
-    %div= cat.name
+    .cat_wrapper{style:"color:#{cat.color}"}= cat.name
+  = link_to "index", controller: "categories", action: "index"
 
 %p.test
 #test_box

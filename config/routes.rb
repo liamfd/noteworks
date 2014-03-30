@@ -13,8 +13,11 @@ Noteweb::Application.routes.draw do
   get "node/index"
   resources :nodes
 
-  get "node/index"
   devise_for :users
+
+  get "categories", to: "categories#index"
+  get "categories/:id", to: "categories#show"
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
