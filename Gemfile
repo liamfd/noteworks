@@ -71,4 +71,4 @@ gem 'factory_girl_rails'
 gem 'haml-rails', :group => :development
 
 gem 'compass-rails'
-gem 'zurb-foundation'
+gem 'zurb-foundation', '~> 4.3.2'

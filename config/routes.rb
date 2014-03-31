@@ -15,8 +15,9 @@ Noteweb::Application.routes.draw do
 
   devise_for :users
 
-  get "categories", to: "categories#index"
-  get "categories/:id", to: "categories#show"
+  resources :categories, only: [:index, :show]
+  #get "categories", to: "categories#index"
+  #get '/category/:id', :to => 'categories#show'
 
 
   # The priority is based upon order of creation: first created -> highest priority.

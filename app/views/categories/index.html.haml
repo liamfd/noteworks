@@ -1,12 +1,13 @@
 %h1 Categories
   
-- @categories.each do |cat|
-	.cat_wrapper{class: "large-2 columns", style:"color:#{cat.color}"}= cat.name
-	
-%h2 I love to eat the pie!
-%a.button{href: "#", data:{"reveal-id" => "myModal"} } Click Me For A Modal
-#myModal{class: "reveal-modal", data:{:reveal=> true }}
-	%h2 Awesome. I have it.
-	%p.lead Your couch.  It is mine.
-	%p Im a cool paragraph that lives inside of an even cooler modal. Wins
-	%a.close-reveal-modal &#215;
+%ul.small-block-grid-8
+	- @categories.each do |cat|
+		%li.cat_wrapper{class: "large-2 columns"}
+			=link_to(cat.name, category_path(cat), {style:"color:#{cat.color}"})
+			=link_to(cat.name, category_path(cat), {style:"color:#{cat.color}", data:{"reveal-id" => "myModal", "reveal-ajax" => true}})
+
+%button{data:{"reveal-id" => "myModal", "reveal-ajax" => "/categories/2"} } Click Me For A Modal
+
+#myModal{class: "reveal-modal", data:{:reveal=> true}}
+
+= link_to "index", controller: "categories", action: "index"
