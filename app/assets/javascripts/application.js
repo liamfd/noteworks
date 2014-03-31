@@ -23,5 +23,4 @@
 //= require cytoscape.js-2.0.4/jquery.cytoscape-navigator
 //= require cytoscape.js-2.0.4/jquery.cytoscape-panzoom
 
-//= require_tree .
 $(function(){ $(document).foundation(); });
