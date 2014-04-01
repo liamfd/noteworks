@@ -14,8 +14,12 @@ Noteweb::Application.routes.draw do
   resources :nodes
 
   devise_for :users
+  resources :users, only: [:show]
 
   resources :categories, only: [:index, :show, :edit, :update]
+  
+
+
   #get "categories", to: "categories#index"
   #get '/category/:id', :to => 'categories#show'
 

@@ -1,23 +1,6 @@
 $( document ).ready(function() {
-	/*
-	$('#category_name').blur(function(){
-		submitForm();
-	});
-	*/
-
 	$('#category_name').get(0).onblur= submitForm;
-	//$("#spinner").hide();
-/*	$("#spinner").bind("ajaxSend", function() {
-	$(this).show();
-	}).bind("ajaxStop", function() {
-	$(this).hide();
-	alert("scoop");
-	}).bind("ajaxError", function() {
-	$(this).hide();
-	});*/
-	//$("form[data-remote]").bind('ajax:before', toggleSpinner());
-	//$("form[data-remote]").bind('ajax:complete', toggleSpinner());
-	
+	$("#spinner").hide();
 });
 
 function submitForm(){
