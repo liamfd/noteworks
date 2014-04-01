@@ -1,11 +1,10 @@
 Noteweb::Application.routes.draw do
-  get "works/:id/takenotes", to: "works#takenotes"
+  get "works/:id/takenotes", to: "works#takenotes", as: 'work'
   get "works/:id/testnetwork", to: "works#testnetwork"
   
   get "works/:id/mod_element", to: "works#mod_element"
   get "works/:id/add_element", to: "works#add_element"
   get "works/:id/del_element", to:"works#del_element"
-
 
   patch "works/:id", to: "works#updatenotes"
   resources :works
@@ -15,6 +14,7 @@ Noteweb::Application.routes.draw do
 
   devise_for :users
   resources :users, only: [:show]
+  get 'profile', to: 'users#show'
 
   resources :categories, only: [:index, :show, :edit, :update]
   
