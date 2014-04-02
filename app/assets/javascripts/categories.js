@@ -24,9 +24,10 @@ $(function() {
 		//this could also go in a ajaxComplete global call
 
 		//console.log("myModal opened");
-
-		$(".edit_form").find('#category_name').get(0).onblur= submitForm;
-		$(".edit_form").find('#category_color').get(0).onblur= submitForm;
+		if ( $(".edit_form").length != 0 ){
+			$(".edit_form").find('#category_name').get(0).onblur= submitForm;
+			$(".edit_form").find('#category_color').get(0).onblur= submitForm;
+		}
 		$("#spinner").hide();
 
 		$("form").bind("ajax:beforeSend", function(){
