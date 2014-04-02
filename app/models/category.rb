@@ -10,9 +10,7 @@ class Category < ActiveRecord::Base
   def set_nodes_category_to_default
     if work!=nil
       default_category = work.categories.find_by name: ""
-      self.nodes.each do |node|
-        node.update_attributes(category: default_category)
-      end
+      move_nodes(default_category)
     end
   end
 
@@ -23,5 +21,18 @@ class Category < ActiveRecord::Base
     end
     self.work_id = 1
   end
+
+  def merge_with_category(merge_to_name)
+    merge_to = work.categories.find_by name: merge_to_name
+    move_nodes(merge_to)
+    self.delete
+  end
+
+  def move_nodes(new_owner)
+    self.nodes.each do |node|
+      node.update_attributes(category: new_owner)
+    end
+  end
+
 
 end

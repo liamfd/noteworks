@@ -30,8 +30,11 @@ class CategoriesController < ApplicationController
   def create
     #this will turn into @work.build.nodes? pass work_id?
     @category = Category.new(category_params)
+
     if @category.save
       respond_with(:layout => false )
+    else
+      respond_with @category, status: :unprocessable_entity
     end
  
     #if @category.save
