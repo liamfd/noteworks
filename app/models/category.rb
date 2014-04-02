@@ -8,16 +8,20 @@ class Category < ActiveRecord::Base
   validates :name, uniqueness: true
 
   def set_nodes_category_to_default
-    default_category = work.categories.find_by name: ""
-    self.nodes.each do |node|
-      node.update_attributes(category: default_category)
+    if work!=nil
+      default_category = work.categories.find_by name: ""
+      self.nodes.each do |node|
+        node.update_attributes(category: default_category)
+      end
     end
   end
 
   #bottom, private
   def color_randomizer
+    binding.pry
     if self.color == nil || self.color == ""
-      self.color ||= "#" + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99)
+      self.color = "#" + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99)
+      binding.pry
     end
     self.work_id = 1
   end
