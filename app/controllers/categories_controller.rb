@@ -16,6 +16,7 @@ class CategoriesController < ApplicationController
   # GET /categories/new
   def new
     @category = Category.new
+    render(:layout => false)
   end
 
   # GET /categories/1/edit
@@ -28,12 +29,11 @@ class CategoriesController < ApplicationController
   def create
     #this will turn into @work.build.nodes? pass work_id?
     @category = Category.new(category_params)
-
     respond_to do |format|
-      if @category.update(category_params)
-        format.js { render :layout=>false }
+      if @category.save
+        format.json { render json: @category.to_json }
       else
-        format.html { render action: 'edit' }
+        format.json { render json: @category.errors, status: :unprocessable_entity }
       end
     end
   end

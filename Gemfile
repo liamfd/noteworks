@@ -73,4 +73,4 @@ gem 'haml-rails', :group => :development
 gem 'compass-rails'
 gem 'zurb-foundation', '~> 4.3.2'
 
-gem 'jquery-form-rails'
+gem 'jquery-turbolinks'

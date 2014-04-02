@@ -16,9 +16,10 @@ class Category < ActiveRecord::Base
 
   #bottom, private
   def color_randomizer
-    if self.color == nil
+    if self.color == nil || self.color == ""
       self.color ||= "#" + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99)
     end
+    self.work_id = 1
   end
 
 end

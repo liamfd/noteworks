@@ -11,9 +11,9 @@
 // about supported directives.
 //
 //= require jquery
+//= require jquery.turbolinks
 //= require jquery_ujs
 //= require foundation
-//= require turbolinks
 
 //= require d3
 //= require cytoscape.js-2.0.4/arbor
@@ -22,5 +22,6 @@
 //= require cytoscape.js-2.0.4/jquery.cytoscape-edgehandles
 //= require cytoscape.js-2.0.4/jquery.cytoscape-navigator
 //= require cytoscape.js-2.0.4/jquery.cytoscape-panzoom
+//= require turbolinks
 
 $(function(){ $(document).foundation(); });
