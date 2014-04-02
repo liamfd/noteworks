@@ -1,4 +1,6 @@
 - @categories.each do |cat|
 	%li.cat_wrapper{class: "large-2 columns", id:"category-#{cat.id}"}
-		=link_to('"' + cat.name + '"', edit_category_path(cat), {style:"color:#{cat.color}", data:{"reveal-id" => "myModal", "reveal-ajax" => true}})
-		=link_to("x", category_path(cat), method: :delete, remote: true)
+		=link_to('"' + cat.name + '"',  edit_category_path(cat), {:class=> "edit-link", style:"color:#{cat.color}", data:{"reveal-id" => "myModal", "reveal-ajax" => true}})
+		=link_to("x", category_path(cat), method: :delete, :class=> "delete-link", remote: true)
+%li.cat_wrapper{class: "large-2 columns", id:"new_category"}
+	=link_to('New!', new_category_path, {data:{"reveal-id" => "myModal", "reveal-ajax" => true}})

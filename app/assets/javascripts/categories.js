@@ -44,6 +44,6 @@ function updateObject(data){
 	console.log("updating");
 	obj = $("#category-"+data.id);
 	test_obj = obj;
-	obj.children("a").text(data.name);
-	obj.children("a").css("color",data.color);
+	obj.children("a.edit-link").text(data.name);
+	obj.children("a.edit-link").css("color",data.color);
 }

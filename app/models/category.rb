@@ -5,6 +5,8 @@ class Category < ActiveRecord::Base
   before_save :color_randomizer
   before_destroy :set_nodes_category_to_default
 
+  validates :name, uniqueness: true
+
   def set_nodes_category_to_default
     default_category = work.categories.find_by name: ""
     self.nodes.each do |node|

@@ -13,9 +13,29 @@ class CategoriesController < ApplicationController
   def show
   end
 
+  # GET /categories/new
+  def new
+    @category = Category.new
+  end
+
   # GET /categories/1/edit
   def edit
     render(:layout => false)
+  end
+
+  # POST /categories
+  # POST /categories.json
+  def create
+    #this will turn into @work.build.nodes? pass work_id?
+    @category = Category.new(category_params)
+
+    respond_to do |format|
+      if @category.update(category_params)
+        format.js { render :layout=>false }
+      else
+        format.html { render action: 'edit' }
+      end
+    end
   end
 
   # PATCH/PUT /categories/1
