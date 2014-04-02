@@ -22,10 +22,8 @@ class CategoriesController < ApplicationController
   def update
     respond_to do |format|
       if @category.update(category_params)
-        format.html { redirect_to "index"}
-        format.json { head :no_content }
+        format.json { render json: @category.to_json }
       else
-        format.html { render action: 'edit' }
         format.json { render json: @category.errors, status: :unprocessable_entity }
       end
     end
