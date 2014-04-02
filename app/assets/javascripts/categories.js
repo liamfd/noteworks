@@ -1,6 +1,8 @@
 var test_data;
 var test_xhr;
 var test_obj;
+var test_ajaxOptions;
+var test_error;
 $( document ).ready(function() {
 	$('#category_list').bind("ajax:success", function(evt, data, status, xhr){
 	//	alert('hello');
@@ -28,6 +30,7 @@ $(function() {
 
 		$("form").bind("ajax:beforeSend", function(){
 			$("#spinner").show();
+			$("#response").hide();
 		});
 		$("form").bind("ajax:success", function(evt, data, status, xhr){
 			$("#response").html("Saved!").show().fadeOut("slow");
@@ -36,6 +39,14 @@ $(function() {
 		});
 		$("form").bind("ajax:complete", function(){
 			$("#spinner").hide();
+		});
+		$("form").bind("ajax:error", function(xhr, ajaxOptions, thrownError){
+			//find a way to get the actual error being returned by the rails controller
+			$("#response").html("Error: Repeated name.").show().fadeOut("slow");
+			$("#spinner").hide();
+			test_xhr = xhr;
+			test_ajaxOptions = ajaxOptions;
+			test_error = thrownError;
 		});
 	});
 });
