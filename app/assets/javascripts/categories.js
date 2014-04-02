@@ -2,15 +2,7 @@ var test_data;
 var test_xhr;
 var test_obj;
 $( document ).ready(function() {
-	//change this in some way so it's only the edit
-	
-	//$('#category_name').get(0).onblur= submitForm;
-	//$("#spinner").hide();
-	console.log("There is JS");
 });
-
-
-
 
 function submitForm(){
 	$(this).parents("form").submit();
@@ -22,18 +14,19 @@ function toggleSpinner(){
 }
 
 $(function() {
-
 	$('#myModal').bind('opened', function() {
-
 		//this could also go in a ajaxComplete global call
-		console.log("myModal opened");
+
+		//console.log("myModal opened");
 		$('#category_name').get(0).onblur= submitForm;
+		$('#category_color').get(0).onblur= submitForm;
 		$("#spinner").hide();
 
 		$("form").bind("ajax:beforeSend", function(){
 			$("#spinner").show();
 		});
 		$("form").bind("ajax:success", function(evt, data, status, xhr){
+			$("#response").html("Saved!").show().fadeOut("slow");
 			test_data = data;
 			updateObject(data);
 		});

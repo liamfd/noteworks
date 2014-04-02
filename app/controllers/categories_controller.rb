@@ -30,6 +30,18 @@ class CategoriesController < ApplicationController
     end
   end
 
+
+  # DELETE /category/1
+  # DELETE /category/1.json
+  def destroy
+    @category.destroy
+    respond_to do |format|
+     # format.html { redirect_to nodes_url }
+      #format.json { head :no_content }
+    end
+  end
+
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_category

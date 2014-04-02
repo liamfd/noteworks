@@ -16,7 +16,7 @@ Noteweb::Application.routes.draw do
   resources :users, only: [:show]
   get 'profile', to: 'users#show'
 
-  resources :categories, only: [:index, :show, :edit, :update]
+  resources :categories, only: [:index, :show, :edit, :update, :destroy]
   
 
 

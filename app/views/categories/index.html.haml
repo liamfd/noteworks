@@ -4,6 +4,7 @@
 	- @categories.each do |cat|
 		%li.cat_wrapper{class: "large-2 columns", id:"category-#{cat.id}"}
 			=link_to(cat.name, edit_category_path(cat), {style:"color:#{cat.color}", data:{"reveal-id" => "myModal", "reveal-ajax" => true}})
+			=link_to("x", category_path(cat), method: :delete, remote: true)
 
 #myModal{class: "reveal-modal", data:{:reveal=> true}}
 
