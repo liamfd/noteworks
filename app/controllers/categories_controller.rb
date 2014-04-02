@@ -1,7 +1,8 @@
 class CategoriesController < ApplicationController
   before_action :set_category, only: [:show, :edit, :update, :destroy]
-  before_action :set_categories, only: [:index, :destroy]
-  respond_to :html, :json
+  before_action :set_categories, only: [:index, :destroy, :create]
+
+  respond_to :html, :json, :js
 
   # GET /categories
   # GET /categories.json
@@ -29,13 +30,15 @@ class CategoriesController < ApplicationController
   def create
     #this will turn into @work.build.nodes? pass work_id?
     @category = Category.new(category_params)
-    respond_to do |format|
-      if @category.save
-        format.json { render json: @category.to_json }
-      else
-        format.json { render json: @category.errors, status: :unprocessable_entity }
-      end
+    if @category.save
+      respond_with(:layout => false )
     end
+ 
+    #if @category.save
+    #  respond_with(:layout => !request.xhr? )
+    #else
+   #   format.json { render json: @category.errors, status: :unprocessable_entity }
+  #  end
   end
 
   # PATCH/PUT /categories/1
