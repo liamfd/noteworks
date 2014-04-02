@@ -35,9 +35,9 @@ class CategoriesController < ApplicationController
   # DELETE /category/1.json
   def destroy
     @category.destroy
+    @categories = Category.all
     respond_to do |format|
-     # format.html { redirect_to nodes_url }
-      #format.json { head :no_content }
+        format.js { render :layout=>false }
     end
   end
 

@@ -2,6 +2,9 @@ var test_data;
 var test_xhr;
 var test_obj;
 $( document ).ready(function() {
+	$('#category_list').bind("ajax:success", function(evt, data, status, xhr){
+	//	alert('hello');
+    });
 });
 
 function submitForm(){
@@ -14,6 +17,7 @@ function toggleSpinner(){
 }
 
 $(function() {
+
 	$('#myModal').bind('opened', function() {
 		//this could also go in a ajaxComplete global call
 
