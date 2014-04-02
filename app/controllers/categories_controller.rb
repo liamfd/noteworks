@@ -1,11 +1,11 @@
 class CategoriesController < ApplicationController
   before_action :set_category, only: [:show, :edit, :update, :destroy]
+  before_action :set_categories, only: [:index, :destroy]
   respond_to :html, :json
 
   # GET /categories
   # GET /categories.json
   def index
-    @categories = Category.all
   end
 
   # GET /categories/1
@@ -35,7 +35,6 @@ class CategoriesController < ApplicationController
   # DELETE /category/1.json
   def destroy
     @category.destroy
-    @categories = Category.all
     respond_to do |format|
         format.js { render :layout=>false }
     end
@@ -46,6 +45,11 @@ class CategoriesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_category
       @category = Category.find(params[:id])
+    end
+
+    #do not allow them access to the default category
+    def set_categories
+      @categories = Category.where.not(name:"")
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
