@@ -15,6 +15,7 @@ class CategoriesController < ApplicationController
 
   # GET /categories/1/edit
   def edit
+    render(:layout => false)
   end
 
   # PATCH/PUT /categories/1
