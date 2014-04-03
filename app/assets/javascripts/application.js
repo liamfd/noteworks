@@ -14,8 +14,9 @@
 //= require jquery.turbolinks
 //= require jquery_ujs
 //= require foundation
+//= require jquery.minicolors
+//= require jquery.minicolors.simple_form
 
-//= require d3
 //= require cytoscape.js-2.0.4/arbor
 //= require cytoscape.js-2.0.4/cytoscape-2-1-wrapping.js
 //= require cytoscape.js-2.0.4/jquery.cxtmenu

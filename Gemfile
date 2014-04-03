@@ -49,10 +49,6 @@ gem 'devise', '3.2.1'
 
 gem "hirb" , "~> 0.7.1"
 
-gem "rubyvis" , "0.5.2"
-
-gem "d3js-rails", "~> 3.1.6"
-
 gem 'rabl'
 
 gem 'oj'
@@ -74,3 +70,7 @@ gem 'compass-rails'
 gem 'zurb-foundation', '~> 4.3.2'
 
 gem 'jquery-turbolinks'
+
+gem 'simple_form'
+
+gem 'jquery-minicolors-rails'
