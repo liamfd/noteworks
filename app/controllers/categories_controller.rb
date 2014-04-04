@@ -17,11 +17,13 @@ class CategoriesController < ApplicationController
   # GET /categories/new
   def new
     @category = Category.new
+    @work = Work.find(params[:work_id])
     render(:layout => false)
   end
 
   # GET /categories/1/edit
   def edit
+    @work = Work.find(params[:work_id])
     render(:layout => false)
   end
 
@@ -30,7 +32,9 @@ class CategoriesController < ApplicationController
   def create
     #this will turn into @work.build.nodes? pass work_id?
     @category = Category.new(category_params)
-
+    @work= Work.find(category_params[:work_id])
+    @categories = @work.categories.where.not(name:"")
+    binding.pry
     if @category.save
       respond_with(:layout => false )
     else
@@ -47,6 +51,8 @@ class CategoriesController < ApplicationController
   # PATCH/PUT /categories/1
   # PATCH/PUT /categories/1.json
   def update
+
+    binding.pry
     respond_to do |format|
       if @category.update(category_params)
         format.json { render json: @category.to_json }
@@ -79,6 +85,6 @@ class CategoriesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def category_params
-      params.require(:category).permit(:name, :color)
+      params.require(:category).permit(:name, :color, :work_id)
     end
 end
