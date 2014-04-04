@@ -1,6 +1,6 @@
 class WorksController < ApplicationController
   before_action :set_work, only: [:show, :edit, :update, :destroy, :testnetwork, :takenotes, :updatenotes, 
-    :mod_element, :add_element, :del_element]
+    :mod_element, :add_element, :del_element, :category_list]
 
   # GET /works
   # GET /works.json
@@ -146,6 +146,10 @@ class WorksController < ApplicationController
   def testnetwork
     @nodes = @work.nodes
     render json: @nodes
+  end
+
+  def category_list
+    @categories = @work.categories
   end
 
   private

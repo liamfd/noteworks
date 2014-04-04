@@ -1,0 +1,3 @@
+class ExampleNode < Node
+
+end

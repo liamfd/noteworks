@@ -16,15 +16,83 @@ $( document ).ready(function() {
   test_data = {};
 
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
-  $ ('#work_markup').get(0).onkeyup= upFunction;
-  $ ('#work_markup').get(0).onclick= clickFunction;
-  $ ('#work_markup').get(0).onselect= selectFunction;
-
-  var ele = gon.elements;
-  ele = JSON.stringify(ele);
-  $( ".test" ).text(ele);
+  if ($("#work.markup").length !== 0){
+    $ ('#work_markup').get(0).onkeyup= upFunction;
+    $ ('#work_markup').get(0).onclick= clickFunction;
+    $ ('#work_markup').get(0).onselect= selectFunction;
+  }
+  $('#category_list').bind("ajax:success", function(evt, data, status, xhr){
+//  alert('hello');
+  });
+  //var ele = gon.elements;
+  //ele = JSON.stringify(ele);
+  //$( ".test" ).text(ele);
 });
 
+var test_data;
+var test_xhr;
+var test_obj;
+var test_ajaxOptions;
+var test_error;
+
+function submitForm(){
+  $(this).parents("form").submit();
+  console.log($(this));
+}
+
+function toggleSpinner(){
+  $("#spinner").toggle();
+}
+
+$(function() {
+  $('#myModal').bind('opened', function() {
+    //this could also go in a ajaxComplete global call
+
+    //console.log("myModal opened");
+    if ( $(".edit_form").length !== 0 ){
+      $(".edit_form").find('#category_name').get(0).onblur= submitForm;
+      $(".edit_form").find('#category_color').get(0).onblur= submitForm;
+    }
+    $("#spinner").hide();
+
+    $.minicolors.defaults = $.extend($.minicolors.defaults, {
+      changeDelay: 200,
+      defaultValue: "#c0c0c0",
+      position: "bottom left"
+    });
+
+    $('#category_color').minicolors();
+
+    $("form").bind("ajax:beforeSend", function(){
+      $("#spinner").show();
+      $("#response").hide();
+    });
+    $("form").bind("ajax:success", function(evt, data, status, xhr){
+      $("#response").html("Saved!").show().fadeOut("slow");
+      test_data = data;
+      updateObject(data);
+    });
+    $("form").bind("ajax:complete", function(){
+      $("#spinner").hide();
+    });
+    $("form").bind("ajax:error", function(xhr, ajaxOptions, thrownError){
+      //find a way to get the actual error being returned by the rails controller
+      $("#response").html("Error: Repeated name.").show().fadeOut("slow");
+      $("#spinner").hide();
+      test_xhr = xhr;
+      test_ajaxOptions = ajaxOptions;
+      test_error = thrownError;
+    });
+  });
+});
+
+function updateObject(data){
+  console.log("updating");
+  obj = $("#category-"+data.id);
+  test_obj = obj;
+  obj.children("a.edit-link").text(data.name);
+  obj.children("a.edit-link").css("color",data.color);
+}
 
 /**
 * Function called on keyup. This function now uses the changes in length and the selections made to determine whether changes
@@ -437,8 +505,11 @@ function checkLineChanged(currLine){
 
 //returns the number of lines in work_markup's text, by splitting with a regexp and taking length
 function getNumLines(){
-  var num_lines = $("#work_markup").val().split(/\r\n|\r|\n/).length;
-  return num_lines;
+  if ($("#work.markup").length !== 0){
+    var num_lines = $("#work_markup").val().split(/\r\n|\r|\n/).length;
+    return num_lines;
+  }
+  return 0;
 }
 
 
@@ -957,3 +1028,9 @@ $('#cy').cytoscape({
   }
 
 }); */
+
+
+
+
+
+

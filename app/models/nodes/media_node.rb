@@ -1,0 +1,3 @@
+class MediaNode < Node
+
+end

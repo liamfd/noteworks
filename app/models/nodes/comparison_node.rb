@@ -1,0 +1,3 @@
+class ComparisonNode < Node
+
+end

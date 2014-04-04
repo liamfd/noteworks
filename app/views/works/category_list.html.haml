@@ -1,0 +1,10 @@
+%h1 Categories
+  
+%ul#category_list.small-block-grid-8
+	=render 'categories/category_list'
+
+#myModal{class: "reveal-modal", data:{:reveal=> true}}
+
+=link_to "index", {controller: "categories", action: "index"}, :class => "category-button"
+
+#test_box
