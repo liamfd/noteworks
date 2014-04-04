@@ -39,12 +39,6 @@ class CategoriesController < ApplicationController
     else
       respond_with @category, status: :unprocessable_entity
     end
- 
-    #if @category.save
-    #  respond_with(:layout => !request.xhr? )
-    #else
-   #   format.json { render json: @category.errors, status: :unprocessable_entity }
-  #  end
   end
 
   # PATCH/PUT /categories/1

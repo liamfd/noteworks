@@ -44,6 +44,7 @@ function toggleSpinner(){
   $("#spinner").toggle();
 }
 
+//sets the stuff for works/:id/categories
 $(function() {
   $('#myModal').bind('opened', function() {
     //this could also go in a ajaxComplete global call
