@@ -30,7 +30,6 @@ class CategoriesController < ApplicationController
   # POST /categories
   # POST /categories.json
   def create
-    #this will turn into @work.build.nodes? pass work_id?
     @category = Category.new(category_params)
     @work= Work.find(category_params[:work_id])
     @categories = @work.categories.where.not(name:"")
@@ -51,13 +50,22 @@ class CategoriesController < ApplicationController
   # PATCH/PUT /categories/1
   # PATCH/PUT /categories/1.json
   def update
-    respond_to do |format|
-      if @category.update(category_params)
-        format.json { render json: @category.to_json }
-      else
-        format.json { render json: @category.errors, status: :unprocessable_entity }
-      end
+    @work= Work.find(category_params[:work_id])
+    @categories = @work.categories.where.not(name:"")
+
+    if @category.update(category_params)
+      respond_with(:layout => false )
+    else
+      respond_with @category, status: :unprocessable_entity
     end
+
+    #respond_to do |format|
+    #  if @category.update(category_params)
+    #    format.json { render json: @category.to_json }
+    #  else
+    #    format.json { render json: @category.errors, status: :unprocessable_entity }
+    #  end
+    #end
   end
 
 

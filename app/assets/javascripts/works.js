@@ -70,7 +70,6 @@ $(function() {
     $("form").bind("ajax:success", function(evt, data, status, xhr){
       $("#response").html("Saved!").show().fadeOut("slow");
       test_data = data;
-      updateObject(data);
     });
     $("form").bind("ajax:complete", function(){
       $("#spinner").hide();
@@ -85,14 +84,6 @@ $(function() {
     });
   });
 });
-
-function updateObject(data){
-  console.log("updating");
-  obj = $("#category-"+data.id);
-  test_obj = obj;
-  obj.children("a.edit-link").text(data.name);
-  obj.children("a.edit-link").css("color",data.color);
-}
 
 /**
 * Function called on keyup. This function now uses the changes in length and the selections made to determine whether changes
