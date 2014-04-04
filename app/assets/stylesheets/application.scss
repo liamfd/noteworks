@@ -8,10 +8,21 @@
  * You're free to add application-wide styles to this file and they'll appear at the top of the
  * compiled file, but it's generally better to create a new file per style scope.
  *
- *= require_self
- *= require foundation_and_overrides
- *= require jquery.minicolors
- *= require_tree .
  */
 
- @import "foundation_and_overrides"
+//Basics
+@import "compass/css3";
+@import "foundation_and_overrides";
+
+//Utilities
+@import "jquery.minicolors";
+
+//general styles
+@import "style";
+@import "fonts";
+@import "nav";
+
+//Individual styles
+@import "categories";
+@import "home";
+@import "works";
