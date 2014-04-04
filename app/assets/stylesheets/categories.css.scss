@@ -1,5 +1,23 @@
+
+@import "foundation_and_overrides";
+
 form.edit_category{
   input[type=submit]{
     display: none;
+	}
+}
+
+.category-button{
+	@include button();
+	color:white;
+}
+
+.button-group{
+	@include button-group-container();
+}
+
+.category-row{
+	@include grid-row;
+	.category-column{
 	}
 }
