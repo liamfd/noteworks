@@ -6,18 +6,3 @@ form.edit_category{
     display: none;
 	}
 }
-
-.category-button{
-	@include button();
-	color:white;
-}
-
-.button-group{
-	@include button-group-container();
-}
-
-.category-row{
-	@include grid-row;
-	.category-column{
-	}
-}
