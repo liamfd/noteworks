@@ -1,0 +1,23 @@
+%nav.top-bar{data:{topbar:true}}
+  %ul.title-area
+    %li.name
+      %h1
+        %a{href:"#"}Noteworks
+      %li{class:"toggle-topbar menu-icon"}
+        %a{href:"#"}Menu
+    %section.top-bar-section
+      / Right Nav Section
+      %ul.right
+        %li.active
+          - if user_signed_in?
+            %li
+              =link_to('Logout', destroy_user_session_path, :method => :delete)
+          -else
+            %li
+              =link_to('Login', new_user_session_path)
+              
+          %li.has-dropdown
+            %a{href:"#"}Right Button Dropdown
+          %ul.dropdown
+            %li
+              %a{href:"#"}Sign out
