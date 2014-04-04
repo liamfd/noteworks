@@ -2,6 +2,6 @@
 	%li.cat_wrapper{id:"category-#{cat.id}"}
 		.row{style: "background-color:#{cat.color}"}
 			=link_to(cat.name,  edit_category_path(cat, :work_id => @work.id), {:class=> ["edit-link","button", "small-9 columns"] , data:{"reveal-id" => "myModal", "reveal-ajax" => true}, style:"background-color:#{cat.color}"})
-			=link_to("x", category_path(cat), method: :delete, :class=> ["delete-link", "button", "small-3 columns end" ] , style:"background-color:#{cat.color}", remote: true)
+			=link_to("x", category_path(cat, :work_id => @work.id), method: :delete, :class=> ["delete-link", "button", "small-3 columns end" ] , style:"background-color:#{cat.color}", remote: true)
 %li.cat_wrapper{class: "large-2 columns", id:"new_category"}
 	=link_to('New!', new_category_path(:work_id => @work.id), {:class=>"button", data:{"reveal-id" => "myModal", "reveal-ajax" => true}})

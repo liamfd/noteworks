@@ -149,7 +149,7 @@ class WorksController < ApplicationController
   end
 
   def category_list
-    @categories = @work.categories
+    @categories = @work.categories.where.not(name:"")
   end
 
   private

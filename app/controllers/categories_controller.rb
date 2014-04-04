@@ -1,6 +1,6 @@
 class CategoriesController < ApplicationController
   before_action :set_category, only: [:show, :edit, :update, :destroy]
-  before_action :set_categories, only: [:index, :destroy, :create]
+  before_action :set_categories, only: [:index]
 
   respond_to :html, :json, :js
 
@@ -34,7 +34,7 @@ class CategoriesController < ApplicationController
     @category = Category.new(category_params)
     @work= Work.find(category_params[:work_id])
     @categories = @work.categories.where.not(name:"")
-    binding.pry
+
     if @category.save
       respond_with(:layout => false )
     else
@@ -51,8 +51,6 @@ class CategoriesController < ApplicationController
   # PATCH/PUT /categories/1
   # PATCH/PUT /categories/1.json
   def update
-
-    binding.pry
     respond_to do |format|
       if @category.update(category_params)
         format.json { render json: @category.to_json }
@@ -67,6 +65,8 @@ class CategoriesController < ApplicationController
   # DELETE /category/1.json
   def destroy
     @category.destroy
+    @work = Work.find(params[:work_id])
+    @categories = @work.categories.where.not(name:"")
     respond_to do |format|
         format.js { render :layout=>false }
     end
