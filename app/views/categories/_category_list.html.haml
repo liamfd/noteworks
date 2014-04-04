@@ -1,15 +1,7 @@
 - @categories.each do |cat|
 	%li.cat_wrapper{id:"category-#{cat.id}"}
-		%ul.button-group
-			%li
-				=link_to(cat.name,  edit_category_path(cat), {:class=> ["edit-link", "button"] , data:{"reveal-id" => "myModal", "reveal-ajax" => true}, style:"background-color:#{cat.color}"})
-			%li
-				=link_to("x", category_path(cat), method: :delete, :class=> ["delete-link", "button"] , style:"background-color:#{cat.color}", remote: true)
+		.row{style: "background-color:#{cat.color}"}
+			=link_to(cat.name,  edit_category_path(cat), {:class=> ["edit-link","button", "small-9 columns"] , data:{"reveal-id" => "myModal", "reveal-ajax" => true}, style:"background-color:#{cat.color}"})
+			=link_to("x", category_path(cat), method: :delete, :class=> ["delete-link", "button", "small-3 columns end" ] , style:"background-color:#{cat.color}", remote: true)
 %li.cat_wrapper{class: "large-2 columns", id:"new_category"}
-	=link_to('New!', new_category_path, {data:{"reveal-id" => "myModal", "reveal-ajax" => true}})
-
-%ul.button-group
-	%li 
-		%a.button{href: "#"} Shakespeare is wack
-	%li 
-		%a.button{href: "#"} x
+	=link_to('New!', new_category_path, {:class=>"button", data:{"reveal-id" => "myModal", "reveal-ajax" => true}})

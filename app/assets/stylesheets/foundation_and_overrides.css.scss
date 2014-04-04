@@ -160,7 +160,7 @@ $include-html-classes: true;
 // We use this to control the maximum number of block grid elements per row
 
 // $block-grid-elements: 12;
-// $block-grid-default-spacing: em-calc(20);
+ $block-grid-default-spacing: em-calc(0);
 
 // Enables media queries for block-grid classes. Set to false if writing semantic HTML.
 
@@ -364,12 +364,12 @@ $include-html-classes: true;
 // We use this to control the display property.
 
 // $button-display: inline-block;
-// $button-margin-bottom: em-calc(20);
+ $button-margin-bottom: em-calc(0);
 
 // We use these to control button text styles.
 
 // $button-font-family: inherit;
-// $button-font-color: #fff;
+ $button-font-color: #fff;
 // $button-font-color-alt: #333;
 // $button-font-med: em-calc(16);
 // $button-font-tny: em-calc(11);
