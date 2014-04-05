@@ -1,4 +1,4 @@
-%h1= "#{@work.name}'s Terminal"
+%h1= @work.name
 
 #cy
 
@@ -6,7 +6,4 @@
   = render 'terminal'
 
 .nodedisplay
-  = render 'nodedisplay'
-
-<%= link_to 'Show', @work %>
-<%= link_to 'Back', works_path %>
+  -# = render 'nodedisplay'

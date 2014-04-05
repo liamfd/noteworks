@@ -1,13 +1,15 @@
 // Place all the styles related to the home controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
-
-
-
-h1.title{
-	font-family:$telegrafico-font-stack;
-	font-size:10em;
-}
-h2.title{
-	font-family:$signikanegative-font-stack;
+.title-box{
+	text-align:center;
+	h1.title{
+		font-family:$telegrafico-font-stack;
+		font-size:9em;
+		margin:0px;
+	}
+	h1.subheader{
+		font-family:$signikanegative-font-stack;
+		margin:0px;
+	}
 }
