@@ -1,10 +1,10 @@
 #lower
   %nav#bar 
     %a#toggle.button Terminal
-  #panel
-    =form_for(@work, url: {action: "updatenotes"}) do |f|
+  #panel.grid
+    =simple_form_for(@work, url: {action: "updatenotes"}) do |f|
       %h2#field
-      = f.text_area :markup, size:"100x20", value: @work.generate_markup
+      = f.text_area :markup, value: @work.generate_markup
 
 /#lower
 /  %nav.top-bar.bottom-bar#bar{data:{topbar:true}}
