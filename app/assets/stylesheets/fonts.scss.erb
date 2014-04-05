@@ -1,0 +1,27 @@
+@include font-face("telegrafico", font-files("telegrafico/telegrafico-webfont.ttf", "telegrafico/telegrafico-webfont.svg", "telegrafico/telegrafico-webfont.woff", "telegrafico/telegrafico-webfont.eot"), "telegrafico/telegrafico-webfont.eot");
+@include font-face("signikanegative", font-files("Signika_Negative/signikanegative-regular-webfont.ttf", "Signika_Negative/signikanegative-regular-webfont.svg", "Signika_Negative/signikanegative-regular-webfont.woff", "Signika_Negative/signikanegative-regular-webfont.eot"), "Signika_Negative/signikanegative-regular-webfont.eot");
+
+$sans-font-stack: Arial, Helvetica, sans-serif;
+/*@font-face {
+  font-family: 'telegrafico';
+  src: url("<%= asset_path('telegrafico/telegrafico-webfont.eot') %>");
+  src: url("<%= asset_path('telegrafico-webfont.eot') %>") format('embedded-opentype'),
+  url("<%= asset_path('telegrafico/telegrafico-webfont.woff') %>") format('woff'),
+  url("<%= asset_path('telegrafico-webfont.ttf') %>") format('truetype'),
+  url("<%= asset_path('telegrafico-webfont.svg#ProximaNovaRegular') %>") format('svg');
+}*/
+
+$telegrafico-font-stack: "telegrafico" , $sans-font-stack;
+/*
+@font-face {
+  font-family: 'signikanegative';
+  src:font-url('signikanegative-regular-webfont.eot');
+  src:font-url('signikanegative-regular-webfont.eot?#iefix') format('embedded-opentype'),
+    font-url('signikanegative-regular-webfont.svg#signikanegative-regular-webfont') format('svg'),
+    font-url('signikanegative-regular-webfont.woff') format('woff'),
+    font-url('signikanegative-regular-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+*/
+$signikanegative-font-stack: 'signikanegative', $sans-font-stack;

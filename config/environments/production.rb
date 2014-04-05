@@ -78,6 +78,13 @@ Noteweb::Application.configure do
   # Disable automatic flushing of the log to improve performance.
   # config.autoflush_log = false
 
+
+  # add app/assets/fonts to the asset path
+  config.assets.paths << Rails.root.join("app", "assets", "fonts")
+
+  # Precompile additional assets
+  config.assets.precompile += %w( .svg .eot .woff .ttf )
+
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 end
