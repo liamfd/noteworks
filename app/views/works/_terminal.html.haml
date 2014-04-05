@@ -4,8 +4,12 @@
     %h2#field
     = f.text_area :markup, size:"100x20", value: @work.generate_markup
 
-    .actions
-      = f.submit
+#lower
+  #bar 
+    %a#toggle Click me!
+  #panel I'm a panel!
+//    .actions
+//      = f.submit
 
 / %div
 / %h3 Categories

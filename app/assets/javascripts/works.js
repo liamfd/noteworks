@@ -24,6 +24,10 @@ $( document ).ready(function() {
   $('#category_list').bind("ajax:success", function(evt, data, status, xhr){
 //  alert('hello');
   });
+
+  $("#toggle").click(function(){
+    $("#panel").slideToggle("slow");
+  });
   //var ele = gon.elements;
   //ele = JSON.stringify(ele);
   //$( ".test" ).text(ele);
