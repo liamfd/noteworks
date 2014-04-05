@@ -19,7 +19,10 @@ $terminal-background-color:#242424;
 	position:fixed;
 	width:100%;
 	bottom:0;
+	background-color:$terminal-background-color; 
 	#bar{
+		@include grid-row();
+		width:100%;
 		height:45px;
 		padding:0px;
 		text-align: center;
@@ -34,6 +37,8 @@ $terminal-background-color:#242424;
 	}
 	#panel {
 	    //display: none;
+	    @include grid-row();
+	    width:100%;
 	    background-color: $terminal-background-color;
 	    form{
 	    	margin:0;
