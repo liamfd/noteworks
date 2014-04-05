@@ -2,7 +2,7 @@ Noteweb::Application.routes.draw do
   root "home#index"
 
   get "works/:id/takenotes", to: "works#takenotes"
-  get "works/:id/categories", to: "works#category_list"
+  get "works/:id/categories", to: "works#category_list", as: "work_categories"
   get "works/:id/testnetwork", to: "works#testnetwork"
   
   get "works/:id/mod_element", to: "works#mod_element"

@@ -1,32 +1,27 @@
 #lower.grid
   %nav#bar
     %a#toggle.button Terminal
-  #panel.off-canvas-wrap
-    .inner-wrap
+  #panel
+         
+    %div{class:"small-1 columns"}
+      %ul.terminal-side-menu
+        %li
+          =link_to work_categories_path(@work), {class:"side-button"} do
+            %i{class:"fi-record"} 
+        %li
+          %a.side-button
+            %i{class:"fi-lock"} 
+        %li
+          %a.side-button
+            ?
+        %li
+          %a.side-button
+            %i{class:"fi-wrench"} 
+    %div{class:"small-11 columns"}
+      =simple_form_for(@work, url: {action: "updatenotes"}) do |f|
+        %h2#field
+        = f.text_area :markup, value: @work.generate_markup
 
-      %a.left-off-canvas-toggle{href:"#"} do eet
-      %aside.left-off-canvas-menu
-        feed me soup
-      .real-content
-        %div{class:"small-1 columns"}
-          %ul.terminal-side-menu
-            %li
-              %a.side-button.left-off-canvas-toggle{href:"#"} 
-                %i{class:"fi-record"} 
-            %li
-              %a.side-button
-                %i{class:"fi-lock"} 
-            %li
-              %a.side-button
-                ?
-            %li
-              %a.side-button
-                %i{class:"fi-wrench"} 
-        %div{class:"small-11 columns"}
-          =simple_form_for(@work, url: {action: "updatenotes"}) do |f|
-            %h2#field
-            = f.text_area :markup, value: @work.generate_markup
-      %a.exit-off-canvas
     
 /      -@work.categories.each do |cat|
 /        %p{style:"color:#{cat.color}"}= cat.name
