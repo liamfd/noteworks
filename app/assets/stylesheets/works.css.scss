@@ -11,7 +11,9 @@
     left: 0;
     top: 45px;
     border: 1px solid #b0b0b0;
+    margin-bottom:45px;
 } 
+$terminal-background-color:#242424;
 
 #lower{
 	position:fixed;
@@ -21,25 +23,25 @@
 		height:45px;
 		padding:0px;
 		text-align: center;
-		background-color:#222;
+		background-color:$terminal-background-color;
 		overflow:hidden;
 		.button{
-			background-color:#222;
+			background-color:$terminal-background-color;
 			height:45px;
 			line-height:45px;
 			padding:0px;
 		}
 	}
 	#panel {
-	  //  display: inline-block;
-	    width:100%;
-	    background-color: #aaaaaa;
+	    //display: none;
+	    background-color: $terminal-background-color;
 	    form{
 	    	margin:0;
 	    	h2{
 	    		margin:0;
 	    	}
 		    #work_markup{
+		    	font-family:"courier", monospace;
 		    	margin:0;
 		    	width:100%;
 		    	height:em-calc(450);
@@ -48,9 +50,15 @@
 	}	
 }
 
-.bottom-bar{
-	position: fixed;
-	bottom: 0px;
-	width: 100%;
-	margin-bottom: 0px;
+.terminal-side-menu{
+	@include side-nav();
+	text-align:center;
+	.side-button{
+		@include button();
+		display:inline-block;
+		background-color:$terminal-background-color;
+		margin:0;
+		border:1px solid #1a1a1a;
+		text-align:left;
+	}
 }

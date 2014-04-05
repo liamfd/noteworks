@@ -61,6 +61,9 @@ GEM
     factory_girl_rails (4.4.1)
       factory_girl (~> 4.4.0)
       railties (>= 3.0.0)
+    foundation-icons-sass-rails (3.0.0)
+      railties (>= 3.1.1)
+      sass-rails (>= 3.1.1)
     fssm (0.2.10)
     gon (5.0.1)
       actionpack (>= 2.3.0)
@@ -197,6 +200,7 @@ DEPENDENCIES
   compass-rails
   devise (= 3.2.1)
   factory_girl_rails
+  foundation-icons-sass-rails
   gon
   haml-rails
   hirb (~> 0.7.1)
