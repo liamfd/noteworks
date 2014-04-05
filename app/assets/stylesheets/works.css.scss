@@ -13,37 +13,38 @@
     border: 1px solid #b0b0b0;
 } 
 
-#editable{
-	border:1px solid black;
-	height:100px;
-    overflow: auto;
-}
-
-#ajtest{
-	background-color:#440066;
-	color:white;
-	width:100px;
-	height:20px;
-	text-align:center;
-}
-
-#test_box{
-	background-color:#c0c0c0;
-	height:20px;
-}
 #lower{
 	position:fixed;
 	width:100%;
 	bottom:0;
+	background-color:#222;
 	#bar{
-		padding:10px;
-		background-color:#550000;
+		height:45px;
+		padding:0px;
+		text-align: center;
+		background-color:#222;
+		overflow:hidden;
+		.button{
+			background-color:#222;
+			height:45px;
+			line-height:45px;
+			padding:0px;
+		}
 	}
 	#panel {
 	    display: none;
 	    width:100%;
-	    height: 100px;
 	    background-color: #aaaaaa;
-	    padding: 10px;
+	    #work_markup{
+	    	width:100%;
+	    	height:100%;
+	    }
 	}	
+}
+
+.bottom-bar{
+	position: fixed;
+	bottom: 0px;
+	width: 100%;
+	margin-bottom: 0px;
 }

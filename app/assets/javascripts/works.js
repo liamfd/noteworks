@@ -16,7 +16,7 @@ $( document ).ready(function() {
   test_data = {};
 
 //  $ ('#work_markup').get(0).onkeypress= pressFunction;
-  if ($("#work.markup").length !== 0){
+  if ($("#work_markup").length !== 0){
     $ ('#work_markup').get(0).onkeyup= upFunction;
     $ ('#work_markup').get(0).onclick= clickFunction;
     $ ('#work_markup').get(0).onselect= selectFunction;
@@ -501,18 +501,12 @@ function checkLineChanged(currLine){
 
 //returns the number of lines in work_markup's text, by splitting with a regexp and taking length
 function getNumLines(){
-  if ($("#work.markup").length !== 0){
+  if ($("#work_markup").length !== 0){
     var num_lines = $("#work_markup").val().split(/\r\n|\r|\n/).length;
     return num_lines;
   }
   return 0;
 }
-
-
-
-
-
-
 
 /* CYTOSCAPE STUFF */
 $(loadCy = function(){

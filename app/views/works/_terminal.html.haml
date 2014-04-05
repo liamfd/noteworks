@@ -1,15 +1,23 @@
-%div
-  =form_for(@work, url: {action: "updatenotes"}) do |f|
-    %h2 Terminal
-    %h2#field
-    = f.text_area :markup, size:"100x20", value: @work.generate_markup
-
 #lower
-  #bar 
-    %a#toggle Click me!
-  #panel I'm a panel!
-//    .actions
-//      = f.submit
+  %nav#bar 
+    %a#toggle.button Terminal
+  #panel
+    =form_for(@work, url: {action: "updatenotes"}) do |f|
+      %h2#field
+      = f.text_area :markup, size:"100x20", value: @work.generate_markup
+
+/#lower
+/  %nav.top-bar.bottom-bar#bar{data:{topbar:true}}
+/    %section.top-bar-section
+/      / Right Nav Section
+/      %ul.right
+/        %li.active
+/          %li
+/            %a#toggle.button Terminal
+/  #panel
+/    =form_for(@work, url: {action: "updatenotes"}) do |f|
+/      %h2#field
+/      = f.text_area :markup, size:"100x20", value: @work.generate_markup
 
 / %div
 / %h3 Categories
