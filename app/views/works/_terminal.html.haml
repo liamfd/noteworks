@@ -6,16 +6,16 @@
     %div{class:"small-1 columns"}
       %ul.terminal-side-menu
         %li
-          =link_to work_categories_path(@work), {class:"side-button"} do
+          =link_to work_categories_path(@work), {class:"side-button", id:"category-list-button"} do
             %i{class:"fi-record"} 
         %li
-          %a.side-button
+          %a.side-button#public-button
             %i{class:"fi-lock"} 
         %li
-          %a.side-button
+          %a.side-button#guide-button
             ?
         %li
-          %a.side-button
+          %a.side-button#settings-button
             %i{class:"fi-wrench"} 
     %div{class:"small-11 columns"}
       =simple_form_for(@work, url: {action: "updatenotes"}) do |f|
@@ -23,6 +23,7 @@
         = f.text_area :markup, value: @work.generate_markup
 
     
+
 /      -@work.categories.each do |cat|
 /        %p{style:"color:#{cat.color}"}= cat.name
 

@@ -9,7 +9,6 @@ var test_data;
 var changes_made;
 var num_lines_selected = 1; //default is one, when no selection count the cursor
 
-
 $( document ).ready(function() {
   num_lines = getNumLines();
   changes_made = false;
@@ -27,6 +26,10 @@ $( document ).ready(function() {
 
   $("#toggle").click(function(){
     $("#panel").slideToggle("slow");
+  });
+
+  $("#guide-button").click(function(){
+    $(document).foundation('joyride', 'start');
   });
   //var ele = gon.elements;
   //ele = JSON.stringify(ele);

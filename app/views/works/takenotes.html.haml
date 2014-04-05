@@ -2,8 +2,24 @@
 
 #cy
 
-.terminal
-  = render 'terminal'
+= render 'terminal'
 
 .nodedisplay
   -# = render 'nodedisplay'
+
+%ol.joyride-list{data:{joyride:true}}
+  %li{data:{id:"category-list-button", text:"Next", options:"tip_location: top"}}
+    %h4 Category List
+    %p Click this to see and edit all the categories associated with this work.
+  %li{data:{id:"public-button", text:"Next"}}
+    %h4 Publicity Settings
+    %p This one sets the privacy settings. Locked means only you can see it, unlocked means everyone can see (but only you can edit.)
+  %li{data:{id:"guide-button", text:"Next", options:"tip_location: top"}}
+    %h4 Guide
+    %p You know this one. It launches the guide, whenever you want it.
+  %li{data:{id:"settings-button", text:"Next", options:"tip_location: top"}}
+    %h4 Settings
+    %p This lets you mess with the settings. Right now, that means the name.
+  %li{data:{button:"End"}}
+    %h4 Stop #3
+    %p That's it!
