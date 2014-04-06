@@ -10,9 +10,9 @@
 					#panel1.content.active
 						%dl.tabs{"data-tab" => ""}
 							-group.works.each do |work|
-								%dd.active
-									%a{href: "#panel#{group.id}-#{work.id}"} #{work.title}
+								%dd
+									%a{href: "#panel#{group.id}-#{work.id}"} #{work.name}
 						.tabs-content
 							-group.works.each do |work|
-								#panel{class:"#{group.id}-#{work.id}"}
-									%p First panel content goes here...
+								.content{id:"panel#{group.id}-#{work.id}"}
+									%p #{work.name}
