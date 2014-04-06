@@ -9,7 +9,7 @@
 					%a{href: "#panel#{group.id}"}= group.name
 					.content{id:"panel#{group.id}"}
 						-group.works.each do |work|
-							/=link_to work.name, work_takenotes_path(work), {class:"work-button"}
+							=link_to work.name, work_takenotes_path(work), {class:"work-button"}
 						
 
 
