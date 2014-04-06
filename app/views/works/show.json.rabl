@@ -1,6 +1,5 @@
 object @work
-
-
+binding.pry
 child :nodes, :root => :nodes, :object_root => :datas do
 	node(:id) { |n| n.id.to_s() }
 	node(:title) { |n| n.title }

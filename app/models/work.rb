@@ -19,6 +19,7 @@ class Work < ActiveRecord::Base
 	]
 
 	before_save :before_save_checker
+	before_create :before_create_defaulter
 
 	#bottom, private
   	def before_save_checker 
@@ -26,6 +27,16 @@ class Work < ActiveRecord::Base
    		#	parse_text
    		#end
    	#fix the infinite loop, then you can have this back
+	end
+
+	def before_create_defaulter
+		if self.markup == nil
+			self.markup = ""
+		end
+
+		if self.order == nil
+			self.order = ""
+		end
 	end
 
 	def valid_links
@@ -38,9 +49,13 @@ class Work < ActiveRecord::Base
 		from_insert_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		from_remove_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
-		
+		from_remove = from_remove_total
+
+
+		binding.pry
+
 		lines_number.zip(lines_content).each do |number, content|
-			
+			binding.pry
 			from_insert = {}
 			from_remove = {}
 			
@@ -50,8 +65,13 @@ class Work < ActiveRecord::Base
 			ordering_el = ordering[number]
 			curr_el = get_element_in_ordering(number, ordering);
 
-			#bug if it goes from node to note, or anything else
-			if first_char == '.' && ordering_el.model == "Node" && curr_el.is_a?(Node)
+			#if that element is not in the ordering, create it
+			if ordering_el == nil
+				from_insert = insert_element(number, content)
+
+
+			elsif first_char == '.' && ordering_el.model == "Node" && curr_el.is_a?(Node)
+				binding.pry
 
 				from_remove = remove_element(number, false)
 				from_insert = insert_element(number, content, curr_el)
@@ -80,16 +100,18 @@ class Work < ActiveRecord::Base
 
 	 		#if you have a note and are modding it
 			elsif first_char == '-' && ordering_el.model == "Note" && curr_el.is_a?(Note)
+				binding.pry
 				from_remove = remove_element(number, false)
 				from_insert = insert_element(number, content, curr_el)
 			
 			#if it's not the same or not formatted right, you want to get rid of what's there 
 			#and insert whatever's appropriate
 			else 
+				binding.pry
 				from_remove = remove_element(number, true)
 				from_insert = insert_element(number, content)
 			end
-
+			binding.pry
 			from_remove_total = merge_two_hashes(from_remove_total, from_remove)
 			from_insert_total = merge_two_hashes(from_insert_total, from_insert)
 			#binding.pry
@@ -137,7 +159,6 @@ class Work < ActiveRecord::Base
 		markup_lines.insert(line_number, line_content);
 		set_markup(markup_lines);
 
-
 		if first_char == "."
 			#shouldn't need this
 			if in_element != nil && in_element.is_a?(Node) #only use the in_el if it's not nil and the right type
@@ -149,7 +170,9 @@ class Work < ActiveRecord::Base
 			new_node.save
 
 			#update the ordering
+			binding.pry
 			ordering.insert(line_number, ObjectPlace.new("Node", new_node.id))
+			binding.pry
 			set_order(ordering)
 
 			#FIND PARENT
@@ -526,11 +549,11 @@ class Work < ActiveRecord::Base
 		return markup.split(/\r\n|[\r\n]/) #match \r\n if present, if not either works
 	end
 
-
 	#takes an array ordering, converts it to the order string and saves
 	def set_order(ordering)
 		o = ""
 		ordering.each do |obj_place|
+			binding.pry
 			o << (obj_place.model + "_" + obj_place.id.to_s + "///,")
 		end
 		self.update_attribute :order, o

@@ -1,0 +1,22 @@
+.work-button{
+	@include button();
+	line-height:1;
+}
+
+.group-mod-button{
+	@include button();
+	line-height:1;
+}
+
+#profile_header{
+	h1, h2{
+		display:inline-block;
+	}
+}
+
+.group-panel-row{
+	@include grid-row();
+	a.work_group_panel, .mod_links{
+		min-height:57px; //see if you can get equilize to work to avoid this terrible fix
+	}
+}

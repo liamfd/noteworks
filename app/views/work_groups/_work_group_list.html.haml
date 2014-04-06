@@ -1,12 +1,25 @@
 %dl.accordion{"data-accordion" => ""}
 	-@user.work_groups.each do |group|
-		%dd
-			%a{href: "#panel#{group.id}"}
-				= group.name
-				=link_to("edit",  edit_work_group_path(group, :user_id => @user.id), {:class=> ["button"] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true}})
-				= link_to("x", work_group_path(group, :user_id => @user.id), method: :delete, :class=> [ "button"] , remote: true)
+		%dd.group-panel-row
+
+			%a.work_group_panel{class:"small-9 columns", href: "#panel#{group.id}"}
+				=group.name
+
+			.mod_links{class:"small-3 columns"}
+				%ul.button-group
+					%li
+						=link_to(edit_work_group_path(group, :user_id => @user.id), {:class=> ["group-mod-button"] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true}}) do
+							%i{class:"fi-pencil"} 
+					%li
+						= link_to(work_group_path(group, :user_id => @user.id), method: :delete, :class=> [ "group-mod-button"] , remote: true) do
+							%i{class:"fi-x"} 
+
 			.content{id:"panel#{group.id}"}
 				-group.works.each do |work|
 					=link_to work.name, work_takenotes_path(work), {class:"work-button"}
-	%dd
+
+	%dd.group-panel-row
 		=link_to('New!', new_work_group_path(:user_id => current_user.id), {:class=>"panel#new", data:{"reveal-id" => "groupModal", "reveal-ajax" => true}})
+
+
+		
