@@ -1,3 +1,22 @@
 .row.main
-	%h1 Profile
-	%h4.subheader current_user.email
+	.row
+		%h1 Profile: #{current_user.email}
+	.row
+	%dl.tabs{"data-tab" => ""}
+		%dd.active
+			%a{href: "#panel2-1"} Tab 1
+		%dd
+			%a{href: "#panel2-2"} Tab 2
+		%dd
+			%a{href: "#panel2-3"} Tab 3
+		%dd
+			%a{href: "#panel2-4"} Tab 4
+	.tabs-content
+		#panel2-1.content.active
+			%p First panel content goes here...
+		#panel2-2.content
+			%p Second panel content goes here...
+		#panel2-3.content
+			%p Third panel content goes here...
+		#panel2-4.content
+			%p Fourth panel content goes here...
