@@ -20,6 +20,8 @@ Noteweb::Application.routes.draw do
 
   resources :categories
 
+  resources :work_groups
+
   #get "categories", to: "categories#index"
   #get '/category/:id', :to => 'categories#show'
 

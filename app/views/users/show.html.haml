@@ -6,10 +6,14 @@
 		%dl.accordion{"data-accordion" => ""}
 			-current_user.work_groups.each do |group|
 				%dd
-					%a{href: "#panel#{group.id}"}= group.name
+					%a{href: "#panel#{group.id}"}
+						= group.name
+						.test
 					.content{id:"panel#{group.id}"}
 						-group.works.each do |work|
 							=link_to work.name, work_takenotes_path(work), {class:"work-button"}
+			%dd
+				%a{href: "#panel#new"} New!
 						
 
 

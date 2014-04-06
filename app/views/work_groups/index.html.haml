@@ -1,0 +1,21 @@
+%h1 Listing work_groups
+
+%table
+  %tr
+    %th Name
+    %th User
+    %th
+    %th
+    %th
+
+  - @work_groups.each do |work_group|
+    %tr
+      %td= work_group.name
+      %td= work_group.user_id
+      %td= link_to 'Show', work_group
+      %td= link_to 'Edit', edit_work_group_path(work_group)
+      %td= link_to 'Destroy', work_group, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Work group', new_work_group_path
