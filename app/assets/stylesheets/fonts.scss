@@ -2,7 +2,7 @@
 @include font-face("signikanegative", font-files("Signika_Negative/signikanegative-regular-webfont.ttf", "Signika_Negative/signikanegative-regular-webfont.svg", "Signika_Negative/signikanegative-regular-webfont.woff", "Signika_Negative/signikanegative-regular-webfont.eot"), "Signika_Negative/signikanegative-regular-webfont.eot");
 @include font-face("anonymous", font-files("anonymous/Anonymous-webfont.ttf", "anonymous/Anonymous-webfont.svg", "anonymous/Anonymous-webfont.woff", "anonymous/Anonymous-webfont.eot"), "anonymous/Anonymous-webfont.eot");
 
-$sans-font-stack: Arial, Helvetica, sans-serif;
+$sans-font-stack: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
 $monospace-font-stack: courier, monospace;
 
 $telegrafico-font-stack: "telegrafico" , $sans-font-stack;

@@ -36,7 +36,7 @@ $terminal-background-color:#242424;
 		}
 	}
 	#panel {
-	    //display: none;
+	    display: none;
 	    @include grid-row();
 	    width:100%;
 	    background-color: $terminal-background-color;

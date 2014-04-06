@@ -16,8 +16,7 @@ Noteweb::Application.routes.draw do
   resources :nodes
 
   devise_for :users
-  resources :users, only: [:show]
-  get 'profile', to: 'users#show'
+  get 'profile', to: 'users#show', as: "profile"
 
   resources :categories
 
