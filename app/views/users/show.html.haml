@@ -2,19 +2,11 @@
 	.row#profile_header
 		%h1 Profile: 
 		%h2.subheader #{current_user.email}
-	.row
-		%dl.accordion{"data-accordion" => ""}
-			-current_user.work_groups.each do |group|
-				%dd
-					%a{href: "#panel#{group.id}"}
-						= group.name
-						.test
-					.content{id:"panel#{group.id}"}
-						-group.works.each do |work|
-							=link_to work.name, work_takenotes_path(work), {class:"work-button"}
-			%dd
-				%a{href: "#panel#new"} New!
-						
+	.row#work_group_list
+		=render 'work_groups/work_group_list'
+				
+
+#groupModal{class: "reveal-modal", data:{:reveal=> true}}		
 
 
 

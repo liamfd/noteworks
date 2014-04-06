@@ -1,6 +1,8 @@
 class WorkGroupsController < ApplicationController
   before_action :set_work_group, only: [:show, :edit, :update, :destroy]
 
+  respond_to :html, :json, :js
+
   # GET /work_groups
   # GET /work_groups.json
   def index
@@ -12,30 +14,32 @@ class WorkGroupsController < ApplicationController
   def show
   end
 
-  # GET /work_groups/new
+  # GET /work_group/new
   def new
     @work_group = WorkGroup.new
+    @user = User.find(params[:user_id])
+    render(:layout => false)
   end
 
   # GET /work_groups/1/edit
   def edit
   end
 
-  # POST /work_groups
-  # POST /work_groups.json
+  # POST /work_group
+  # POST /work_group.json
   def create
     @work_group = WorkGroup.new(work_group_params)
+    @user= User.find(work_group_params[:user_id])
+    @work_groups = @user.work_groups
 
-    respond_to do |format|
-      if @work_group.save
-        format.html { redirect_to @work_group, notice: 'Work group was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @work_group }
-      else
-        format.html { render action: 'new' }
-        format.json { render json: @work_group.errors, status: :unprocessable_entity }
-      end
+    if @work_group.save
+      respond_with(:layout => false )
+    else
+      respond_with @work_group, status: :unprocessable_entity
     end
   end
+
+
 
   # PATCH/PUT /work_groups/1
   # PATCH/PUT /work_groups/1.json
@@ -55,9 +59,10 @@ class WorkGroupsController < ApplicationController
   # DELETE /work_groups/1.json
   def destroy
     @work_group.destroy
+    @user = User.find(params[:user_id])
+    @users = @user.work_groups
     respond_to do |format|
-      format.html { redirect_to work_groups_url }
-      format.json { head :no_content }
+        format.js { render :layout=>false }
     end
   end
 

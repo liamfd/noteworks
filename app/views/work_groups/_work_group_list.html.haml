@@ -1,0 +1,11 @@
+%dl.accordion{"data-accordion" => ""}
+	-@user.work_groups.each do |group|
+		%dd
+			%a{href: "#panel#{group.id}"}
+				= group.name
+				=link_to("x", work_group_path(group, :user_id => @user.id), method: :delete, :class=> [ "button"] , remote: true)
+			.content{id:"panel#{group.id}"}
+				-group.works.each do |work|
+					=link_to work.name, work_takenotes_path(work), {class:"work-button"}
+	%dd
+		=link_to('New!', new_work_group_path(:user_id => current_user.id), {:class=>"panel#new", data:{"reveal-id" => "groupModal", "reveal-ajax" => true}})
