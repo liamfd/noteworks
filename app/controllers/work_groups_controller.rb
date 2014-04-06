@@ -23,6 +23,8 @@ class WorkGroupsController < ApplicationController
 
   # GET /work_groups/1/edit
   def edit
+    @user = User.find(params[:user_id])
+    render(:layout => false)
   end
 
   # POST /work_group
@@ -39,19 +41,16 @@ class WorkGroupsController < ApplicationController
     end
   end
 
-
-
-  # PATCH/PUT /work_groups/1
-  # PATCH/PUT /work_groups/1.json
+  # PATCH/PUT /categories/1
+  # PATCH/PUT /categories/1.json
   def update
-    respond_to do |format|
-      if @work_group.update(work_group_params)
-        format.html { redirect_to @work_group, notice: 'Work group was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: 'edit' }
-        format.json { render json: @work_group.errors, status: :unprocessable_entity }
-      end
+    @user= User.find(work_group_params[:user_id])
+    @work_groups = @user.work_groups
+
+    if @work_group.update(work_group_params)
+      respond_with(:layout => false )
+    else
+      respond_with @work_group, status: :unprocessable_entity
     end
   end
 
@@ -61,8 +60,9 @@ class WorkGroupsController < ApplicationController
     @work_group.destroy
     @user = User.find(params[:user_id])
     @users = @user.work_groups
+
     respond_to do |format|
-        format.js { render :layout=>false }
+      format.js { render :layout=>false }
     end
   end
 

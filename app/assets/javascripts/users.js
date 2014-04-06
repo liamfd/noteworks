@@ -16,8 +16,7 @@ $(function() {
 
     //console.log("myModal opened");
     if ( $(".edit_form").length !== 0 ){
-      $(".edit_form").find('#category_name').get(0).onblur= submitForm;
-      $(".edit_form").find('#category_color').get(0).onblur= submitForm;
+      $(".edit_form").find('#work_group_name').get(0).onblur= submitForm;
     }
     $("#spinner").hide();
 
