@@ -24,7 +24,7 @@
 // $base-line-height: 150%;
 
 // We use this to control whether or not CSS classes come through in the gem files.
-// $include-html-classes: true;
+ $include-html-classes: true;
 // $include-print-styles: true;
 // $include-html-global-classes: $include-html-classes;
 
@@ -115,7 +115,7 @@
 // TYPOGRAPHY
 //
 
-// $include-html-type-classes: $include-html-classes;
+ $include-html-type-classes: $include-html-classes;
 
 // We use these to control header font styles
  $header-font-family: $franchise-font-stack;
@@ -1165,10 +1165,10 @@
 // TOP BAR
 //
 
-// $include-html-top-bar-classes: $include-html-classes;
+$include-html-top-bar-classes: $include-html-classes;
 
 // Background color for the top bar
-// $topbar-bg-color: #333;
+// $topbar-bg-color: #336600;
 // $topbar-bg: $topbar-bg-color;
 
 // Height and margin

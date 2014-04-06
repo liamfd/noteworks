@@ -2,17 +2,41 @@
 	.row
 		%h1 Profile: #{current_user.email}
 	.row
-
-		%dl.accordion{"data-accordion" => ""}
+		%dl.tabs.vertical{"data-tab" => ""}
 			-current_user.work_groups.each do |group|
 				%dd
-					%a{href: "#panel#{group.id}"} Accordion 1
-					#panel1.content.active
-						%dl.tabs{"data-tab" => ""}
-							-group.works.each do |work|
-								%dd
-									%a{href: "#panel#{group.id}-#{work.id}"} #{work.name}
-						.tabs-content
-							-group.works.each do |work|
-								.content{id:"panel#{group.id}-#{work.id}"}
-									%p #{work.name}
+					%a{href:"#panel#{group.id}"} Tab 1
+			
+		.tabs-content.vertical
+			-current_user.work_groups.each do |group|
+				.content{id:"panel#{group.id}"}
+					%p= group.id
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/	.row
+/		%dl.accordion{"data-accordion" => ""}
+/			-current_user.work_groups.each do |group|
+/				%dd
+/					%a{href: "#panel#{group.id}"} Accordion 1
+/					#panel1.content.active
+/						%dl.tabs{"data-tab" => ""}
+/							-group.works.each do |work|
+/								%dd
+/									%a{href: "#panel#{group.id}-#{work.id}"} #{work.name}
+/						.tabs-content
+/							-group.works.each do |work|
+/								.content{id:"panel#{group.id}-#{work.id}"}
+/									%p #{work.name}
