@@ -67,7 +67,7 @@ gem 'factory_girl_rails'
 gem 'haml-rails', :group => :development
 
 gem 'compass-rails'
-gem 'zurb-foundation', '~> 4.3.2'
+gem 'foundation-rails'
 gem 'foundation-icons-sass-rails'
 
 gem 'jquery-turbolinks'
