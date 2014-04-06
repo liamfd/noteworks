@@ -1,0 +1,10 @@
+.work-button{
+	@include button();
+	line-height:1;
+}
+
+#profile_header{
+	h1, h2{
+		display:inline-block;
+	}
+}

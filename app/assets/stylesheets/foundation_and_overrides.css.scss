@@ -321,7 +321,7 @@
 // BUTTONS
 //
 
-// $include-html-button-classes: $include-html-classes;
+ $include-html-button-classes: $include-html-classes;
 
 // We use these to build padding for buttons.
 // $button-tny: rem-calc(10);
@@ -331,7 +331,7 @@
 
 // We use this to control the display property.
 // $button-display: inline-block;
-// $button-margin-bottom: rem-calc(20);
+ $button-margin-bottom: rem-calc(0);
 
 // We use these to control button text styles.
 // $button-font-family: $body-font-family;
@@ -362,7 +362,7 @@
 
 // Button Groups
 
-// $include-html-button-classes: $include-html-classes;
+ //$include-html-button-classes: $include-html-classes;
 
 // Sets the margin for the right side by default, and the left margin if right-to-left direction is used
 // $button-bar-margin-opposite: rem-calc(10);
