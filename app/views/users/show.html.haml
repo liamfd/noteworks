@@ -2,21 +2,17 @@
 	.row
 		%h1 Profile: #{current_user.email}
 	.row
-	%dl.tabs{"data-tab" => ""}
-		%dd.active
-			%a{href: "#panel2-1"} Tab 1
-		%dd
-			%a{href: "#panel2-2"} Tab 2
-		%dd
-			%a{href: "#panel2-3"} Tab 3
-		%dd
-			%a{href: "#panel2-4"} Tab 4
-	.tabs-content
-		#panel2-1.content.active
-			%p First panel content goes here...
-		#panel2-2.content
-			%p Second panel content goes here...
-		#panel2-3.content
-			%p Third panel content goes here...
-		#panel2-4.content
-			%p Fourth panel content goes here...
+
+		%dl.accordion{"data-accordion" => ""}
+			-current_user.work_groups.each do |group|
+				%dd
+					%a{href: "#panel#{group.id}"} Accordion 1
+					#panel1.content.active
+						%dl.tabs{"data-tab" => ""}
+							-group.works.each do |work|
+								%dd.active
+									%a{href: "#panel#{group.id}-#{work.id}"} #{work.title}
+						.tabs-content
+							-group.works.each do |work|
+								#panel{class:"#{group.id}-#{work.id}"}
+									%p First panel content goes here...

@@ -1,5 +1,5 @@
 class Work < ActiveRecord::Base
-	belongs_to :group
+	belongs_to :work_group, foreign_key: :group_id
 
 	has_many :nodes, dependent: :destroy
 	has_many :links, dependent: :destroy
