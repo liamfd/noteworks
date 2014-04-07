@@ -2,6 +2,8 @@ class WorksController < ApplicationController
   before_action :set_work, only: [:show, :edit, :update, :destroy, :testnetwork, :takenotes, :updatenotes, 
     :mod_element, :add_element, :del_element, :category_list]
 
+  respond_to :html, :json, :js
+
   # GET /works
   # GET /works.json
   def index
@@ -16,29 +18,28 @@ class WorksController < ApplicationController
   # GET /work_group/new
   def new
     @work = Work.new
-    @group = Group.find(params[:group_id])
+    @group = WorkGroup.find(params[:group_id])
     render(:layout => false)
   end
 
   # GET /work/1/edit
   def edit
-    @group = Group.find(params[:group_id])
+    @group = WorkGroup.find(params[:group_id])
     render(:layout => false)
   end
 
-  # POST /works
-  # POST /works.json
+  # POST /work
+  # POST /work.json
   def create
     @work = Work.new(work_params)
+    @group= WorkGroup.find(work_params[:group_id])
+    @works = @group.works
 
-    respond_to do |format|
-      if @work.save
-        format.html { redirect_to @work, notice: 'Work was successfully updated.' }
-        format.json { render action: 'takenotes', status: :created, location: @work }
-      else
-        format.html { render action: 'new' }
-        format.json { render json: @work.errors, status: :unprocessable_entity }
-      end
+    @work.save #figure out why this is necessary later
+    if @work.save
+      respond_with(:layout => false )
+    else
+      respond_with @work, status: :unprocessable_entity
     end
   end
 

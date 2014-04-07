@@ -9,3 +9,4 @@
 		%li
 			= link_to(work_path(work, :group_id => @group.id), method: :delete, :class=> [ "group-mod-button"] , remote: true) do
 				%i{class:"fi-x"} 
+=link_to('New!', new_work_path(:group_id => @group.id), {data:{"reveal-id" => "groupModal", "reveal-ajax" => true}})
