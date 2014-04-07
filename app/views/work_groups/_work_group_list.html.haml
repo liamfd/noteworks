@@ -15,9 +15,10 @@
 							%i{class:"fi-x"} 
 
 			.content{id:"panel#{group.id}"}
-				=render "works/work_list", locals: {group: group}
-				/-group.works.each do |work|
-				/	=link_to work.name, work_takenotes_path(work), {class:"work-button"}
+				#work-list
+					=render "works/work_list", locals: {group: group}
+					/-group.works.each do |work|
+					/	=link_to work.name, work_takenotes_path(work), {class:"work-button"}
 
 	%dd.group-panel-row
 		=link_to('New!', new_work_group_path(:user_id => current_user.id), {:class=>"panel#new", data:{"reveal-id" => "groupModal", "reveal-ajax" => true}})

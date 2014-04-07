@@ -13,15 +13,18 @@ class WorksController < ApplicationController
   def show
   end
 
-  # GET /works/new
+  # GET /work_group/new
   def new
     @work = Work.new
+    @group = Group.find(params[:group_id])
+    render(:layout => false)
   end
 
-  # GET /works/1/edit
+  # GET /work/1/edit
   def edit
+    @group = Group.find(params[:group_id])
+    render(:layout => false)
   end
-
 
   # POST /works
   # POST /works.json
@@ -53,16 +56,17 @@ class WorksController < ApplicationController
     end
   end
 
-  # DELETE /works/1
-  # DELETE /works/1.json
+  # DELETE /work_groups/1
+  # DELETE /work_groups/1.json
   def destroy
     @work.destroy
+    @group = WorkGroup.find(params[:group_id])
+    @works = @group.works
+
     respond_to do |format|
-      format.html { redirect_to works_url }
-      format.json { head :no_content }
+      format.js { render :layout=>false }
     end
   end
-
 
   # GET /works/1/takenotes
   def takenotes

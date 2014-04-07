@@ -1,3 +1,11 @@
--locals[:group].works.each do |work|
-	=link_to work.name, work_takenotes_path(work), {class:"work-button"}
-%p hi!
+-if @group == nil
+	-@group = locals[:group]
+
+-@group.works.each do |work|
+	%ul.button-group
+		%li
+			=link_to work.name, work_takenotes_path(work), {class:"work-button"}
+
+		%li
+			= link_to(work_path(work, :group_id => @group.id), method: :delete, :class=> [ "group-mod-button"] , remote: true) do
+				%i{class:"fi-x"} 

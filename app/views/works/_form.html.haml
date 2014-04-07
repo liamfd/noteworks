@@ -1,14 +1,13 @@
-= simple_form_for @work_group, remote: true do |f|
+= simple_form_for @work, remote: true do |f|
 	= f.error_notification
 
 	.form-inputs
 		= f.input :name
 
-	=f.hidden_field :user_id, :value => @user.id
+	=f.hidden_field :group_id, :value => @group.id
 	
 	.actions
 		= f.submit
-
 
 	#spinner.spinner
 		= image_tag "ajax-loader.gif"

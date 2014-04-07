@@ -59,7 +59,8 @@ class WorkGroupsController < ApplicationController
   def destroy
     @work_group.destroy
     @user = User.find(params[:user_id])
-    @users = @user.work_groups
+    @groups = @user.work_groups
+    #this had said @users = @user.work_groups
 
     respond_to do |format|
       format.js { render :layout=>false }
