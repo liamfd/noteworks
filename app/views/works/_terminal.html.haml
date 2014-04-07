@@ -1,9 +1,9 @@
 #lower.grid
   %nav#bar
     %a#toggle.button Terminal
-  #panel
+  #panel.row{data:{:equilizer=>true}}
          
-    %div{class:"small-1 columns"}
+    %div{class:"small-1 columns", data:{"equilizer-watch"=>true}}
       %ul.terminal-side-menu
         %li
           =link_to work_categories_path(@work), {class:"side-button", id:"category-list-button"} do
@@ -17,7 +17,7 @@
         %li
           %a.side-button#settings-button
             %i{class:"fi-wrench"} 
-    %div{class:"small-11 columns"}
+    %div{class:"small-11 columns", data:{"equilizer-watch"=>true}}
       =simple_form_for(@work, url: {action: "updatenotes"}) do |f|
         %h2#field
         = f.text_area :markup, value: @work.generate_markup

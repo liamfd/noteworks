@@ -66,10 +66,14 @@ $terminal-background-color:#242424;
 			@include button();
 			//display:inline-block;
 			background-color:$terminal-background-color;
+			color:#fff;
 			margin:0;
 			padding: 16px 28px;
 			border:1px solid #1a1a1a;
 			text-align:center;
+			i{
+				color:#fff;
+			}
 		}
 	}
 }
