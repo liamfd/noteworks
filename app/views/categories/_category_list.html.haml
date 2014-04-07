@@ -1,10 +1,10 @@
 - @categories.each do |cat|
 	%li.cat-wrapper{id:"category-#{cat.id}"}
 		.row{style: "background-color:#{cat.color}"}
-			=link_to(cat.name,  edit_category_path(cat, :work_id => @work.id), {:class=> ["edit-link","cat-button", "small-10 columns"] , data:{"reveal-id" => "myModal", "reveal-ajax" => true}, style:"background-color:#{cat.color}"})
-			=link_to(category_path(cat, :work_id => @work.id), method: :delete, :class=> ["delete-link", "cat-button", "small-2 columns" ] , style:"background-color:#{cat.color}", remote: true) do
+			=link_to(cat.name,  edit_category_path(cat, :work_id => @work.id), {:class=> ["edit-link","cat-button", "small-10 columns"] , data:{"reveal-id" => "myModal", "reveal-ajax" => true}})
+			=link_to(category_path(cat, :work_id => @work.id), method: :delete, :class=> ["delete-link", "cat-button", "small-2 columns" ] , remote: true) do
 				%i{class:"fi-x"} 
 %li.cat-wrapper{id:"category-new"}
 	.row{style: "background-color:#606060"}
-		=link_to(new_category_path(:work_id => @work.id), {:class=>["edit-link", "cat-button", "small-10 columns"], style:"background-color:#606060",data:{"reveal-id" => "myModal", "reveal-ajax" => true}}) do
+		=link_to(new_category_path(:work_id => @work.id), {:class=>["edit-link", "cat-button", "small-10 columns"], data:{"reveal-id" => "myModal", "reveal-ajax" => true}}) do
 			New!
