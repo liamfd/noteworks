@@ -36,7 +36,7 @@ $terminal-background-color:#242424;
 		}
 	}
 	#panel {
-	    display: none;
+	    //display: none;
 	    @include grid-row();
 	    width:100%;
 	    background-color: $terminal-background-color;
@@ -58,12 +58,18 @@ $terminal-background-color:#242424;
 .terminal-side-menu{
 	@include side-nav();
 	text-align:center;
-	.side-button{
-		@include button();
+	li{
 		display:inline-block;
-		background-color:$terminal-background-color;
-		margin:0;
-		border:1px solid #1a1a1a;
-		text-align:left;
+		text-align: center;
+		background-color:#440088;
+		.side-button{
+			@include button();
+			//display:inline-block;
+			background-color:$terminal-background-color;
+			margin:0;
+			padding: 16px 28px;
+			border:1px solid #1a1a1a;
+			text-align:center;
+		}
 	}
 }
