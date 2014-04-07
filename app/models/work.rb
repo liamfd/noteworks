@@ -38,6 +38,10 @@ class Work < ActiveRecord::Base
 		if self.order == nil
 			self.order = ""
 		end
+
+		if self.public == nil
+			self.public = false
+		end
 	end
 
 	#generates an initial node named after the work, to be called after_create
