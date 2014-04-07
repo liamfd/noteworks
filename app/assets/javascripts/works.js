@@ -514,6 +514,7 @@ function getNumLines(){
 /* CYTOSCAPE STUFF */
 $(loadCy = function(){
   options = {
+    
     layout: {
       name: 'arbor',
       liveUpdate: true, // whether to show the layout as it's running
@@ -568,7 +569,7 @@ $(loadCy = function(){
     
       .selector(':selected')
         .css({
-          'background-color': '#000',
+          'background-color': '#fff',
           'line-color': '#000',
           'target-arrow-color': '#000',
           'text-outline-color': '#000'
@@ -584,7 +585,7 @@ $(loadCy = function(){
           'text-outline-color': 'data(color)',
           'border-color':'data(color)',
           'border-width':3,
-          'background-color': '#fff',
+          'background-color': '#ffffff',
           'text-valign': 'center',
           'text-halign' : 'center',
           'color': '#fff',
@@ -627,6 +628,10 @@ $(loadCy = function(){
         .css({
           'z-index' : 3,
           'background-color':"#dddddd"
+        })
+      .selector('.being_tapped')
+        .css({
+          'background-color':"#ffffff"
         })
 
       .selector('.faded')
@@ -675,14 +680,14 @@ $(loadCy = function(){
       
       //bring focus to the element as they're clicked, prioritizing the most recent click
       cy.on('tap', 'node', function(e){
-        var curr_node = e.cyTarget; 
+        var curr_node = e.cyTarget;
         var prev_foci = cy.elements('node.focused');
 
         prev_foci.not(curr_node).addClass('less-focused'); //middleground all focused nodes except current
 
         if (curr_node.hasClass('less-focused')){ //if it's been middlegrounded, foreground
           curr_node.removeClass('less-focused');
-        } 
+        }
         else { //otherwise, swap between foreground and background
           curr_node.toggleClass('focused');
         }
@@ -694,6 +699,11 @@ $(loadCy = function(){
           cy.elements().removeClass('focused');
           cy.elements().removeClass('less-focused');
         }
+      });
+
+      cy.on('tapstart', 'node', function(e){
+        var curr_node = e.cyTarget;
+        //curr_node.addClass("being_tapped");
       });
 
       cy.on('load', function(e) {
