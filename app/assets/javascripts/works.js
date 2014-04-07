@@ -564,6 +564,7 @@ $(loadCy = function(){
           
           'width': 'mapData(weight, 30, 80, 20, 50)',
           'height': 'mapData(height, 0, 200, 10, 45)',
+          'background-color': "#fff",
           'z-index' : 1
         })
     
@@ -585,7 +586,7 @@ $(loadCy = function(){
           'text-outline-color': 'data(color)',
           'border-color':'data(color)',
           'border-width':3,
-          'background-color': '#ffffff',
+          'background-color': '#fff',
           'text-valign': 'center',
           'text-halign' : 'center',
           'color': '#fff',
@@ -628,10 +629,6 @@ $(loadCy = function(){
         .css({
           'z-index' : 3,
           'background-color':"#dddddd"
-        })
-      .selector('.being_tapped')
-        .css({
-          'background-color':"#ffffff"
         })
 
       .selector('.faded')
@@ -699,11 +696,6 @@ $(loadCy = function(){
           cy.elements().removeClass('focused');
           cy.elements().removeClass('less-focused');
         }
-      });
-
-      cy.on('tapstart', 'node', function(e){
-        var curr_node = e.cyTarget;
-        //curr_node.addClass("being_tapped");
       });
 
       cy.on('load', function(e) {
