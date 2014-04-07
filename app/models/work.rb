@@ -20,6 +20,7 @@ class Work < ActiveRecord::Base
 
 	before_save :before_save_checker
 	before_create :before_create_defaulter
+	after_create :generate_initial_node
 
 	#bottom, private
   	def before_save_checker 
@@ -39,6 +40,23 @@ class Work < ActiveRecord::Base
 		end
 	end
 
+	#generates an initial node named after the work, to be called after_create
+	#should also generate the "" category
+	def generate_initial_node
+		node_text = ".," + self.name
+		
+		initial_node = Node.new()
+		#this line will also build the "" category, since it is the first instance of it
+		initial_node = build_node(initial_node, node_text)
+		initial_node.save
+
+		#update the ordering
+		ordering = []
+		ordering.insert(0, ObjectPlace.new("Node", initial_node.id))
+		set_order(ordering)
+		#insert_element(0, node_text)
+	end
+
 	def valid_links
 		self.links.select {|l| l.parent_id != nil && l.child_id != nil}
 	end
@@ -52,10 +70,7 @@ class Work < ActiveRecord::Base
 		from_remove = from_remove_total
 
 
-		binding.pry
-
 		lines_number.zip(lines_content).each do |number, content|
-			binding.pry
 			from_insert = {}
 			from_remove = {}
 			
@@ -71,7 +86,6 @@ class Work < ActiveRecord::Base
 
 
 			elsif first_char == '.' && ordering_el.model == "Node" && curr_el.is_a?(Node)
-				binding.pry
 
 				from_remove = remove_element(number, false)
 				from_insert = insert_element(number, content, curr_el)
@@ -100,18 +114,16 @@ class Work < ActiveRecord::Base
 
 	 		#if you have a note and are modding it
 			elsif first_char == '-' && ordering_el.model == "Note" && curr_el.is_a?(Note)
-				binding.pry
 				from_remove = remove_element(number, false)
 				from_insert = insert_element(number, content, curr_el)
 			
 			#if it's not the same or not formatted right, you want to get rid of what's there 
 			#and insert whatever's appropriate
 			else 
-				binding.pry
 				from_remove = remove_element(number, true)
 				from_insert = insert_element(number, content)
 			end
-			binding.pry
+
 			from_remove_total = merge_two_hashes(from_remove_total, from_remove)
 			from_insert_total = merge_two_hashes(from_insert_total, from_insert)
 			#binding.pry
@@ -170,9 +182,7 @@ class Work < ActiveRecord::Base
 			new_node.save
 
 			#update the ordering
-			binding.pry
 			ordering.insert(line_number, ObjectPlace.new("Node", new_node.id))
-			binding.pry
 			set_order(ordering)
 
 			#FIND PARENT
@@ -553,7 +563,6 @@ class Work < ActiveRecord::Base
 	def set_order(ordering)
 		o = ""
 		ordering.each do |obj_place|
-			binding.pry
 			o << (obj_place.model + "_" + obj_place.id.to_s + "///,")
 		end
 		self.update_attribute :order, o
@@ -805,7 +814,6 @@ class Work < ActiveRecord::Base
 			category = self.categories.create(name: category_name.downcase)
 		end
 		node.category = category
-	
 		title = title.strip	
 		
 		node.title = title

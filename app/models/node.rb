@@ -5,7 +5,6 @@ class Node < ActiveRecord::Base
   has_one :position, dependent: :destroy
   has_many :link_collections, inverse_of: :node
 
-  validates :category_id, presence: true
   validates :work_id, presence: true
 
   has_many :child_relationships, class_name: "Link", foreign_key: 'parent_id', dependent: :destroy

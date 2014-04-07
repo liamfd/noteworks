@@ -1,18 +1,15 @@
 object @work
-binding.pry
 child :nodes, :root => :nodes, :object_root => :datas do
 	node(:id) { |n| n.id.to_s() }
 	node(:title) { |n| n.title }
 	node(:notes) { |n| n.combined_notes }
 	node(:color) { |n| n.category.color }
 end
-
 node :edges do 
   root_object.links.map do |link|
     { "data" => partial("works/link", :object => link) }  if link.fully_connected?
   end.compact
 end
-
 
 #child :links, :root => :edges, :object_root => :datas do
 #	node(:id) { |link| link.id.to_s() }
