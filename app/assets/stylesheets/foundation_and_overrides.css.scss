@@ -41,8 +41,8 @@
 // We use these to control various global styles
 // $body-bg: #fff;
 // $body-font-color: #222;
-// $body-font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
-// $body-font-weight: normal;
+ $body-font-family: $bitter-font-stack;
+ $body-font-weight: normal;
 // $body-font-style: normal;
 
 // We use this to control font-smoothing
@@ -148,7 +148,7 @@
 
 // We use these to style paragraphs
 // $paragraph-font-family: inherit;
-// $paragraph-font-weight: normal;
+ $paragraph-font-weight: normal;
 // $paragraph-font-size: 1rem;
 // $paragraph-line-height: 1.6;
 // $paragraph-margin-bottom: rem-calc(20);
@@ -334,14 +334,14 @@
  $button-margin-bottom: rem-calc(0);
 
 // We use these to control button text styles.
-// $button-font-family: $body-font-family;
+ //$button-font-family: $franchise-font-stack;
 // $button-font-color: #fff;
 // $button-font-color-alt: #333;
 // $button-font-tny: rem-calc(11);
 // $button-font-sml: rem-calc(13);
 // $button-font-med: rem-calc(16);
 // $button-font-lrg: rem-calc(20);
-// $button-font-weight: normal;
+// $button-font-weight: bold;
 // $button-font-align: center;
 
 // We use these to control various hover effects.

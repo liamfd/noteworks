@@ -55,8 +55,9 @@ $title-container-height:350px;
 		@include panel();
 		margin:0px;
 		border:5px solid #fff;
-		padding:15px;
+		padding:20px;
 		p{
+			font-family: $bitter-font-stack;
 			color:#eee;
 		}
 	}
@@ -70,6 +71,6 @@ $title-container-height:350px;
 	}
 	.command-flexible{
 		@extend .command-panel;
-		background-color:#135f7d;
+		background-color:#0c6487;
 	}
 }

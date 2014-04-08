@@ -2,15 +2,21 @@
 @include font-face("signikanegative", font-files("Signika_Negative/signikanegative-regular-webfont.ttf", "Signika_Negative/signikanegative-regular-webfont.svg", "Signika_Negative/signikanegative-regular-webfont.woff", "Signika_Negative/signikanegative-regular-webfont.eot"), "Signika_Negative/signikanegative-regular-webfont.eot");
 @include font-face("anonymous", font-files("anonymous/Anonymous-webfont.ttf", "anonymous/Anonymous-webfont.svg", "anonymous/Anonymous-webfont.woff", "anonymous/Anonymous-webfont.eot"), "anonymous/Anonymous-webfont.eot");
 @include font-face("franchise", font-files("Franchise_Bold/franchise-bold-webfont.ttf", "Franchise_Bold/franchise-bold-webfont.svg", "Franchise_Bold/franchise-bold-webfont.woff", "Franchise_Bold/franchise-bold-webfont.eot"), "Franchise_Bold/franchise-bold-webfont.eot");
+@include font-face("bitter", font-files("Bitter/bitter-regular-webfont.ttf", "Bitter/bitter-regular-webfont.svg", "Bitter/bitter-regular-webfont.woff", "Bitter/bitter-regular-webfont.eot"), "Bitter/bitter-regular-webfont.eot");
 
-
+//font variables
 $sans-font-stack: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
-$monospace-font-stack: courier, monospace;
+$monospace-font-stack: Consolas, 'Liberation Mono', Courier, monospace;
+$serif-font-stack: Georgia, serif;
+
 
 $telegrafico-font-stack: "telegrafico" , $sans-font-stack;
 $signikanegative-font-stack: 'signikanegative', $sans-font-stack;
-$anonymous-font-stack: 'anonymous', $monospace-font-stack;
 $franchise-font-stack: 'franchise', $sans-font-stack;
+
+$bitter-font-stack: "bitter", $serif-font-stack;
+
+$anonymous-font-stack: 'anonymous', $monospace-font-stack;
 
 
 /*@font-face {
