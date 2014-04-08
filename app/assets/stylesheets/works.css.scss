@@ -77,3 +77,22 @@ $terminal-background-color:#242424;
 		}
 	}
 }
+
+
+.work-row{
+	@include grid-row();
+}
+
+.work-row-even{
+	@extend .work-row;
+	.group-mod-button{
+		background-color:#cccccc;
+	}
+}
+
+.work-row-odd{
+	@extend .work-row;
+	.group-mod-button{
+		background-color:#858585;
+	}
+}

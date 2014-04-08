@@ -1,12 +1,19 @@
 -if @group == nil
 	-@group = locals[:group]
-
+-switch = 1
 -@group.works.each do |work|
-	%ul.button-group
-		%li
-			=link_to work.name, work_takenotes_path(work), {class:"work-button"}
+	-if switch > 0
+		.work-row-even{"data-equalizer" => ""}
+			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"], "data-equalizer-watch" => ""} 
 
-		%li
-			= link_to(work_path(work, :group_id => @group.id), method: :delete, :class=> [ "group-mod-button"] , remote: true) do
+			=link_to(work_path(work, :group_id => @group.id), method: :delete, :class=> [ "group-mod-button", "small-4 columns"] , "data-equalizer-watch" => "", remote: true) do
 				%i{class:"fi-x"} 
+	-else
+		.work-row-odd{"data-equalizer" => ""}
+			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"], "data-equalizer-watch" => ""} 
+
+			=link_to(work_path(work, :group_id => @group.id), method: :delete, :class=> [ "group-mod-button", "small-4 columns"] , "data-equalizer-watch" => "", remote: true) do
+				%i{class:"fi-x"}
+
+	-switch = switch*-1
 =link_to('New!', new_work_path(:group_id => @group.id), {data:{"reveal-id" => "groupModal", "reveal-ajax" => true}})
