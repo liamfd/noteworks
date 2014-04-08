@@ -4,12 +4,24 @@
 			%h1.main-header Noteworks
 			%h1.subheader Take notes. Better.
 		#home-cy
-	%div{class:"small-8 small-centered columns"}
+	#title-filler
+		%div{class:"small-8 small-centered columns"}
+			.row.commands{"data-equalizer" => true}
+				.large-4.small-12.columns.command-write{"data-equalizer-watch" => true}
+					%h3 Write Simple
+					%p Easy markup. No fuss, no muss. You can write your notes exactly like you always do, or make use of our additions to spice it up.
+				.large-4.small-12.columns.command-graph{"data-equalizer-watch" => true}
+					%h3 Graphic
+					%p Your notes, our graph. You type your notes in, and it draws a graph for you (look up - there's an example.)
+				.large-4.small-12.columns.command-flexible{"data-equalizer-watch" => true}
+					%h3 Anything Goes.
+					%p Want to write class notes? Easy. Want to map a network of intrigue, or hash out your plans for world domination? Equally easy (though you might want to make those private.)
 	
 
 /#cy_wrapper
-/	#home_cy
+/ #home_cy
 /.row.main
-/	.title-box
-/		%h1.title Noteworks
-/		%h1.subheader Take notes. Better.
+/ .title-box
+/   %h1.title Noteworks
+/   %h1.subheader Take notes. Better.
+

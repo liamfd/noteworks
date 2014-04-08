@@ -13,10 +13,17 @@
 	}
 }
 */
+
+$title-container-height:350px;
 #title-container {
     width: 100%;
-    height: 350px;
+    height: $title-container-height;
     position: relative;
+}
+
+#title-filler{
+	width:100%;
+	height:$title-container-height;
 }
 
 #title-box, 
@@ -41,4 +48,28 @@
 	h1.subheader{
 		//color:#559900;
 	}	
+}
+
+.commands{
+	.command-panel{
+		@include panel();
+		margin:0px;
+		border:5px solid #fff;
+		padding:15px;
+		p{
+			color:#eee;
+		}
+	}
+	.command-write{
+		@extend .command-panel;
+		background-color:#994040;
+	}
+	.command-graph{
+		@extend .command-panel;
+		background-color:#6c9c35;
+	}
+	.command-flexible{
+		@extend .command-panel;
+		background-color:#135f7d;
+	}
 }
