@@ -1,11 +1,11 @@
 %dl.accordion{"data-accordion" => ""}
 	-@user.work_groups.each do |group|
-		%dd.row
-			%a.small-10.columns{href: "#panel#{group.id}"}= group.name
+		%dd.row{"data-equalizer" => ""}
+			%a.small-10.columns{href: "#panel#{group.id}", class:"group-mod-button", "data-equalizer-watch" => ""}= group.name
 
-			=link_to(edit_work_group_path(group, :user_id => @user.id), {:class=> ["group-mod-button", 'small-1 columns'] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true}}) do
+			=link_to(edit_work_group_path(group, :user_id => @user.id), {:class=> ["group-mod-button", 'small-1 columns'] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true, "equalizer-watch" => ""}}) do
 				%i{class:"fi-pencil"} 
-			= link_to(work_group_path(group, :user_id => @user.id), method: :delete, :class=> [ "group-mod-button", 'small-1 columns'] , remote: true) do
+			= link_to(work_group_path(group, :user_id => @user.id), method: :delete, :class=> [ "group-mod-button", 'small-1 columns'] , "data-equalizer-watch" => "", remote: true) do
 				%i{class:"fi-x"} 
 
 			.content{id:"panel#{group.id}"}
