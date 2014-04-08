@@ -13,11 +13,15 @@ function toggleSpinner(){
 $(function() {
   $('#groupModal').bind('opened', function() {
     //this could also go in a ajaxComplete global call
+    console.log("groupModal opening");
 
     //console.log("myModal opened");
-    if ( $(".edit_form").length !== 0 ){
-      $(".edit_form").find('#work_group_name').get(0).onblur= submitForm;
-    }
+    //if ( $(".edit_form").length !== 0 ){
+    //  if ($(".edit_form").find("#work_group_name").length !== 0){
+    //    $(".edit_form").find('#work_group_name').get(0).onblur= submitForm;
+    //  }
+    //}
+
     $("#spinner").hide();
 
     $("form").bind("ajax:beforeSend", function(){
@@ -32,7 +36,7 @@ $(function() {
     });
     $("form").bind("ajax:error", function(xhr, ajaxOptions, thrownError){
       //find a way to get the actual error being returned by the rails controller
-      $("#response").html("Error: Repeated name.").show().fadeOut("slow");
+      $("#response").html("Error: Something's gone wrong.").show().fadeOut("slow");
       $("#spinner").hide();
     });
   });

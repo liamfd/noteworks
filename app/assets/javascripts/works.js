@@ -55,7 +55,7 @@ function toggleSpinner(){
 $(function() {
   $('#myModal').bind('opened', function() {
     //this could also go in a ajaxComplete global call
-
+    console.log("my modal opening");
     //console.log("myModal opened");
     if ( $(".edit_form").length !== 0 ){
       $(".edit_form").find('#category_name').get(0).onblur= submitForm;
@@ -90,6 +90,7 @@ $(function() {
       test_ajaxOptions = ajaxOptions;
       test_error = thrownError;
     });
+    $(document).foundation();
   });
 });
 

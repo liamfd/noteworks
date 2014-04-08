@@ -1,22 +1,21 @@
+-#takes either the local or the data from the controller and puts it in a local var, destroyed after each
 -if @group == nil
 	-group = locals[:group]
-	.p= group.id
 -else
 	-group = @group
-	.p= group.id
 -switch = 1
 -group.works.each do |work|
 	-if switch > 0
-		.work-row-even{"data-equalizer" => ""}
-			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"], "data-equalizer-watch" => ""} 
+		.work-row-even
+			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"]} 
 
-			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-4 columns"] , "data-equalizer-watch" => "", remote: true) do
+			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-4 columns"] ,  remote: true) do
 				%i{class:"fi-x"} 
 	-else
-		.work-row-odd{"data-equalizer" => ""}
-			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"], "data-equalizer-watch" => ""} 
+		.work-row-odd
+			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"]} 
 
-			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-4 columns"] , "data-equalizer-watch" => "", remote: true) do
+			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-4 columns"], remote: true) do
 				%i{class:"fi-x"}
 
 	-switch = switch*-1
