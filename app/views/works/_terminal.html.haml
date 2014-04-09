@@ -20,14 +20,3 @@
       =simple_form_for(@work) do |f|
         %h2#field
         = f.text_area :markup, value: @work.generate_markup
-
-    
-
-/      -@work.categories.each do |cat|
-/        %p{style:"color:#{cat.color}"}= cat.name
-
-/ %div
-/ %h3 Categories
--# @work.categories.each do |cat|
-/ .cat_wrapper{style:"color:#{cat.color}"}= cat.name
--#= link_to "index", controller: "categories", action: "index"

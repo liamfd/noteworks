@@ -22,7 +22,7 @@ $terminal-background-color:#242424;
 	width:100%;
 	bottom:0;
 	background-color:$terminal-background-color; 
-	box-shadow: 0px -3px 6px #444;
+	box-shadow: 0px -2px 4px 1px #444;
 	#bar{
 		@include grid-row();
 		width:100%;
@@ -84,18 +84,26 @@ $terminal-background-color:#242424;
 
 .work-row{
 	@include grid-row();
+	a:hover{
+		background-color:scale-color($electric-blue, $lightness: -10%);
+	}
 }
 
 .work-row-even{
 	@extend .work-row;
 	.group-mod-button{
-		background-color:#cccccc;
+		background-color: scale-color($electric-blue, $lightness: 10%);
 	}
 }
 
 .work-row-odd{
 	@extend .work-row;
 	.group-mod-button{
-		background-color:#858585;
+		background-color: scale-color($electric-blue, $lightness: 30%);
 	}
+}
+
+h1#takenotes{
+	margin-left:1em;
+	color:$strong-green;
 }
