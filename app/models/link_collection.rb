@@ -7,10 +7,10 @@ class LinkCollection < ActiveRecord::Base
   def set_links(text)
   	chunks = text.split(",")
     new_nodes = []
-  	chunks.each do |chunk|
 
+  	chunks.each do |chunk|
       #perhaps have this find all of them
-  		child_node = Node.find_by(title: chunk.strip)
+  		child_node = Node.find_by(title: chunk.strip, work_id:self.work)
 
       if child_node == nil #if the child doesn't exist, create it at the very end
         place = self.work.get_ordering.length

@@ -520,18 +520,26 @@
 	"buffers":
 	[
 		{
-			"file": "app/assets/stylesheets/foundation_and_overrides.css.scss",
+			"file": "app/assets/javascripts/works.js",
 			"settings":
 			{
-				"buffer_size": 42087,
+				"buffer_size": 31381,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/views/works/_work_list.html.haml",
+			"file": "app/views/works/category_list.html.haml",
 			"settings":
 			{
-				"buffer_size": 1000,
+				"buffer_size": 222,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/views/users/show.html.haml",
+			"settings":
+			{
+				"buffer_size": 1015,
 				"line_ending": "Unix"
 			}
 		},
@@ -544,26 +552,10 @@
 			}
 		},
 		{
-			"file": "app/assets/stylesheets/works.css.scss",
+			"file": "app/views/works/_work_list.html.haml",
 			"settings":
 			{
-				"buffer_size": 1708,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "app/assets/stylesheets/users.css.scss",
-			"settings":
-			{
-				"buffer_size": 207,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "app/assets/stylesheets/categories.css.scss",
-			"settings":
-			{
-				"buffer_size": 190,
+				"buffer_size": 1155,
 				"line_ending": "Unix"
 			}
 		}
@@ -624,27 +616,45 @@
 	},
 	"file_history":
 	[
+		"/home/liam/projs/noteworks/app/controllers/categories_controller.rb",
+		"/home/liam/projs/noteworks/app/views/works/takenotes.html.haml",
+		"/home/liam/projs/noteworks/config/routes.rb",
+		"/home/liam/projs/noteworks/app/views/work_groups/_work_group_list.html.haml",
+		"/home/liam/projs/noteworks/app/views/works/_work_list.html.haml",
+		"/home/liam/projs/noteworks/app/views/works/_terminal.html.haml",
+		"/home/liam/projs/noteworks/app/views/works/update.js.erb",
+		"/home/liam/projs/noteworks/app/views/works/create.js.erb",
+		"/home/liam/projs/noteworks/app/controllers/work_groups_controller.rb",
+		"/home/liam/projs/noteworks/app/controllers/works_controller.rb",
+		"/home/liam/projs/noteworks/app/models/work.rb",
+		"/home/liam/projs/noteworks/app/views/works/_privacy_button_content.html.haml",
+		"/home/liam/projs/noteworks/app/views/works/toggle_privacy.js.erb",
+		"/home/liam/projs/noteworks/app/views/works/toggle_privacy.js.haml",
+		"/home/liam/projs/noteworks/app/views/works/_privacy_button_content.html.erb",
+		"/home/liam/projs/noteworks/app/views/works/_privacy_button.html.haml",
+		"/home/liam/projs/noteworks/db/migrate/20140408215608_change_works_public_column_name.rb",
+		"/home/liam/projs/noteworks/app/controllers/users_controller.rb",
+		"/home/liam/projs/noteworks/app/assets/stylesheets/users.css.scss",
+		"/home/liam/projs/noteworks/app/assets/stylesheets/works.css.scss",
+		"/home/liam/projs/noteworks/app/views/users/show.html.haml",
+		"/home/liam/projs/noteworks/app/assets/javascripts/users.js",
+		"/home/liam/projs/noteworks/app/assets/stylesheets/foundation_and_overrides.css.scss",
+		"/home/liam/projs/noteworks/app/assets/javascripts/nodes.js.coffee",
+		"/home/liam/projs/noteworks/app/views/work_groups/destroy.js.erb",
+		"/home/liam/projs/noteworks/app/views/work_groups/update.js.erb",
+		"/home/liam/projs/noteworks/app/views/work_groups/create.js.erb",
+		"/home/liam/projs/noteworks/app/assets/javascripts/categories.js",
+		"/home/liam/projs/noteworks/app/assets/stylesheets/categories.css.scss",
 		"/home/liam/projs/noteworks/app/views/home/index.html.haml",
 		"/home/liam/projs/noteworks/app/assets/javascripts/home.js",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/home.css.scss",
-		"/home/liam/projs/noteworks/app/views/users/show.html.haml",
 		"/home/liam/projs/noteworks/app/views/categories/_category_list.html.haml",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/fonts.scss",
 		"/home/liam/projs/noteworks/app/views/shared/_nav.html.haml",
 		"/home/liam/projs/noteworks/app/views/works/category_list.html.haml",
-		"/home/liam/projs/noteworks/app/assets/stylesheets/categories.css.scss",
-		"/home/liam/projs/noteworks/app/views/works/create.js.erb",
-		"/home/liam/projs/noteworks/app/views/work_groups/_work_group_list.html.haml",
-		"/home/liam/projs/noteworks/app/assets/stylesheets/works.css.scss",
-		"/home/liam/projs/noteworks/app/views/works/_terminal.html.haml",
 		"/home/liam/projs/noteworks/app/views/works/_form.html.haml",
-		"/home/liam/projs/noteworks/app/views/works/_work_list.html.haml",
-		"/home/liam/projs/noteworks/app/controllers/work_groups_controller.rb",
-		"/home/liam/projs/noteworks/app/controllers/works_controller.rb",
-		"/home/liam/projs/noteworks/app/models/work.rb",
 		"/home/liam/projs/noteworks/app/assets/javascripts/application.js",
 		"/home/liam/projs/noteworks/app/views/works/destroy.js.erb",
-		"/home/liam/projs/noteworks/app/views/work_groups/create.js.erb",
 		"/home/liam/projs/noteworks/app/views/works/new.html.haml",
 		"/home/liam/projs/noteworks/app/views/work_groups/edit.html.haml",
 		"/home/liam/projs/noteworks/app/views/works/edit.html.haml",
@@ -655,32 +665,22 @@
 		"/home/liam/projs/noteworks/app/models/node.rb",
 		"/home/liam/projs/noteworks/app/assets/javascripts/works.js",
 		"/home/liam/projs/noteworks/app/models/category.rb",
-		"/home/liam/projs/noteworks/app/assets/stylesheets/users.css.scss",
 		"/home/liam/projs/noteworks/app/models/link_collection.rb",
 		"/home/liam/projs/noteworks/app/views/works/show.json.rabl",
-		"/home/liam/projs/noteworks/app/controllers/categories_controller.rb",
-		"/home/liam/projs/noteworks/app/controllers/users_controller.rb",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/application.scss",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/work_groups.css.scss",
-		"/home/liam/projs/noteworks/app/assets/javascripts/users.js",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/user.css.scss",
 		"/home/liam/projs/noteworks/app/views/categories/_form.html.haml",
-		"/home/liam/projs/noteworks/app/views/work_groups/update.js.erb",
-		"/home/liam/projs/noteworks/app/views/work_groups/destroy.js.erb",
 		"/home/liam/projs/noteworks/app/views/work_groups/edit.js.erb",
 		"/home/liam/projs/noteworks/app/views/work_groups/new.html.haml",
 		"/home/liam/projs/noteworks/app/views/categories/create.js.erb",
 		"/home/liam/projs/noteworks/app/views/layouts/application.html.haml",
-		"/home/liam/projs/noteworks/config/routes.rb",
-		"/home/liam/projs/noteworks/app/assets/javascripts/categories.js",
 		"/home/liam/projs/noteworks/app/models/work_group.rb",
-		"/home/liam/projs/noteworks/app/assets/stylesheets/foundation_and_overrides.css.scss",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/style.css.scss",
 		"/home/liam/projs/noteworks/app/views/works/data.tsv",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/foundation_and_overrides.scss",
 		"/home/liam/projs/noteworks/app/views/layouts/application.html.erb",
 		"/home/liam/projs/noteworks/Gemfile",
-		"/home/liam/projs/noteworks/app/views/works/takenotes.html.haml",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/nav.css.scss",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/tabs.css.scss",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/accordion.css.scss",
@@ -743,15 +743,7 @@
 		"/home/liam/projs/noteworks/spec/models/work_spec.rb",
 		"/home/liam/projs/noteworks/spec/spec_helper.rb",
 		"/home/liam/projs/noteworks/test/controllers/nodes_controller_test.rb",
-		"/home/liam/projs/noteworks/test/fixtures/works.yml",
-		"/home/liam/projs/noteworks/test/fixtures/nodes.yml",
-		"/home/liam/projs/noteworks/test/fixtures/categories.yml",
-		"/home/liam/projs/noteworks/app/models/media_node.rb",
-		"/home/liam/projs/noteworks/test/fixtures/users.yml",
-		"/home/liam/projs/noteworks/test/controllers/node_controller_test.rb",
-		"/home/liam/projs/noteworks/app/views/nodes/show.json.rabl",
-		"/home/liam/projs/noteworks/backup_jbuilder.json.jbuilder",
-		"/home/liam/projs/noteworks/app/views/nodes/show.json.jbuilder"
+		"/home/liam/projs/noteworks/test/fixtures/works.yml"
 	],
 	"find":
 	{
@@ -769,6 +761,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"moon",
+			"public",
+			"@group",
 			"\"]}, ",
 			", ",
 			"font-weight",
@@ -893,10 +888,7 @@
 			"findElParent",
 			"removeElement",
 			"modifyElement",
-			"parseText",
-			"buildNode",
-			"buildNote",
-			"populateOrdering"
+			"parseText"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -904,6 +896,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"group",
 			"franchise-bold-webfont",
 			"Franchise Bold/",
 			"%a",
@@ -1009,23 +1002,22 @@
 	"groups":
 	[
 		{
-			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "app/assets/stylesheets/foundation_and_overrides.css.scss",
+					"file": "app/assets/javascripts/works.js",
 					"settings":
 					{
-						"buffer_size": 42087,
+						"buffer_size": 31381,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1385,
-								1385
+								1208,
+								1208
 							]
 						],
 						"settings":
@@ -1122,28 +1114,30 @@
 							},
 							"sublimelinter_wrap_find": true,
 							"synced": false,
-							"syntax": "Packages/Sass/Syntaxes/Sass.tmLanguage"
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 479.0,
+						"translation.y": 726.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "app/views/works/_work_list.html.haml",
+					"file": "app/views/works/category_list.html.haml",
 					"settings":
 					{
-						"buffer_size": 1000,
+						"buffer_size": 222,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								410,
-								410
+								47,
+								47
 							]
 						],
 						"settings":
@@ -1250,18 +1244,18 @@
 				},
 				{
 					"buffer": 2,
-					"file": "app/views/work_groups/_work_group_list.html.haml",
+					"file": "app/views/users/show.html.haml",
 					"settings":
 					{
-						"buffer_size": 1047,
+						"buffer_size": 1015,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								205,
-								205
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1369,18 +1363,18 @@
 				},
 				{
 					"buffer": 3,
-					"file": "app/assets/stylesheets/works.css.scss",
+					"file": "app/views/work_groups/_work_group_list.html.haml",
 					"settings":
 					{
-						"buffer_size": 1708,
+						"buffer_size": 1047,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1619,
-								1619
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1477,126 +1471,7 @@
 							},
 							"sublimelinter_wrap_find": true,
 							"synced": false,
-							"syntax": "Packages/Sass/Syntaxes/Sass.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1254.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "app/assets/stylesheets/users.css.scss",
-					"settings":
-					{
-						"buffer_size": 207,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								13,
-								13
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"incomplete_sync": null,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"remote_loading": false,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": true,
-							"sublimelinter_gutter_marks_theme": "simple",
-							"sublimelinter_mark_style": "none",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"synced": false,
-							"syntax": "Packages/Sass/Syntaxes/Sass.tmLanguage",
+							"syntax": "Packages/Rails/Ruby Haml.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
@@ -1606,19 +1481,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "app/assets/stylesheets/categories.css.scss",
+					"buffer": 4,
+					"file": "app/views/works/_work_list.html.haml",
 					"settings":
 					{
-						"buffer_size": 190,
+						"buffer_size": 1155,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								132,
-								132
+								248,
+								248
 							]
 						],
 						"settings":
@@ -1715,7 +1590,8 @@
 							},
 							"sublimelinter_wrap_find": true,
 							"synced": false,
-							"syntax": "Packages/Sass/Syntaxes/Sass.tmLanguage"
+							"syntax": "Packages/Rails/Ruby Haml.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,

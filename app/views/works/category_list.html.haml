@@ -1,7 +1,9 @@
   
 .row.main
 
-	%h1 Categories - #{@work.name}
+	%h1 
+		=link_to "< #{@work.name} ", work_takenotes_path(@work)
+		Categories
 	%ul#category_list.small-block-grid-5
 		=render 'categories/category_list'
 
