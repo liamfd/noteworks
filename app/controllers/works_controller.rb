@@ -148,10 +148,11 @@ class WorksController < ApplicationController
 
   #PATCH works/1/toggle_privacy
   def toggle_privacy
-    @work.toggle_privacy
-
-    @privacy = @work.show_others
-    respond_with(@work, :layout => false)
+    if @work.toggle_privacy
+      respond_with(@work, :layout => false)
+    else
+      respond_with @work, status: :unprocessable_entity
+    end
   end
 
   def category_list
