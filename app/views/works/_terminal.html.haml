@@ -9,8 +9,10 @@
           =link_to work_categories_path(@work), {class:"side-button", id:"category-list-button"} do
             %i{class:"fi-record"} 
         %li
-          %a.side-button#public-button
-            %i{class:"fi-lock"} 
+          =link_to(work_privacy_path(@work), :class=> "side-button", id: "privacy-button", remote: true) do
+            = render "privacy_button_content", :show_others => @work.show_others
+            /%a.side-button#privacy-button
+            /%i{class:"fi-lock"} 
         %li
           %a.side-button#guide-button
             %i{class:"fi-compass"} 

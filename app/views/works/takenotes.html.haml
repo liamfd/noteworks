@@ -1,4 +1,4 @@
-%h1= @work.name
+%h1#work_name= @work.name
 
 #cy
 
@@ -11,7 +11,7 @@
   %li{data:{id:"category-list-button", text:"Next", options:"tip_location: top"}}
     %h4 Category List
     %p Click this to see and edit all the categories associated with this work.
-  %li{data:{id:"public-button", text:"Next"}}
+  %li{data:{id:"privacy-button", text:"Next"}}
     %h4 Publicity Settings
     %p This one sets the privacy settings. Locked means only you can see it, unlocked means everyone can see (but only you can edit.)
   %li{data:{id:"guide-button", text:"Next", options:"tip_location: top"}}

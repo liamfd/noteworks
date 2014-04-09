@@ -1,0 +1,7 @@
+console.log("one");
+var pub = <%= @work.show_others %>
+
+if (pub == true)
+	$("a#privacy-button").html("<i class='fi-unlock'></i>");
+else
+	$("a#privacy-button").html("<i class='fi-lock'></i>");

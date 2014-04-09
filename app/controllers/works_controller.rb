@@ -1,6 +1,6 @@
 class WorksController < ApplicationController
   before_action :set_work, only: [:show, :edit, :update, :destroy, :testnetwork, :takenotes, :updatenotes, 
-    :mod_element, :add_element, :del_element, :category_list]
+    :mod_element, :add_element, :del_element, :category_list, :toggle_privacy]
 
   respond_to :html, :json, :js
 
@@ -79,7 +79,6 @@ class WorksController < ApplicationController
 
   # PATCH/PUT /works/1
   # PATCH/PUT /works/1.json
-    
   def updatenotes
     #@nodes = @work.nodes
     #@links = @work.links
@@ -147,10 +146,12 @@ class WorksController < ApplicationController
     end
   end
 
+  #PATCH works/1/toggle_privacy
+  def toggle_privacy
+    @work.toggle_privacy
 
-  def testnetwork
-    @nodes = @work.nodes
-    render json: @nodes
+    @privacy = @work.show_others
+    respond_with(@work, :layout => false)
   end
 
   def category_list

@@ -4,6 +4,7 @@ Noteweb::Application.routes.draw do
   get "works/:id/takenotes", to: "works#takenotes", as: "work_takenotes"
   get "works/:id/categories", to: "works#category_list", as: "work_categories"
   get "works/:id/testnetwork", to: "works#testnetwork"
+  get "works/:id/toggle_privacy", to: "works#toggle_privacy", as: "work_privacy"
   
   get "works/:id/mod_element", to: "works#mod_element"
   get "works/:id/add_element", to: "works#add_element"

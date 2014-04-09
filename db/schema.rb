@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140407045205) do
+ActiveRecord::Schema.define(version: 20140408215608) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
@@ -133,7 +133,7 @@ ActiveRecord::Schema.define(version: 20140407045205) do
     t.datetime "updated_at"
     t.string   "name"
     t.text     "order"
-    t.boolean  "public"
+    t.boolean  "show_others"
   end
 
   add_index "works", ["group_id"], name: "index_works_on_group_id"

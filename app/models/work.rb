@@ -39,8 +39,8 @@ class Work < ActiveRecord::Base
 			self.order = ""
 		end
 
-		if self.public == nil
-			self.public = false
+		if self.show_others == nil
+			self.show_others = false
 		end
 	end
 
@@ -63,6 +63,15 @@ class Work < ActiveRecord::Base
 
 	def valid_links
 		self.links.select {|l| l.parent_id != nil && l.child_id != nil}
+	end
+
+	#whatever the public setting is, reverse it
+	def toggle_privacy 
+		if self.show_others == true
+			update_attributes(show_others:false)
+    	else
+			update_attributes(show_others:true)
+		end
 	end
 
 	#parser shit
