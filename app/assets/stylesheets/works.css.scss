@@ -3,13 +3,15 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 #cy {
-	position:fixed;
-	width:100%;
-	height:100%;
+	position:absolute;
+	//width:100%;
+	//height:100%;
     //height: 600px;
     //width: 980px;
+    right:0;
     left: 0;
     top: 45px;
+    bottom:0;
     border: 1px solid #b0b0b0;
     margin-bottom:45px;
 } 
@@ -20,6 +22,7 @@ $terminal-background-color:#242424;
 	width:100%;
 	bottom:0;
 	background-color:$terminal-background-color; 
+	box-shadow: 0px -3px 6px #444;
 	#bar{
 		@include grid-row();
 		width:100%;
@@ -36,7 +39,7 @@ $terminal-background-color:#242424;
 		}
 	}
 	#panel {
-	    //display: none;
+	    display: none;
 	    @include grid-row();
 	    width:100%;
 	    background-color: $terminal-background-color;
