@@ -46,14 +46,16 @@ class WorksController < ApplicationController
   # PATCH/PUT /works/1
   # PATCH/PUT /works/1.json
   def update
-    respond_to do |format|
-      if @work.update(work_params)
-        format.html { redirect_to @work, notice: 'Work was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: 'edit' }
-        format.json { render json: @work.errors, status: :unprocessable_entity }
-      end
+    binding.pry
+    @group= WorkGroup.find(work_params[:group_id])
+    @works = @group.works
+    binding.pry
+    if @work.update(work_params)
+      binding.pry
+      respond_with(:layout => false )
+    else
+      binding.pry
+      respond_with @work, status: :unprocessable_entity
     end
   end
 

@@ -9,8 +9,10 @@
 		.work-row-even
 			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"]} 
 
-			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-4 columns"] ,  remote: true) do
+			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-2 columns"] ,  remote: true) do
 				%i{class:"fi-x"} 
+			=link_to(edit_work_path(work, :group_id => group.id), {:class=> ["group-mod-button", 'small-2 columns'] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true}} ) do
+				%i{class:"fi-pencil"}
 	-else
 		.work-row-odd
 			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"]} 

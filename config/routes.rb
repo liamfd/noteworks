@@ -10,7 +10,7 @@ Noteweb::Application.routes.draw do
   get "works/:id/add_element", to: "works#add_element"
   get "works/:id/del_element", to:"works#del_element"
 
-  patch "works/:id", to: "works#updatenotes"
+  #patch "works/:id", to: "works#updatenotes"
   resources :works
 
   get "node/index"
