@@ -33,14 +33,16 @@ $terminal-background-color:#242424;
 		overflow:hidden;
 		.button{
 			background-color:$terminal-background-color;
+			font-family:$franchise-font-stack;
+			font-size:1.6em;
 			height:45px;
 			line-height:45px;
 			padding:0px;
 		}
 	}
 	#panel {
-	    display: none;
 	    @include grid-row();
+	    display: none;
 	    width:100%;
 	    background-color: $terminal-background-color;
 	    form{
@@ -105,5 +107,4 @@ $terminal-background-color:#242424;
 
 h1#takenotes{
 	margin-left:1em;
-	color:$strong-green;
 }

@@ -19,7 +19,7 @@
   =f.hidden_field :work_id, :value => @work.id
 
   .actions
-    = f.submit
+    = f.submit nil, :class => 'button tiny'
 
   #spinner.spinner
     = image_tag "ajax-loader.gif"

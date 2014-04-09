@@ -1186,7 +1186,7 @@ $include-html-top-bar-classes: $include-html-classes;
  $topbar-dropdown-link-bg: $primary-color;
 // $topbar-dropdown-link-weight: normal;
 // $topbar-dropdown-toggle-size: 5px;
-// $topbar-dropdown-toggle-color: #fff;
+ $topbar-dropdown-toggle-color: #fff;
 // $topbar-dropdown-toggle-alpha: 0.4;
 
 // Set the link colors and styles for top-level nav
@@ -1197,7 +1197,7 @@ $include-html-top-bar-classes: $include-html-classes;
 // $topbar-link-weight: normal;
 $topbar-link-font-size: rem-calc(18);
 // $topbar-link-hover-lightness: -10%; // Darken by 10%
-// $topbar-link-bg: $topbar-bg;
+ $topbar-link-bg: $primary-color;
 // $topbar-link-bg-hover: #272727;
 // $topbar-link-bg-active: $primary-color;
 // $topbar-link-bg-active-hover: scale-color($primary-color, $lightness: -14%);

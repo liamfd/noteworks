@@ -7,7 +7,7 @@
 	=f.hidden_field :group_id, :value => @group.id
 	
 	.actions
-		= f.submit
+		= f.submit nil, :class => 'button tiny'
 
 	#spinner.spinner
 		= image_tag "ajax-loader.gif"
