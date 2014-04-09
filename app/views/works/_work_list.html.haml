@@ -7,23 +7,25 @@
 -group.works.each do |work|
 	-if switch > 0
 		.work-row-even
-			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"]} 
+			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-7 small-offset-3 columns"]} 
 
-			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-2 columns"] ,  remote: true) do
-				%i{class:"fi-x"} 
-			=link_to(edit_work_path(work, :group_id => group.id), {:class=> ["group-mod-button", 'small-2 columns'] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true}} ) do
+			=link_to(edit_work_path(work, :group_id => group.id), {:class=> ["group-mod-button", 'small-1 columns'] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true}} ) do
 				%i{class:"fi-pencil"}
+			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-1 columns"] ,  remote: true) do
+				%i{class:"fi-x"} 
+			
 	-else
 		.work-row-odd
-			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-6 small-offset-2 columns"]} 
+			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-7 small-offset-3 columns"]} 
 
-			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-2 columns"], remote: true) do
-				%i{class:"fi-x"}
-			=link_to(edit_work_path(work, :group_id => group.id), {:class=> ["group-mod-button", 'small-2 columns'] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true}} ) do
+			=link_to(edit_work_path(work, :group_id => group.id), {:class=> ["group-mod-button", 'small-1 columns'] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true}} ) do
 				%i{class:"fi-pencil"}
+			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-1 columns"], remote: true) do
+				%i{class:"fi-x"}
+			
 
 	-switch = switch*-1
 
-.work-row
-	=link_to(new_work_path(:group_id => group.id), {class: ["group-mod-button", "small-3 small-offset-2 columns"], data:{"reveal-id" => "groupModal", "reveal-ajax" => true}}) do
-		%i{class:"fi-plus"}
+-#.work-row
+	-#=link_to(new_work_path(:group_id => group.id), {class: ["group-mod-button", "small-3 small-offset-3 columns"], data:{"reveal-id" => "groupModal", "reveal-ajax" => true}}) do
+		/%i{class:"fi-plus"}

@@ -5,17 +5,25 @@
 			%h1.subheader Take notes. Better.
 		#home-cy
 	#header-filler
-		%div{class:"small-8 small-centered columns"}
-			.row.commands{"data-equalizer" => true}
-				.large-4.small-12.columns.command-write{"data-equalizer-watch" => true}
-					%h2 Write Simple
-					%p Easy markup. No fuss, no muss. You can write your notes exactly like you always do, or make use of our additions to spice them up.
-				.large-4.small-12.columns.command-graph{"data-equalizer-watch" => true}
-					%h2 Graphic
-					%p Your notes, our graph. You type your notes in, and it draws a graph for you (look up - there's an example.)
-				.large-4.small-12.columns.command-flexible{"data-equalizer-watch" => true}
-					%h2 Anything Goes
-					%p Want to write class notes? Easy. Want hash out your plans for world domination? Equally easy (though you might want to make those private.)
+	.row.main
+		.row.commands{"data-equalizer" => true}
+			.large-4.small-12.columns.command-write{"data-equalizer-watch" => true}
+				%h2 Write Simple
+				%p Easy markup. No fuss, no must. You can write your notes almost exactly like you always do, but if you want to really get things going, our additions only take a few minutes to learn.
+			.large-4.small-12.columns.command-graph{"data-equalizer-watch" => true}
+				%h2 Graphic
+				%p Your notes, our graph. You type your notes in, and it draws a graph for you (look up - there's an example.)
+			.large-4.small-12.columns.command-flexible{"data-equalizer-watch" => true}
+				%h2 Anything Goes
+				%p Want to write class notes? Easy. Want hash out your plans for world domination? Equally easy (though you might want to make those private.)
+		.row
+			.large-6.small-12.small-centered.columns.options
+				- if user_signed_in?
+					=link_to(profile_path, class: :button) do
+						%h1 Profile
+				-else
+					=link_to(profile_path, class: :button) do
+						%h1 Get Started
 	
 
 /#cy_wrapper

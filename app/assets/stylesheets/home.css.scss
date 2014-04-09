@@ -47,8 +47,6 @@ $header-container-height:350px;
 	}	
 }
 
-
-
 .commands{
 	.command-panel{
 		@include panel();
@@ -62,14 +60,31 @@ $header-container-height:350px;
 	}
 	.command-write{
 		@extend .command-panel;
-		background-color:#994040;
+		background-color:$electric-blue;
 	}
 	.command-graph{
 		@extend .command-panel;
-		background-color:#6c9c35;
+		background-color:$dusty-red;
 	}
 	.command-flexible{
 		@extend .command-panel;
-		background-color:#0c6487;
+		background-color:scale-color($strong-green, $lightness: -15%);
+	}
+}
+
+.options{
+	text-align:center;
+	.button{
+		background-color:$dark-grey;
+		margin:5px 10px;
+		padding:8px 128px;
+		h1{
+			color:#cccccc;
+		}
+	}
+	.button:hover{
+		h1{
+			color:$strong-green;
+		}
 	}
 }
