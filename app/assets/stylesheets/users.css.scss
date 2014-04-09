@@ -16,3 +16,10 @@
 		display:inline-block;
 	}
 }
+
+.devise-links-button-group{
+	@include button-group-container();
+	margin:1em 0em;
+
+	& > li { @include button-group-style(); }
+}
