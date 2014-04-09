@@ -25,4 +25,5 @@
 	-switch = switch*-1
 
 .work-row
-	=link_to('New!', new_work_path(:group_id => group.id), {class: ["group-mod-button", "small-3 small-offset-2 columns"], data:{"reveal-id" => "groupModal", "reveal-ajax" => true}})
+	=link_to(new_work_path(:group_id => group.id), {class: ["group-mod-button", "small-3 small-offset-2 columns"], data:{"reveal-id" => "groupModal", "reveal-ajax" => true}}) do
+		%i{class:"fi-plus"}
