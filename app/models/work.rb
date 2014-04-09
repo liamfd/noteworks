@@ -380,7 +380,14 @@ class Work < ActiveRecord::Base
 				end
 			end
 		#	binding.pry
-			el.parent_relationships.delete_all
+
+			#if it's actually supposed to be deleted, delete all links
+			if del_obj == true
+				el.parent_relationships.delete_all
+			else #otherwise, just the ones that are hierarchical
+				el.parent_relationships.where(link_collection_id: nil).delete_all
+			end
+
 			if del_obj #delete unless explicitly told not to (when it's called from modify)
 				el.delete
 			end
