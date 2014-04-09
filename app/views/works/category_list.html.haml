@@ -1,8 +1,8 @@
-%h1 Categories
   
-%ul#category_list.small-block-grid-5
-	=render 'categories/category_list'
+.row.main
+
+	%h1 Categories - #{@work.name}
+	%ul#category_list.small-block-grid-5
+		=render 'categories/category_list'
 
 #myModal{class: "reveal-modal", data:{:reveal=> true}}
-
-#test_box
