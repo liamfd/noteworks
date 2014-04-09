@@ -86,6 +86,9 @@ $terminal-background-color:#242424;
 
 .work-row{
 	@include grid-row();
+	.group-mod-button{
+		background-color:scale-color($electric-blue, $lightness: -30%);
+	}
 	a:hover{
 		background-color:scale-color($electric-blue, $lightness: -10%);
 	}
