@@ -1,1 +1,1 @@
-$("#work-list").html("<%= escape_javascript render("work_list", :locals => {:group => @group}) %>");
+$("#panel<%=@group.id%> #work-list").html("<%= escape_javascript render("work_list", :locals => {:group => @group}) %>");

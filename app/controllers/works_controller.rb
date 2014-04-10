@@ -33,7 +33,6 @@ class WorksController < ApplicationController
   def create
     @work = Work.new(work_params)
     @group= WorkGroup.find(work_params[:group_id])
-    binding.pry
     @works = @group.works
 
     @work.save #figure out why this is necessary later
@@ -48,7 +47,6 @@ class WorksController < ApplicationController
   # PATCH/PUT /works/1.json
   def update
     @group= WorkGroup.find(work_params[:group_id])
-    binding.pry
     @works = @group.works
     if @work.update(work_params)
       respond_with(@group, :layout => false )
@@ -60,13 +58,18 @@ class WorksController < ApplicationController
   # DELETE /work_groups/1
   # DELETE /work_groups/1.json
   def destroy
-    @work.destroy
+    @result = @work.destroy
     @group = WorkGroup.find(params[:group_id])
     @works = @group.works
 
-    respond_to do |format|
-      format.js { render :layout=>false }
+    if @result
+      respond_with(@group, :layout => false)
+    else
+      respond_with @work, status: :unprocessable_entity
     end
+    #respond_to do |format|
+    #  format.js { render :layout=>false }
+    #end
   end
 
   # GET /works/1/takenotes
