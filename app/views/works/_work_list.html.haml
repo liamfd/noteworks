@@ -1,17 +1,17 @@
 
--group = locals[:group]
+-#group = locals[:group]
 -switch = 1
 
 -group.works.each do |work|
 	-if switch > 0
-		.work-row-even
+		.work-row-even 
+			-#make this a partial, DRY friend. Though that would be nested 4 deep
 			=link_to work.name, work_takenotes_path(work), {class:[ "group-mod-button", "small-7 small-offset-3 columns"]} 
 
 			=link_to(edit_work_path(work, :group_id => group.id), {:class=> ["group-mod-button", 'small-1 columns'] , data:{"reveal-id" => "groupModal", "reveal-ajax" => true}} ) do
 				%i{class:"fi-pencil"}
 			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-1 columns"] ,  remote: true) do
 				%i{class:"fi-x"} 
-
 			
 	-else
 		.work-row-odd

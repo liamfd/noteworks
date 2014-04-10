@@ -12,7 +12,7 @@
 
 			.content{id:"panel#{group.id}"}
 				#work-list
-					=render "works/work_list", locals: {group: group}
+					=render "works/work_list", group: group
 					/-group.works.each do |work|
 					/	=link_to work.name, work_takenotes_path(work), {class:"work-button"}
 

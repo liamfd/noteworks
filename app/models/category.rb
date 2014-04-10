@@ -17,6 +17,7 @@ class Category < ActiveRecord::Base
     if self.color == nil || self.color == ""
       self.color = "#" + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99)
     end
+    self.name = self.name.downcase
   end
 
   def merge_with_category(merge_to_name)

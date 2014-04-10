@@ -102,6 +102,7 @@ class Work < ActiveRecord::Base
 
 				from_remove = remove_element(number, false)
 				from_insert = insert_element(number, content, curr_el)
+				#binding.pry
 
 				#consolidates these into modify in insert
 				if from_remove[:remove_nodes].first[:id] == from_insert[:add_nodes].first[:id]
@@ -143,7 +144,7 @@ class Work < ActiveRecord::Base
 		end
 		#to_modify = format_hash_for_AJAX(from_insert, from_remove)
 		to_modify = merge_two_hashes(from_remove_total, from_insert_total)
-
+		#binding.pry
 		#return node
 		return uniqify_arrays_in_hash(to_modify, :id)
 	end
@@ -217,7 +218,8 @@ class Work < ActiveRecord::Base
 			children.each do |child|
 				#removes the old edges
 				if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
-					old_parent_edge = child[:node].parent_relationships.first
+					old_parent_edge = child[:node].parent_relationships.find_by link_collection_id: nil #doesn't mess with ones that have link_coll
+					#binding.pry
 					if old_parent_edge != nil
 						remove_edges.append(old_parent_edge.to_cytoscape_hash)
 						#remove_edges.append({ id: old_parent_edge.id, source: old_parent_edge.parent_id.to_s, target: old_parent_edge.child_id.to_s })
@@ -234,16 +236,20 @@ class Work < ActiveRecord::Base
 				
 				elsif child[:node].is_a?(LinkCollection)
 					#if it's a link collection, remove all those links, gonna reassign
+					#binding.pry
 					child[:node].links.each do |link|
 						to_modify[:modify_edges].append(link.to_cytoscape_hash)
 						#remove_edges.append({ id: link.id, source: link.parent_id.to_s, target: link.child_id.to_s })
 					end
 				end
+				#binding.pry
 				owner_id = nil #resets it to make the above check false for non-nodes
 			end
+
 			new_node.combine_notes
 			to_modify[:add_nodes].append(new_node.to_cytoscape_hash[:node])
 			to_modify[:add_edges] = new_node.to_cytoscape_hash[:edges]
+			#binding.pry
 			to_modify[:remove_edges] = remove_edges
 
 			return to_modify
@@ -516,6 +522,7 @@ class Work < ActiveRecord::Base
 			
 			#relation = child.parent_relationships.first #hierarchy relationship should always be first <- no longer true potentially
 			relation = child.parent_relationships.find_by link_collection_id: nil #the first one not explicitly defined, so hierarchy
+			#binding.pry
 			if (parent != nil) #if there is a parent for it
 
 				if relation != nil #if it already has a parent relation. should be .any?
