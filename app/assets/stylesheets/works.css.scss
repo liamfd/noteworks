@@ -111,3 +111,9 @@ $terminal-background-color:#242424;
 h1#takenotes{
 	margin-left:1em;
 }
+
+form.edit_work{
+  input[type=submit]{
+    display: none;
+	}
+}

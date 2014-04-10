@@ -34,6 +34,11 @@ $(function() {
     $("form").bind("ajax:complete", function(){
       $("#spinner").hide();
     });
+
+    $(".new_form form").bind("ajax:complete", function() {
+      $('#groupModal').foundation('reveal', 'close');
+    });
+
     $("form").bind("ajax:error", function(xhr, ajaxOptions, thrownError){
       //find a way to get the actual error being returned by the rails controller
       $("#response").html("Error: Something's gone wrong.").show().fadeOut("slow");
