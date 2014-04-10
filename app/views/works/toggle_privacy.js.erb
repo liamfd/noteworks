@@ -1,7 +1,1 @@
-console.log("one");
-var pub = <%= @work.show_others %>
-
-if (pub == true)
-	$("a#privacy-button").html("<i class='fi-unlock'></i>");
-else
-	$("a#privacy-button").html("<i class='fi-lock'></i>");
+$("a#privacy-button").html("<%= escape_javascript render("privacy_button_content", :locals => {:show_others => @work.show_others}) %>");

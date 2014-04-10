@@ -10,7 +10,7 @@
             %i{class:"fi-record"} 
         %li
           =link_to(work_privacy_path(@work), :class=> "side-button", id: "privacy-button", remote: true) do
-            = render "privacy_button_content", :show_others => @work.show_others
+            = render "privacy_button_content", locals: {:show_others => @work.show_others}
             /%a.side-button#privacy-button
             /%i{class:"fi-lock"} 
         %li

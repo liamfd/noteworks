@@ -33,11 +33,12 @@ class WorksController < ApplicationController
   def create
     @work = Work.new(work_params)
     @group= WorkGroup.find(work_params[:group_id])
+    binding.pry
     @works = @group.works
 
     @work.save #figure out why this is necessary later
     if @work.save
-      respond_with(:layout => false )
+      respond_with @group, :layout => false
     else
       respond_with @work, status: :unprocessable_entity
     end
@@ -46,15 +47,12 @@ class WorksController < ApplicationController
   # PATCH/PUT /works/1
   # PATCH/PUT /works/1.json
   def update
-    binding.pry
     @group= WorkGroup.find(work_params[:group_id])
-    @works = @group.works
     binding.pry
+    @works = @group.works
     if @work.update(work_params)
-      binding.pry
-      respond_with(:layout => false )
+      respond_with(@group, :layout => false )
     else
-      binding.pry
       respond_with @work, status: :unprocessable_entity
     end
   end

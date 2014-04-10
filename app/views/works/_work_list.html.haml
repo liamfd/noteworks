@@ -1,8 +1,8 @@
 -#takes either the local or the data from the controller and puts it in a local var, destroyed after each
--if @group == nil
-	-group = locals[:group]
--else
-	-group = @group
+-#if @group == nil
+-group = locals[:group]
+-#else
+	-#group = @group
 -switch = 1
 -group.works.each do |work|
 	-if switch > 0
@@ -13,6 +13,7 @@
 				%i{class:"fi-pencil"}
 			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ "group-mod-button", "small-1 columns"] ,  remote: true) do
 				%i{class:"fi-x"} 
+
 			
 	-else
 		.work-row-odd
@@ -26,6 +27,6 @@
 
 	-switch = switch*-1
 
--#.work-row
-	-#=link_to(new_work_path(:group_id => group.id), {class: ["group-mod-button", "small-3 small-offset-3 columns"], data:{"reveal-id" => "groupModal", "reveal-ajax" => true}}) do
-		/%i{class:"fi-plus"}
+.work-row
+	=link_to(new_work_path(:group_id => group.id), {class: ["group-mod-button", "small-3 small-offset-3 columns"], data:{"reveal-id" => "groupModal", "reveal-ajax" => true}}) do
+		%i{class:"fi-plus"}

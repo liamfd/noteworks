@@ -1,2 +1,2 @@
 //online, you'll find they want you to say "update". That's a prototype thing, you want html.
-$("#work-list").html("<%= escape_javascript(render(:partial => "work_list")) %>");
+$("#work-list").html("<%= escape_javascript render("work_list", :locals => {:group => @group}) %>");

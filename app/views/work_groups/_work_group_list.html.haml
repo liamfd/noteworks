@@ -1,8 +1,7 @@
 %dl.accordion{"data-accordion" => ""}
 	-@user.work_groups.each do |group|
 		%dd.row{"data-equalizer" => ""}
-			%a.small-9.columns{href: "#panel#{group.id}", class:"group-mod-button", "data-equalizer-watch" => ""}= group.name
-
+			%a.small-8.small-offset-1.columns{href: "#panel#{group.id}", class:"group-mod-button", "data-equalizer-watch" => ""}= group.name
 
 			=link_to(new_work_path(:group_id => group.id), {class: ["group-mod-button", "small-1 columns"], data:{"reveal-id" => "groupModal", "reveal-ajax" => true, "equalizer-watch" => ""}}) do
 				%i{class:"fi-plus"}
