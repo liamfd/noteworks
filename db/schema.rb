@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140408215608) do
+ActiveRecord::Schema.define(version: 20140423133924) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
@@ -127,7 +127,6 @@ ActiveRecord::Schema.define(version: 20140408215608) do
   add_index "work_groups", ["user_id"], name: "index_work_groups_on_user_id"
 
   create_table "works", force: true do |t|
-    t.text     "markup"
     t.integer  "group_id"
     t.datetime "created_at"
     t.datetime "updated_at"

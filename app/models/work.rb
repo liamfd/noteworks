@@ -18,23 +18,10 @@ class Work < ActiveRecord::Base
          "Media"
 	]
 
-	before_save :before_save_checker
 	before_create :before_create_defaulter
 	after_create :generate_initial_node
 
-	#bottom, private
-  	def before_save_checker 
-   		#if markup_changed?
-   		#	parse_text
-   		#end
-   	#fix the infinite loop, then you can have this back
-	end
-
 	def before_create_defaulter
-		if self.markup == nil
-			self.markup = ""
-		end
-
 		if self.order == nil
 			self.order = ""
 		end
@@ -76,7 +63,6 @@ class Work < ActiveRecord::Base
 
 	#parser shit
 	def modify_element(lines_number, lines_content)
-		#TODO: Consolidate these 
 		from_insert_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		from_remove_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
@@ -144,8 +130,6 @@ class Work < ActiveRecord::Base
 		end
 		#to_modify = format_hash_for_AJAX(from_insert, from_remove)
 		to_modify = merge_two_hashes(from_remove_total, from_insert_total)
-		#binding.pry
-		#return node
 		return uniqify_arrays_in_hash(to_modify, :id)
 	end
 
@@ -156,7 +140,6 @@ class Work < ActiveRecord::Base
 		lines_number.zip(lines_content).each do |number, content|
 			new_element_hash = merge_two_hashes(new_element_hash , insert_element(number, content))
 		end
-		#return new_element_hash
 		return uniqify_arrays_in_hash(new_element_hash, :id)
 
 	end
@@ -168,22 +151,16 @@ class Work < ActiveRecord::Base
 		lines_number.reverse.each do |number|
 			deleted_element_hash = merge_two_hashes(deleted_element_hash , remove_element(number))
 		end
-		#return deleted_element_hash
 		return uniqify_arrays_in_hash(deleted_element_hash, :id)
 	end
 
-	#insert a new element, into the markup, ordering, and relations
+	#insert a new element, into the ordering, and relations
 	def insert_element(line_number, line_content, in_element=nil)
-		#TODO pass this
 		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
 		ordering = get_ordering
 		first_char = get_text_from_regexp(line_content, /[ ,\t]*(.)/)
 
-		#update the markup
-		markup_lines = get_markup_lines
-		markup_lines.insert(line_number, line_content);
-		set_markup(markup_lines);
 
 		if first_char == "."
 			#shouldn't need this
@@ -349,11 +326,6 @@ class Work < ActiveRecord::Base
 			ordering.delete_at(line_number)
 			set_order(ordering)
 			
-			#update the markup
-			markup_lines = get_markup_lines
-			markup_lines.delete_at(line_number);
-			set_markup(markup_lines);
-
 			#for each child, find their new parent according to the ordering, update the elements
 			children.each do |child|
 
@@ -403,11 +375,6 @@ class Work < ActiveRecord::Base
 			ordering.delete_at(line_number)
 			set_order(ordering)
 		
-			#update the markup
-			markup_lines = get_markup_lines
-			markup_lines.delete_at(line_number);
-			set_markup(markup_lines);
-
 			#save the owning node of this note, delete the note, then redo the owner's notes
 			owner = el.node
 			if del_obj #delete unless explicitly told not to (when it's called from modify)
@@ -426,11 +393,6 @@ class Work < ActiveRecord::Base
 			ordering.delete_at(line_number)
 			set_order(ordering)
 		
-			#update the markup
-			markup_lines = get_markup_lines
-			markup_lines.delete_at(line_number);
-			set_markup(markup_lines);
-
 			#links = el.links
 			if el.links != nil && el.links.any?
 				el.links.each do |link|
@@ -453,10 +415,6 @@ class Work < ActiveRecord::Base
 			ordering.delete_at(line_number)
 			set_order(ordering)
 			
-			#update the markup
-			markup_lines = get_markup_lines
-			markup_lines.delete_at(line_number);
-			set_markup(markup_lines);
 			return {}
 		end
 
@@ -574,16 +532,6 @@ class Work < ActiveRecord::Base
 				end
 			end
 		end
-	end
-
-	#using an array of strings, joins and saves them as markup
-	def set_markup(markup_lines)
-		m = markup_lines.join("\r\n") #join with \r\n
-		self.update_attribute :markup, m
-	end
-
-	def get_markup_lines
-		return markup.split(/\r\n|[\r\n]/) #match \r\n if present, if not either works
 	end
 
 	#takes an array ordering, converts it to the order string and saves

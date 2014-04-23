@@ -64,7 +64,8 @@ end
 
 gem 'factory_girl_rails'
 
-gem 'haml-rails', :group => :development
+#gem 'haml-rails', :group => :development
+gem 'haml-rails'
 
 gem 'compass-rails'
 gem 'foundation-rails'

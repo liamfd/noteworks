@@ -1,6 +1,5 @@
 var graph_elements = {"edges":[{"data":{"id":"1836","source":"2395","target":"2394"}},{"data":{"id":"1837","source":"2396","target":"2394"}},{"data":{"id":"1838","source":"2398","target":"2397"}},{"data":{"id":"1839","source":"2399","target":"2397"}},{"data":{"id":"1840","source":"2400","target":"2397"}},{"data":{"id":"1841","source":"2401","target":"2400"}},{"data":{"id":"1842","source":"2402","target":"2400"}},{"data":{"id":"1843","source":"2403","target":"2397"}},{"data":{"id":"1844","source":"2404","target":"2397"}},{"data":{"id":"1861","source":"2394","target":"2408"}}],"nodes":[{"data":{"id":"2394","title":"","notes":"","color":"#d56b79"}},{"data":{"id":"2395","title":"","notes":"","color":"#d56b79"}},{"data":{"id":"2396","title":"","notes":"","color":"#5b29f3"}},{"data":{"id":"2397","title":"","notes":"","color":"#990000"}},{"data":{"id":"2398","title":"","notes":"","color":"#505050"}},{"data":{"id":"2399","title":"","notes":"","color":"#505050"}},{"data":{"id":"2400","title":"","notes":"","color":"#505050"}},{"data":{"id":"2401","title":"","notes":"","color":"#d56b79"}},{"data":{"id":"2402","title":"","notes":"","color":"#b33ede"}},{"data":{"id":"2403","title":"","notes":" //- also Macbeth's flaw","color":"#7ab7d6"}},{"data":{"id":"2404","title":"","notes":"","color":"#d56b79"}},{"data":{"id":"2405","title":"","notes":"","color":"#d56b79"}},{"data":{"id":"2408","title":"","notes":" //- Legendary Men, Kids //- Written By Shakespeare //- Tragedies, His Best //- Title Character","color":"#1f0099"}},{"data":{"id":"2410","title":"","notes":"","color":"#d56b79"}}]};
 
-
 /* CYTOSCAPE STUFF */
 $(loadCy = function(){
   options = {
@@ -139,7 +138,7 @@ $(loadCy = function(){
         var targ = edge.target();
 
         //center of canvas
-        var cont = $('#cy')[0];
+        var cont = $('#home-cy')[0];
         //var cont = document.getElementById(cy);
         var cent_x = (cont.offsetWidth)/2;
         var cent_y = (cont.offsetHeight)/2;
