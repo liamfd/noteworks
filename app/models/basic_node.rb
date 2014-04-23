@@ -1,3 +1,0 @@
-class BasicNode < Node
-
-end

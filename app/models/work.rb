@@ -10,14 +10,6 @@ class Work < ActiveRecord::Base
 	ObjectPlace = Struct.new(:model, :id)
 	NodeDepth = Struct.new(:node_idnum, :depth)
 
-	@@types = [ "Basic",
-         "Comparison",
-         "Definition",
-         "Example",
-         "Key",
-         "Media"
-	]
-
 	before_create :before_create_defaulter
 	after_create :generate_initial_node
 
@@ -768,7 +760,7 @@ class Work < ActiveRecord::Base
 
 	#builds a node with category, title, and returns it
 	def build_node(node, text)
-		node.type = :BasicNode
+		#node.type = :BasicNode
 
 		whitespace = text.partition(".").first
 		pure_text = text.partition(".").last

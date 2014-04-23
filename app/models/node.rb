@@ -28,7 +28,6 @@ class Node < ActiveRecord::Base
   def combine_notes
     @notes = self.notes
     @full_text = ""
-    
 
     for @note in @notes
       @full_text << " //- "
@@ -38,13 +37,11 @@ class Node < ActiveRecord::Base
      # end
     end
 
-    #IMPROVE: HAVE THIS RETURN full_text, THEN JUST SAVE IT WITH A CALLBACK PERHAPS?
     self.combined_notes = @full_text
    # puts self.combined_notes
     self.save 
   end
 
-    #look up how to do this with JSON objects in ruby
   def to_cytoscape_hash
     #add section
     toNode = {};
