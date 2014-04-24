@@ -75,4 +75,5 @@ gem 'jquery-turbolinks'
 
 gem 'simple_form'
 
+gem 'jquery-ui-rails'
 gem 'jquery-minicolors-rails'

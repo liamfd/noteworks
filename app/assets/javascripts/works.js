@@ -26,7 +26,12 @@ $( document ).ready(function() {
 
   $("#toggle").click(function(){
     $("#panel").slideToggle("slow");
-  });
+    });
+
+//  $( "#lower" ).resizable({
+ //   handles: "n",
+ // });
+
 
   $("#guide-button").click(function(){
     $(document).foundation('joyride', 'start');

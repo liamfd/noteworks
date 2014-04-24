@@ -15,24 +15,25 @@
     border: 1px solid #b0b0b0;
     margin-bottom:45px;
 } 
-$terminal-background-color:#242424;
-
+$terminal-background-color:rgba(0,0,0,.9);
+$markup-color-darkener:rgba(0,0,0,.4);
+$markup-text:#e0e1c6;
 #lower{
 	position:fixed;
 	width:100%;
 	bottom:0;
 	background-color:$terminal-background-color; 
-	box-shadow: 0px -2px 4px 1px #444;
+	//box-shadow: 0px -2px 4px 1px #444;
 	#bar{
 		@include grid-row();
 		width:100%;
 		height:45px;
 		padding:0px;
 		text-align: center;
-		background-color:$terminal-background-color;
+		border:none;
 		overflow:hidden;
 		.button{
-			background-color:$terminal-background-color;
+			background-color:inherit;
 			font-family:$franchise-font-stack;
 			font-size:1.6em;
 			height:45px;
@@ -44,17 +45,21 @@ $terminal-background-color:#242424;
 	    @include grid-row();
 	    display: none;
 	    width:100%;
-	    background-color: $terminal-background-color;
 	    form{
 	    	margin:0;
 	    	h2{
 	    		margin:0;
 	    	}
 		    #work_markup{
-		    	font-family:"courier", monospace;
+		    	font-family:$monospace-font-stack;
+		    	background-color:$markup-color-darkener;
+		    	color:$markup-text;
 		    	margin:0;
+		    	border:0;
+		    	padding:10px;
 		    	width:100%;
 		    	height:em-calc(450);
+		    	font-size:1.2em;
 		    }
 		}
 	}	
