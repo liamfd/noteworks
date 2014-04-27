@@ -574,8 +574,10 @@ $(loadCy = function(){
           'font-family': 'helvetica',
           'font-size': 14,
           
-          'width': 'mapData(weight, 30, 80, 20, 50)',
-          'height': 'mapData(height, 0, 200, 10, 45)',
+          'width': 'mapData(weight, 0, 200, 10, 80)',
+          'height': 'mapData(height, 0, 200, 10, 80)',
+          //'width': 'mapData(weight, 30000, 0, 30, 100)',
+          //'height': 'mapData(height, 30000, 0, 30, 100)',
           'background-color': "#fff",
           'z-index' : 1
         })
@@ -603,8 +605,7 @@ $(loadCy = function(){
           'text-halign' : 'center',
           'color': '#fff',
           'font-size':"16px",
-          'height':"30px",
-         
+          
           //this needs to be there, otherwise it doesn't draw the notes correctly the first time.
           'note-font-size': "16px",
           'note-font-weight': "bold",
@@ -643,6 +644,17 @@ $(loadCy = function(){
           'background-color':"#dddddd"
         })
 
+      .selector('.big-text')
+        .css({
+          'font-size':26
+        })
+
+      .selector('.little-text')
+        .css({
+          'font-size':12
+
+        })
+
       .selector('.faded')
         .css({
           'opacity': 0.9,
@@ -655,6 +667,38 @@ $(loadCy = function(){
     ready: function(){
       window.cy = this;
       cy.elements().unselectify();
+
+      cy.on('position', 'node', function(e){
+        var nodes = e.cyTarget;
+        var cont = $('#cy')[0];
+      
+        var cent_x = (cont.offsetWidth)/2;
+        var cent_y = (cont.offsetHeight)/2;
+     
+        for (var i = 0; i < nodes.length; i++){
+          var node = nodes[i];
+          var pos = nodes[i].renderedPosition();
+          
+          //x and y of the two nodes
+          var pos_x = node.renderedPosition("x");
+          var pos_y = node.renderedPosition("y");
+       
+          //distance function, sans sqrt
+          var cent_dist = (cent_x - pos_x) * (cent_x - pos_x) + (cent_y - pos_y) * (cent_y - pos_y);
+          console.log(cent_dist);
+          if (cent_dist < 30000){
+           // node.data({"weight":200, "height":200, "font-size":20});
+            node.addClass('big-text');
+            node.removeClass('little-text');
+          }
+          else{
+          //  node.data({"weight":0, "height":0});
+            node.addClass('little-text');
+            node.removeClass('big-text');
+          }
+        }
+      });
+
 
       //centers the node further from the middle when clicking edge
       cy.on('tap', 'edge', function(e){
@@ -684,7 +728,6 @@ $(loadCy = function(){
         } else {
           cy.center(targ);
         }
-
       });
       
       //bring focus to the element as they're clicked, prioritizing the most recent click
