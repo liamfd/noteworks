@@ -473,24 +473,6 @@ function getCurrentLine(el){
   //var caretPos = getCaretCharacterOffsetWithin(el);
   var caret_pos = $("#work_markup").getCursorPosition();
   return getLineNumber(caret_pos, el);
-  /*if (caretPos == null)
-    return -1;
-  //console.log(caretPos);
-
-  var currLine = 0;
-  var text = "";
-  if (el != undefined){
-    text = el.value;
-  }
-  //var text = "soup"
-  for (var i = 0; i < caretPos; i++){
-    if (text[i] == "\n"){
-      currLine++;
-    }
-  }
-  //if it's a newline...
-  //console.log("currLine: " + currLine);
-  return currLine;*/
 }
 
 
@@ -623,8 +605,7 @@ $(loadCy = function(){
           'text-valign': 'center',
           'text-halign' : 'center',
           'color': '#fff',
-          'font-size':"16px",
-          
+
           //this needs to be there, otherwise it doesn't draw the notes correctly the first time.
           'note-font-size': "16px",
           'note-font-weight': "bold",
@@ -665,12 +646,12 @@ $(loadCy = function(){
 
       .selector('.big-text')
         .css({
-          'font-size':26
+          'font-size':30
         })
 
       .selector('.little-text')
         .css({
-          'font-size':12
+          'font-size':16
 
         })
 
@@ -688,36 +669,16 @@ $(loadCy = function(){
       cy.elements().unselectify();
 
       cy.on('position', 'node', function(e){
-        var nodes = e.cyTarget;
-        var cont = $('#cy')[0];
-      
-        var cent_x = (cont.offsetWidth)/2;
-        var cent_y = (cont.offsetHeight)/2;
-     
-        for (var i = 0; i < nodes.length; i++){
-          var node = nodes[i];
-          var pos = nodes[i].renderedPosition();
-          
-          //x and y of the two nodes
-          var pos_x = node.renderedPosition("x");
-          var pos_y = node.renderedPosition("y");
-       
-          //distance function, sans sqrt
-          var cent_dist = (cent_x - pos_x) * (cent_x - pos_x) + (cent_y - pos_y) * (cent_y - pos_y);
-        //  console.log(cent_dist);
-          if (cent_dist < 30000){
-           // node.data({"weight":200, "height":200, "font-size":20});
-            node.addClass('big-text');
-            node.removeClass('little-text');
-          }
-          else{
-          //  node.data({"weight":0, "height":0});
-            node.addClass('little-text');
-            node.removeClass('big-text');
-          }
-        }
+        setTextSize();
       });
 
+      cy.on('pan', function(e){
+        setTextSize();
+      });
+
+      cy.on('zoom', function(e){
+        setTextSize();
+      });
 
       //centers the node further from the middle when clicking edge
       cy.on('tap', 'edge', function(e){
@@ -781,126 +742,33 @@ $(loadCy = function(){
   $('#cy').cytoscape(options);
 });
 
+//to be called within the cytoscape declaration. changes the size of the text as necessary
+function setTextSize(){
+  var nodes = cy.elements('node');
+  var cont = $('#cy')[0];
 
-function EDgetLineText(currLine){
-  var text = $('#editable').get(0).innerText;
-  //console.log("currLine: " + currLine);
-  if (currLine != 0){
-    var lines = $("#editable > *");
-    if (lines[currLine-1] != null)
-      return lines[currLine-1].innerText;
-    else //if the line number is not a real one
-      return "";
-  }
+  var cent_x = (cont.offsetWidth)/2;
+  var cent_y = (cont.offsetHeight)/2;
 
-  else{ //if it's line 0, there is no jquery object
-    //returns as soon as there's a newline. if it never hits one, just returns the entire thing
-    var i;
-    for (i = 0; i < text.length; i++){
-      if (text[i] == "\n")
-        return text.substring(0, i);
-    }
-    return text;
-  }
-}
-
-function EDgetCurrentLine(el, caretPos){
-  //var caretPos = getCaretCharacterOffsetWithin(el);
-  if (caretPos == null){
-    alert("wat");
-    return 0;
-  }
-  var currLine = 0;
-
-  var text = el.innerText;
-  var text_html = el.innerHTML;
-  var i;
-
-  for (i = 0; i <= caretPos; i++){
-    if (text[i] == "\n"){
-      currLine++;
-      caretPos++;
+  for (var i = 0; i < nodes.length; i++){
+    var node = nodes[i];
+    var pos = nodes[i].renderedPosition();
+    
+    //x and y of the two nodes
+    var pos_x = node.renderedPosition("x");
+    var pos_y = node.renderedPosition("y");
+ 
+    //distance function, sans sqrt
+    var cent_dist = (cent_x - pos_x) * (cent_x - pos_x) + (cent_y - pos_y) * (cent_y - pos_y);
+    if (cent_dist < 50000){
+      node.addClass('big-text');
+      node.removeClass('little-text');
     }
     else{
+      node.addClass('little-text');
+      node.removeClass('big-text');
     }
   }
-
-  //for text input, fixes the issue with the extra newline at the end
-  if (currLine >= 0 && text[caretPos-1] == "\n"){
-    currLine--;
-  }
-  //solves issue with end of line moving cursor via arrows
-  if (text[caretPos] == "\n"){
-    currLine--;
-  }
-  //if it's a newline...
-  return currLine;
-
-}
-
-
-function EDpressFunction(e){
-  var code = e.keyCode || e.which;
-
-  var el = $("#editable")[0];
-  var caretPos = getCaretCharacterOffsetWithin(el);
-
-  var currLine = getCurrentLine(el, caretPos);
-  
-  if (code == 13){
-    currLine++;
-  }
-
-  checkChangedLine(currLine);
-  //so, whenever I make changes to a line that's not a backspace, send its complete self to the parser, to do its best with
-    //on the parser side, I don't want to just endlessly create shit... don't change to new element unless ordered to?
-  //keep track of previous line number, so if backspace is hit, I can know whether or not a whole line is gone. 
-}
-
-function EDupFunction(e){
-  code = e.code || e.which;
-  
-  //I believe these two are equivalent
-  //var el = $("#editable")[0];
-  var el = this;
-  var caretPos = getCaretCharacterOffsetWithin(el);
-  var currLine = 0;
-
-  var sel = rangy.getSelection();
-  var cursorOffset = sel.focusOffset;
-  
-  //delete never changes the LINE
-  //if the key pressed wasn't an arrow or a del/backsp.
-  if ((code==8) || (code==46) || ((code >= 37) && (code <= 40))){
-    currLine = getCurrentLine(el, caretPos);
-
-    //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line
-    if (cursorOffset == 0 && caretPos != 0){
-     currLine++;
-    }
-    checkChangedLine(currLine);
-  }
-  //else if (code == 13){
-  //  currLine = getCurrentLine(el, caretPos);
-  //  currLine++; //since it's an enter
-  //  checkChangedLine(currLine);
-  //}
-
-  return;
-}
-
-function EDclickFunction(e){
-  var caretPos = getCaretCharacterOffsetWithin(this);
-  var currLine = getCurrentLine(this, caretPos);
-
-  var sel = rangy.getSelection();
-  var cursorOffset = sel.focusOffset;
-
-  //if the line by line count is 0, it's the border case, just bump it up, don't count if at first line
-  if (cursorOffset == 0 && caretPos != 0){
-   currLine++;
-  }
-  checkChangedLine(currLine);
 }
 
 
@@ -972,134 +840,5 @@ function getInputSelection(el) {
         end: end
     };
 }
-
-
-
-
-
-
-//$(#editable).keypress(function(){
- // alert("shoo");
-//});
-
-//THIS IS THE FORMATTING I USED IN THE VIEW
-/* 
-$('#cy').cytoscape({
-  layout: {
-    name: 'arbor',
-    liveUpdate: false, // whether to show the layout as it's running
-    ready: undefined, // callback on layoutready 
-    stop: undefined, // callback on layoutstop
-    maxSimulationTime: 4000, // max length in ms to run the layout
-    fit: true, // reset viewport to fit defaualt simulationBounds
-    padding: [ 50, 50, 50, 50 ], // top, right, bottom, left
-    simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by defaualt
-    ungrabifyWhileSimulating: true, // so you can't drag nodes during layout
-
-    // forces used by arbor (use arbor defaualt on undefined)
-    repulsion: undefined,
-    stiffness: undefined,
-    friction: undefined,
-    gravity: true,
-    fps: undefined,
-    precision: undefined,
-
-    // static numbers or functions that dynamically return what these
-    // values should be for each element
-    nodeMass: undefined,
-    edgeLength: undefined,
-
-    stepSize: 1, // size of timestep in simulation
-
-    // function that returns true if the system is stable to indicate
-    // that the layout can be stopped
-    stableEnergy: function( energy ){
-        var e = energy;
-        return (e.max <= 0.5) || (e.mean <= 0.3);
-    }
-  },
-
-  style: cytoscape.stylesheet()
-    .selector('node')
-      .css({
-        'content': 'data(title)',
-        'text-valign': 'center',
-        'color': 'white',
-        'text-outline-width': 2,
-        'text-outline-color': '//888'
-      })
-    .selector('edge')
-      .css({
-        'target-arrow-shape': 'triangle'
-      })
-    .selector(':selected')
-      .css({
-        'background-color': 'black',
-        'line-color': 'black',
-        'target-arrow-color': 'black',
-        'source-arrow-color': 'black'
-
-      })
-
-    .selector('.faded')
-      .css({
-        'opacity': 0.25,
-        'text-opacity': 0
-      })
-
-    .selector('.largeNode')
-      .css({
-        'width' : '100px',
-        'height' : '100px'
-      }),
-
-  elements: {
-    nodes: [
-      { data: { id: 'j', title: 'Jerry' } },
-      { data: { id: 'e', title: 'Elaine' } },
-      { data: { id: 'k', title: 'Kramer' } },
-      { data: { id: 'g', title: 'George' } }
-    ],
-    edges: [
-      { data: { source: 'j', target: 'e' } },
-      { data: { source: 'j', target: 'k' } },
-      { data: { source: 'j', target: 'g' } },
-      { data: { source: 'e', target: 'j' } },
-      { data: { source: 'e', target: 'k' } },
-      { data: { source: 'k', target: 'j' } },
-      { data: { source: 'k', target: 'e' } },
-      { data: { source: 'k', target: 'g' } },
-      { data: { source: 'g', target: 'j' } }
-    ]
-  },
-  
-    ready: function(){
-      window.cy = this;
-      
-      cy.elements().unselectify();
-      
-      cy.on('tap', 'node', function(e){
-        var node = e.cyTarget;
-        var neighborhood = node.neighborhood().add(node);
-        
-        cy.nodes().addClass('faded');
-        cy.nodes().removeClass('faded');
-        node.toggleClass('largeNode');
-      });
-      
-      cy.on('tap', function(e){
-        if( e.cyTarget === cy ){
-          cy.nodes().removeClass('faded');
-          cy.nodes().removeClass('largeNode');
-        }
-      });
-
-  }
-
-}); */
-
-
-
-
 
 
