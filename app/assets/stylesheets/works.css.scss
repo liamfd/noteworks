@@ -19,7 +19,7 @@ $terminal-background-color:rgba(0,0,0,.9);
 $markup-color-darkener:rgba(0,0,0,.4);
 $markup-text:#e0e1c6;
 #lower{
-	position:fixed;
+	position:absolute;
 	width:100%;
 	bottom:0;
 	background-color:$terminal-background-color; 
@@ -59,7 +59,9 @@ $markup-text:#e0e1c6;
 		    	padding:10px;
 		    	width:100%;
 		    	height:em-calc(350);
+		    	min-height:em-calc(200);
 		    	font-size:1.2em;
+		    	margin-bottom: 10px;
 		    }
 		}
 	}	

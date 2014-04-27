@@ -28,14 +28,12 @@ $( document ).ready(function() {
     $("#panel").slideToggle("slow");
     });
 
-//  $( "#lower" ).resizable({
- //   handles: "n",
- // });
-
-
   $("#guide-button").click(function(){
     $(document).foundation('joyride', 'start');
   });
+
+  dragHeight();
+  //http://jsfiddle.net/wSTcJ/2/
   //var ele = gon.elements;
   //ele = JSON.stringify(ele);
   //$( ".test" ).text(ele);
@@ -47,6 +45,27 @@ var test_xhr;
 var test_obj;
 var test_ajaxOptions;
 var test_error;
+
+function dragHeight(){
+  $('#bar').on('mousedown', function(e){
+    var $markup_text = $ ("#work_markup"),
+        startConsoleHeight = $markup_text.height(),
+        pY = e.pageY;
+    
+    $(document).on('mouseup', function(e){
+        $(document).off('mouseup').off('mousemove');
+    });
+    $(document).on('mousemove', function(me){
+      var my = (me.pageY - pY);
+      var consoleHeight = startConsoleHeight-my;
+   
+      $markup_text.css({
+        height: consoleHeight,
+      });
+    });
+  });
+}
+
 
 function submitForm(){
   $(this).parents("form").submit();
@@ -685,7 +704,7 @@ $(loadCy = function(){
        
           //distance function, sans sqrt
           var cent_dist = (cent_x - pos_x) * (cent_x - pos_x) + (cent_y - pos_y) * (cent_y - pos_y);
-          console.log(cent_dist);
+        //  console.log(cent_dist);
           if (cent_dist < 30000){
            // node.data({"weight":200, "height":200, "font-size":20});
             node.addClass('big-text');
