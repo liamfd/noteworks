@@ -43,13 +43,10 @@ $markup-text:#e0e1c6;
 	}
 	#panel {
 	    @include grid-row();
-	    display: none;
+	   // display: none;
 	    width:100%;
 	    form{
 	    	margin:0;
-	    	h2{
-	    		margin:0;
-	    	}
 		    #work_markup{
 		    	font-family:$monospace-font-stack;
 		    	background-color:$markup-color-darkener;
@@ -59,9 +56,10 @@ $markup-text:#e0e1c6;
 		    	padding:10px;
 		    	width:100%;
 		    	height:em-calc(350);
-		    	min-height:em-calc(200);
+		    	min-height:em-calc(175); //matches height of buttons
 		    	font-size:1.2em;
 		    	margin-bottom: 10px;
+		    	resize:none;
 		    }
 		}
 	}	
@@ -70,14 +68,14 @@ $markup-text:#e0e1c6;
 .terminal-side-menu{
 	@include side-nav();
 	text-align:center;
+	padding:0px;
 	li{
 		display:inline-block;
 		text-align: center;
-		background-color:#440088;
 		.side-button{
 			@include button();
 			//display:inline-block;
-			background-color:$terminal-background-color;
+			background-color:$markup-color-darkener;
 			color:#fff;
 			margin:0;
 			padding: 16px 28px;
@@ -123,4 +121,20 @@ form.edit_work{
   input[type=submit]{
     display: none;
 	}
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    background:#666;
+    border-left:2px solid $terminal-background-color;
+    border-right:2px solid $terminal-background-color;
+}
+ 
+::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+    background:#eee;
 }

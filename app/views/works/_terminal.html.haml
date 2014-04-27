@@ -18,5 +18,4 @@
             %i{class:"fi-compass"} 
     %div{class:"small-11 columns", data:{"equilizer-watch"=>true}}
       =simple_form_for(@work) do |f|
-        %h2#field
         = f.text_area :markup, value: @work.generate_markup
