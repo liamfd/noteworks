@@ -1,6 +1,9 @@
 class WorksController < ApplicationController
-  before_action :set_work, only: [:show, :edit, :update, :destroy, :testnetwork, :takenotes, :updatenotes, 
+  before_action :set_work, only: [:show, :edit, :update, :destroy, :takenotes, :updatenotes, 
     :mod_element, :add_element, :del_element, :category_list, :toggle_privacy]
+  before_action :decide_visibility
+  before_action :check_owner, only: [:edit, :update, :destroy, :takenotes, :updatenotes, 
+    :mod_element, :add_element, :del_element, :category_list, :toggle_privacy] 
 
   respond_to :html, :json, :js
 
@@ -13,6 +16,12 @@ class WorksController < ApplicationController
   # GET /works/1
   # GET /works/1.json
   def show
+    if @work.work_group.user == current_user
+      redirect_to action: :takenotes and return
+    end
+    @nodes = @work.nodes
+    @links = @work.links
+    gon.rabl "app/views/works/show.json.rabl", as: "elements"
   end
 
   # GET /work_group/new
@@ -171,5 +180,17 @@ class WorksController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def work_params
       params.require(:work).permit(:markup, :group_id, :name)
+    end
+
+    def decide_visibility
+      @user = @work.work_group.user
+      #checks if either it's labeled public or owned by the current user
+      visibile = (@user == current_user) || @work.show_others
+      render status: :forbidden, text: "Unfortunately, this work is private." unless visibile
+    end
+
+    def check_owner
+      @user = @work.work_group.user
+      render status: :forbidden, text: "This is not yours to modify." unless @user == current_user
     end
 end
