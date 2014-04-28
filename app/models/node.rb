@@ -36,7 +36,7 @@ class Node < ActiveRecord::Base
         combined << new_piece
       end
     end
-    update_attributes(combined_notes: combined)
+    #update_attributes(combined_notes: combined)
     return combined
   end
 
