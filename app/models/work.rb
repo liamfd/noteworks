@@ -13,6 +13,12 @@ class Work < ActiveRecord::Base
 	before_create :before_create_defaulter
 	after_create :generate_initial_node
 
+
+
+
+	#INITIALIZERS AND UTILITY
+
+	#inits the order and sets it to private
 	def before_create_defaulter
 		if self.order == nil
 			self.order = ""
@@ -40,10 +46,6 @@ class Work < ActiveRecord::Base
 		#insert_element(0, node_text)
 	end
 
-	def valid_links
-		self.links.select {|l| l.parent_id != nil && l.child_id != nil}
-	end
-
 	#whatever the public setting is, reverse it
 	def toggle_privacy 
 		if self.show_others == true
@@ -53,7 +55,86 @@ class Work < ActiveRecord::Base
 		end
 	end
 
-	#parser begins
+
+
+
+
+	#FRONT END PREP
+
+	#function that, using order and the models, generates the markup and returns it
+	def generate_markup
+		ordering = get_ordering
+		markup_text = ""
+
+		ordering.each do |obj_place|
+
+			element = obj_place.model.constantize.find(obj_place.id) #find the element referred to in the objectplace	
+			whitespace = ""
+			type_char = ""
+			info = ""
+
+			#get the whitespace, which is three spaces for every depth
+			(element.depth*3).times do
+				whitespace << " "
+			end
+
+			#if it's a node, gets its category and title, builds a string with a comma
+			if element.is_a?(Node)
+				type_char = "."
+				category_text = ""
+				if element.category.name != ""
+					category_text = element.category.name.capitalize + ","
+				end
+				title = element.title
+				info = category_text + title
+
+			#if it's a note, gets its body
+			elsif element.is_a?(Note)
+				type_char = "-"
+				body = element.body
+				info = body
+
+			#if it's a LinkCollection, builds the string with the link's child names comma separated
+			elsif element.is_a?(LinkCollection)
+				type_char = ":"
+				links_text = ""
+				element.links.each do |link|
+					if link.child != nil
+						links_text << link.child.title + " , "
+					end
+				end
+				if links_text != ""
+					links_text = links_text[0..-4] #removes the trailing spaces and comma
+				end
+				info = links_text
+			elsif element.is_a?(PlaceHolder) #it's a place_holder
+				whitespace = ""
+				type_char = ""
+				info = element.text
+			end
+			markup_text << whitespace + type_char + info + "\r\n"
+		end
+		return markup_text
+	end
+
+	#returns links that should be drawn in the graph (valid edges)
+	def valid_links
+		self.links.select {|l| l.parent_id != nil && l.child_id != nil}
+	end
+
+
+
+
+
+
+
+
+
+	###### PARSER LOGIC ######
+
+	#FRONT FACING FUNCTIONS
+
+
 	def modify_element(lines_number, lines_content)
 		from_insert_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		from_remove_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
@@ -131,6 +212,12 @@ class Work < ActiveRecord::Base
 		end
 		return uniqify_arrays_in_hash(deleted_element_hash, :id)
 	end
+
+
+
+
+
+	#MAIN DRIVER FUNCTIONS
 
 	#insert a new element, into the ordering, and relations
 	def insert_element(line_number, line_content, in_element=nil)
@@ -404,6 +491,12 @@ class Work < ActiveRecord::Base
 		return to_modify
 	end
 
+
+
+
+
+	#UTILITIES - RELATIONS
+
 	# works for node and note, both have depth
 	def find_element_parent(el_depth, index, ordering)
 		i = index - 1
@@ -516,6 +609,12 @@ class Work < ActiveRecord::Base
 		end
 	end
 
+
+
+
+
+	#UTILITIES - ORDERING
+
 	#takes an array ordering, converts it to the order string and saves
 	def set_order(ordering)
 		o = ""
@@ -570,62 +669,14 @@ class Work < ActiveRecord::Base
 	end
 
 
-	#function that, using order and the models, generates the markup and returns it
-	def generate_markup
-		ordering = get_ordering
-		markup_text = ""
 
-		ordering.each do |obj_place|
 
-			element = obj_place.model.constantize.find(obj_place.id) #find the element referred to in the objectplace	
-			whitespace = ""
-			type_char = ""
-			info = ""
 
-			#get the whitespace, which is three spaces for every depth
-			(element.depth*3).times do
-				whitespace << " "
-			end
 
-			#if it's a node, gets its category and title, builds a string with a comma
-			if element.is_a?(Node)
-				type_char = "."
-				category_text = ""
-				if element.category.name != ""
-					category_text = element.category.name.capitalize + ","
-				end
-				title = element.title
-				info = category_text + title
 
-			#if it's a note, gets its body
-			elsif element.is_a?(Note)
-				type_char = "-"
-				body = element.body
-				info = body
 
-			#if it's a LinkCollection, builds the string with the link's child names comma separated
-			elsif element.is_a?(LinkCollection)
-				type_char = ":"
-				links_text = ""
-				element.links.each do |link|
-					if link.child != nil
-						links_text << link.child.title + " , "
-					end
-				end
-				if links_text != ""
-					links_text = links_text[0..-4] #removes the trailing spaces and comma
-				end
-				info = links_text
-			elsif element.is_a?(PlaceHolder) #it's a place_holder
-				whitespace = ""
-				type_char = ""
-				info = element.text
-			end
-			markup_text << whitespace + type_char + info + "\r\n"
-		end
-		return markup_text
-	end
 
+	#BUILDERS (CONTEXT OF WORK NECESSARY)
 
 	#builds a node with category, title, and returns it
 	def build_node(node, text)
@@ -692,6 +743,12 @@ class Work < ActiveRecord::Base
 		#return new_nodes
 	end
 
+
+
+
+
+	#UTILITIES - HASH AND REGEXP
+
 	#takes a string and a regexp, returns the result or nothing if no result
 	def get_text_from_regexp(text, expression)
 		wanted = ""
@@ -703,6 +760,7 @@ class Work < ActiveRecord::Base
 		end
 		return wanted
 	end
+
 
 	#takes in a hash of arrays, returns a version that has all repeated values removed (last one remains)
 	def uniqify_arrays_in_hash(hash, sub_key)
@@ -725,7 +783,13 @@ class Work < ActiveRecord::Base
 
 
 
-	#OUTDATED CODE
+
+
+
+
+
+
+	#OUTDATED CODE - OLD PARSER LOGIC
 
 	def parse_text(text)
 		Node.destroy_all(work_id: self.id)
