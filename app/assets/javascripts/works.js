@@ -10,20 +10,7 @@ var changes_made;
 var num_lines_selected = 1; //default is one, when no selection count the cursor
 
 $( document ).ready(function() {
-  num_lines = getNumLines();
-  changes_made = false;
-  test_data = {};
-
-//  $ ('#work_markup').get(0).onkeypress= pressFunction;
-  if ($("#work_markup").length !== 0){
-    $ ('#work_markup').get(0).onkeyup= upFunction;
-    $ ('#work_markup').get(0).onclick= clickFunction;
-    $ ('#work_markup').get(0).onselect= selectFunction;
-  }
-  $('#category_list').bind("ajax:success", function(evt, data, status, xhr){
-//  alert('hello');
-  });
-
+  //page interactivity
   $("#toggle").click(function(){
     $("#panel").slideToggle("slow");
     });
@@ -31,21 +18,35 @@ $( document ).ready(function() {
   $("#guide-button").click(function(){
     $(document).foundation('joyride', 'start');
   });
-
   dragHeight();
-  //http://jsfiddle.net/wSTcJ/2/
-  //var ele = gon.elements;
-  //ele = JSON.stringify(ele);
-  //$( ".test" ).text(ele);
 
+
+  //observing
+  num_lines = getNumLines();
+  changes_made = false;
+  test_data = {};
+  if ($("#work_markup").length !== 0){
+    $ ('#work_markup').get(0).onkeyup= upFunction;
+    $ ('#work_markup').get(0).onclick= clickFunction;
+    $ ('#work_markup').get(0).onselect= selectFunction;
+  }
 });
 
-var test_data;
-var test_xhr;
-var test_obj;
-var test_ajaxOptions;
-var test_error;
 
+
+
+
+
+
+
+
+
+
+/**
+*  PAGE INTERACTIVITY
+*/
+
+//drag the terminal bar to adjust the form height (does the entire bottom)
 function dragHeight(){
   $('#bar').on('mousedown', function(e){
     var $markup_text = $ ("#work_markup"),
@@ -65,7 +66,6 @@ function dragHeight(){
     });
   });
 }
-
 
 function submitForm(){
   $(this).parents("form").submit();
@@ -116,13 +116,23 @@ $(function() {
       //find a way to get the actual error being returned by the rails controller
       $("#response").html("Error: Repeated name.").show().fadeOut("slow");
       $("#spinner").hide();
-      test_xhr = xhr;
-      test_ajaxOptions = ajaxOptions;
-      test_error = thrownError;
     });
     $(document).foundation();
   });
 });
+
+
+
+
+
+
+
+
+
+
+/**
+* LIVE UPDATING WATCH AND RESPONSE
+*/
 
 /**
 * Function called on keyup. This function now uses the changes in length and the selections made to determine whether changes
@@ -149,22 +159,13 @@ function upFunction(e){
     changes_made = true;
   }
 
- // console.log("num_lines_changed:" + num_lines_changed);
- // console.log("num_lines_selected:" + num_lines_selected);
- // console.log("changes made?" + changes_made);
-  if (changes_made){
-  //  console.log("line changed?" + checkLineChanged(currLine));
+  if (changes_made){ //if things have changed
     if (num_lines_changed !== 0 || num_lines_selected !== 1){ //if the current number of lines has changed, or we selected some
-      //if adding or only modifying
       if (num_lines_changed > 0){ // if some have been added
         num_lines_changed = curr_line - prev_line+1; //only works b/c you always add down, use the +1 to account for last line
         num_lines_modified = num_lines_selected;
 
-      //  console.log("modified"+num_lines_modified);
-
         total_changes = getChanges(num_lines_changed, num_lines_modified);
-        console.log("added_lines" + total_changes.change_line_nums);
-        console.log("mod_lines" + total_changes.mod_line_nums);
         modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
         addElement(total_changes.change_line_nums, total_changes.change_line_text);
       }
@@ -175,14 +176,7 @@ function upFunction(e){
         // if deleting one line, you always modify the first and delete the second. otherwise, modify the first, deal with rest
         num_lines_modified = Math.max(1, num_lines_selected-num_lines_deleted); //modifying all selected lines not being deleted
         num_lines_changed = num_lines_deleted + num_lines_modified;// + Math.abs(curr_line-prev_line);
-        
-      //  console.log("deleted" + num_lines_deleted);
-      //  console.log("modified"+ num_lines_modified);
-      //  console.log("changed" + num_lines_changed);
-      
         total_changes = getChanges(num_lines_changed, num_lines_modified);
-        console.log("deleted_lines" + total_changes.change_line_nums);
-        console.log("mod_lines" + total_changes.mod_line_nums);
         
         modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
         delElement(total_changes.change_line_nums, total_changes.change_line_text);
@@ -190,11 +184,7 @@ function upFunction(e){
       else{
         num_lines_changed = curr_line - prev_line+1; //use the +1 to account for last line
         num_lines_modified = num_lines_selected;
-
-      //  console.log("modified"+num_lines_modified);
-
         total_changes = getChanges(num_lines_changed, num_lines_modified);
-        console.log("mod_lines" + total_changes.mod_line_nums);
         
         modElement(total_changes.mod_line_nums, total_changes.mod_line_text);
       }
@@ -202,21 +192,14 @@ function upFunction(e){
     }
 
     else if (checkLineChanged(currLine)){ //otherwise, if he's just changed lines
-     // if (changes_made){ //if he's not just arrowing around
       text = getLineText(prevLine);
-      console.log("updating element at " + prev_line);
       modElement(prevLine, text);
-    //    changes_made = false;
-    //  }
       changes_made = false;
     }
   }
   prevLine = currLine;
   num_lines = curr_num_lines;
   num_lines_selected = 1;
-
-  console.log("--------------");
-
   return;
 }
 
@@ -232,16 +215,13 @@ function getChanges(change_length, mod_point){
   //runs from the prev_line up past curr_line to all ones being changed (added or deleted)
   for (i=0; i < change_length; i++){
     line_ind = starting_ind+i;
-  //  console.log("i:" + i + " line_ind:" + line_ind);
     if (i < mod_point){ //before the threshold where you start adding
       mod_line_nums.push(line_ind);
       mod_line_text.push(getLineText(line_ind));
-    //  console.log("mod");
     }
     else{
       change_line_nums.push(line_ind);
       change_line_text.push(getLineText(line_ind));
-    //  console.log("change");
     }
   }
   return{
@@ -255,9 +235,6 @@ function getChanges(change_length, mod_point){
 //function called on click. Gets the current line and sends it to checkChanged
 function clickFunction(e){
   var currLine = getCurrentLine(this);
-//  checkLineChanged(currLine);
-//  if (this == undefined)
-//    return;
   num_lines_selected = 1; //returns to default, in case just clicking, if it is selected that's taken care of in subsequent onselect
   prevLine = currLine;
 }
@@ -276,6 +253,134 @@ function selectFunction(e){
   return (num_lines_selected); //returns the number of lines highlighted, +1 so counts the first line
 }
 
+
+
+
+
+/*CHANGE WATCHING UTILS */
+
+//using the text and the caret position, gets the line number
+function getCurrentLine(el){
+  var caret_pos = $("#work_markup").getCursorPosition();
+  return getLineNumber(caret_pos, el);
+}
+
+//gets the line number given a position and the DOM element
+function getLineNumber(pos, el){
+  if (pos == null)
+    return -1;
+  //console.log(caretPos);
+
+  var curr_line = 0;
+  var text = "";
+  if (el != undefined){
+    text = el.value;
+  }
+
+  //go through, checking for a newline, adding one for each
+  for (var i = 0; i < pos; i++){
+    if (text[i] === "\n"){
+      curr_line++;
+    }
+  }
+  return curr_line;
+}
+
+//returns the text at the given line, by breaking it into an array of strings (one each line) returning the one at lineNum
+function getLineText(lineNum){
+  var lines = $("#work_markup").val().split(/\r\n|\r|\n/);
+  return lines[lineNum];
+
+}
+
+//compares the line numbers, see if it's changed
+function checkLineChanged(currLine){
+  if (currLine != prevLine){
+    return true;
+  }
+  return false;
+}
+
+//returns the number of lines in work_markup's text, by splitting with a regexp and taking length
+function getNumLines(){
+  if ($("#work_markup").length !== 0){
+    var num_lines = $("#work_markup").val().split(/\r\n|\r|\n/).length;
+    return num_lines;
+  }
+  return 0;
+}
+
+//GETTING THE SELECTION, SRC: SO
+function getInputSelection(el) {
+    var start = 0, end = 0, normalizedValue, range,
+        textInputRange, len, endRange;
+
+    if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
+        start = el.selectionStart;
+        end = el.selectionEnd;
+    } else {
+        range = document.selection.createRange();
+
+        if (range && range.parentElement() == el) {
+            len = el.value.length;
+            normalizedValue = el.value.replace(/\r\n/g, "\n");
+
+            // Create a working TextRange that lives only in the input
+            textInputRange = el.createTextRange();
+            textInputRange.moveToBookmark(range.getBookmark());
+
+            // Check if the start and end of the selection are at the very end
+            // of the input, since moveStart/moveEnd doesn't return what we want
+            // in those cases
+            endRange = el.createTextRange();
+            endRange.collapse(false);
+
+            if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
+                start = end = len;
+            } else {
+                start = -textInputRange.moveStart("character", -len);
+                start += normalizedValue.slice(0, start).split("\n").length - 1;
+
+                if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
+                    end = len;
+                } else {
+                    end = -textInputRange.moveEnd("character", -len);
+                    end += normalizedValue.slice(0, end).split("\n").length - 1;
+                }
+            }
+        }
+    }
+
+    return {
+        start: start,
+        end: end
+    };
+}
+
+//gets the caret pos for text areas, SRC: SO
+(function ($, undefined) {
+    $.fn.getCursorPosition = function() {
+        var el = $(this).get(0);
+        var pos = 0;
+        if('selectionStart' in el) {
+            pos = el.selectionStart;
+        } else if('selection' in document) {
+            el.focus();
+            var Sel = document.selection.createRange();
+            var SelLength = document.selection.createRange().text.length;
+            Sel.moveStart('character', -el.value.length);
+            pos = Sel.text.length - SelLength;
+        }
+        return pos;
+    };
+  })(jQuery);
+
+
+
+
+
+
+/* AJAX CALLS */
 
 //ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
 function modElement(line_num, text){
@@ -320,16 +425,19 @@ function delElement(line_num){
 }
 
 
-//function that runs if the ajax is successful, will eventually update the graph
+
+
+
+/* UPDATE GRAPH */
+
+//function that runs if the ajax is successful, will update the graph
 function modInGraph(data){
   console.log(JSON.stringify(data));
-  
-  //console.log("data=" + data);
   test_data = data;
-  var pos_y; //these two will be random
+  var pos_y;
   var pos_x;
   var edge_id_string;
-
+  var cont = $('#cy')[0];
 
   //delete the edges
   for (i = 0; i < data.remove_edges.length; i++){
@@ -354,7 +462,7 @@ function modInGraph(data){
   for (i = 0, len = data.modify_nodes.length; i < len; ++i){
     mod_node = data.modify_nodes[i];
     if ((mod_node != null) && (mod_node != undefined)){
-      //save the position, so the replacement can be set at it
+      //save the position, so the replacement can be set at it. Only one modified at a time
       var mod_graph_node = cy.$("#" + mod_node.id);
       pos_x = mod_graph_node.position().x;
       pos_y = mod_graph_node.position().y;
@@ -371,9 +479,6 @@ function modInGraph(data){
     }
   }
 
-  pos_y = 50; //these two will be random
-  pos_x = 60;
-
   //delete the nodes
   var rem_node;
   for (i = 0, len = data.remove_nodes.length; i < len; ++i){
@@ -388,13 +493,14 @@ function modInGraph(data){
     }
   }
  
-  //var add_node = data.add.node;
   //add the edges
   for (i = 0, len = data.add_nodes.length; i < len; ++i){
     add_node = data.add_nodes[i];
     if ((add_node != null) && (add_node != undefined)) {
       //add the new node
       add_node.id = add_node.id.toString();
+      pos_x = Math.floor(Math.random() * (cont.offsetWidth+ 1));
+      pos_y = Math.floor(Math.random() * (cont.offsetHeight+ 1));
     //  data.add.node.id = data.add.node.id.toString(); //convert the id to a string
       cy.add({
         group: "nodes",
@@ -425,7 +531,6 @@ function modInGraph(data){
     }
   }
 
-
   //add the new edges, first converting their values to strings
   for (i = 0; i < data.add_edges.length; i++){
     add_edge = data.add_edges[i];
@@ -446,85 +551,22 @@ function modInGraph(data){
       }
     }
   }
-
+  setTextSize(); //fix the text sizing when it's coming in
 }
 
 
-//gets the caret pos this is for text areas
-(function ($, undefined) {
-    $.fn.getCursorPosition = function() {
-        var el = $(this).get(0);
-        var pos = 0;
-        if('selectionStart' in el) {
-            pos = el.selectionStart;
-        } else if('selection' in document) {
-            el.focus();
-            var Sel = document.selection.createRange();
-            var SelLength = document.selection.createRange().text.length;
-            Sel.moveStart('character', -el.value.length);
-            pos = Sel.text.length - SelLength;
-        }
-        return pos;
-    };
-  })(jQuery);
-
-//using the text and the caret position, gets the line number
-function getCurrentLine(el){
-  //var caretPos = getCaretCharacterOffsetWithin(el);
-  var caret_pos = $("#work_markup").getCursorPosition();
-  return getLineNumber(caret_pos, el);
-}
 
 
-function getLineNumber(pos, el){
-  if (pos == null)
-    return -1;
-  //console.log(caretPos);
 
-  var curr_line = 0;
-  var text = "";
-  if (el != undefined){
-    text = el.value;
-  }
 
-  //go through, checking for a newline, adding one for each
-  for (var i = 0; i < pos; i++){
-    if (text[i] === "\n"){
-      curr_line++;
-    //  console.log("newline!");
-    }
- //   console.log(text[i]+"|");
-  }
-  console.log("|" + text[i] + "|");
-  return curr_line;
-}
 
-//returns the text at the given line, by breaking it into an array of strings (one each line) returning the one at lineNum
-function getLineText(lineNum){
-  var lines = $("#work_markup").val().split(/\r\n|\r|\n/);
-//  console.log("888" + lines[lineNum]);
-  return lines[lineNum];
 
-}
 
-//figure out what you want this to do
-function checkLineChanged(currLine){
-  if (currLine != prevLine){
-    return true;
-  }
-  return false;
-}
 
-//returns the number of lines in work_markup's text, by splitting with a regexp and taking length
-function getNumLines(){
-  if ($("#work_markup").length !== 0){
-    var num_lines = $("#work_markup").val().split(/\r\n|\r|\n/).length;
-    return num_lines;
-  }
-  return 0;
-}
 
-/* CYTOSCAPE STUFF */
+/** 
+* CYTOSCAPE GRAPHING INIT
+*/
 $(loadCy = function(){
   options = {
     
@@ -781,75 +823,3 @@ function setTextSize(){
     }
   }
 }
-
-
-//GETTING THE CARET POSITION
-function getCaretCharacterOffsetWithin(element) {
-    var caretOffset = 0;
-    var doc = element.ownerDocument || element.document;
-    var win = doc.defaultView || doc.parentWindow;
-    var sel;
-    if (typeof win.getSelection != "undefined") {
-        var range = win.getSelection().getRangeAt(0);
-        var preCaretRange = range.cloneRange();
-        preCaretRange.selectNodeContents(element);
-        preCaretRange.setEnd(range.endContainer, range.endOffset);
-        caretOffset = preCaretRange.toString().length;
-    } else if ( (sel = doc.selection) && sel.type != "Control") {
-        var textRange = sel.createRange();
-        var preCaretTextRange = doc.body.createTextRange();
-        preCaretTextRange.moveToElementText(element);
-        preCaretTextRange.setEndPoint("EndToEnd", textRange);
-        caretOffset = preCaretTextRange.text.length;
-    }
-    return caretOffset;
-}
-
-//GETTING THE SELECTION
-function getInputSelection(el) {
-    var start = 0, end = 0, normalizedValue, range,
-        textInputRange, len, endRange;
-
-    if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
-        start = el.selectionStart;
-        end = el.selectionEnd;
-    } else {
-        range = document.selection.createRange();
-
-        if (range && range.parentElement() == el) {
-            len = el.value.length;
-            normalizedValue = el.value.replace(/\r\n/g, "\n");
-
-            // Create a working TextRange that lives only in the input
-            textInputRange = el.createTextRange();
-            textInputRange.moveToBookmark(range.getBookmark());
-
-            // Check if the start and end of the selection are at the very end
-            // of the input, since moveStart/moveEnd doesn't return what we want
-            // in those cases
-            endRange = el.createTextRange();
-            endRange.collapse(false);
-
-            if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
-                start = end = len;
-            } else {
-                start = -textInputRange.moveStart("character", -len);
-                start += normalizedValue.slice(0, start).split("\n").length - 1;
-
-                if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
-                    end = len;
-                } else {
-                    end = -textInputRange.moveEnd("character", -len);
-                    end += normalizedValue.slice(0, end).split("\n").length - 1;
-                }
-            }
-        }
-    }
-
-    return {
-        start: start,
-        end: end
-    };
-}
-
-

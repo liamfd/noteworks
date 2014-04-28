@@ -4,6 +4,58 @@
 		"selected_items":
 		[
 			[
+				"spinner",
+				"spinner-size"
+			],
+			[
+				"load",
+				"load"
+			],
+			[
+				"layout",
+				"layoutstop"
+			],
+			[
+				"node",
+				"node_hash"
+			],
+			[
+				"to",
+				"to_cytoscape_hash"
+			],
+			[
+				"owner",
+				"owner_id"
+			],
+			[
+				"cate",
+				"category"
+			],
+			[
+				"categor",
+				"category"
+			],
+			[
+				"categ",
+				"category_name"
+			],
+			[
+				"combine",
+				"combine_notes_in_order"
+			],
+			[
+				"combined",
+				"combined"
+			],
+			[
+				"combi",
+				"combined_notes"
+			],
+			[
+				"add",
+				"add_note_to_combined"
+			],
+			[
 				"zoom",
 				"zoom"
 			],
@@ -40,10 +92,6 @@
 				"removeClass"
 			],
 			[
-				"node",
-				"node"
-			],
-			[
 				"i",
 				"i"
 			],
@@ -58,10 +106,6 @@
 			[
 				"being",
 				"being_tapped"
-			],
-			[
-				"add",
-				"addClass"
 			],
 			[
 				"none",
@@ -102,10 +146,6 @@
 			[
 				"category",
 				"category-button"
-			],
-			[
-				"categ",
-				"category_color"
 			],
 			[
 				"ajax",
@@ -308,10 +348,6 @@
 				"deleted_element_hash"
 			],
 			[
-				"cate",
-				"category_name"
-			],
-			[
 				"uni",
 				"uniqify_arrays_in_hash"
 			],
@@ -326,10 +362,6 @@
 			[
 				"new",
 				"new_element_hash"
-			],
-			[
-				"to",
-				"to_modify"
 			],
 			[
 				"merge",
@@ -384,10 +416,6 @@
 				"lines_content"
 			],
 			[
-				"owner",
-				"owner_node"
-			],
-			[
 				"old",
 				"old_parent_edge"
 			],
@@ -422,10 +450,6 @@
 			[
 				"deleted",
 				"deleted_element_hash"
-			],
-			[
-				"combine",
-				"combine_notes"
 			],
 			[
 				"changes",
@@ -490,30 +514,6 @@
 			[
 				"rela",
 				"parent_relationships"
-			],
-			[
-				"id",
-				"id"
-			],
-			[
-				"combined",
-				"combined_notes"
-			],
-			[
-				"cob",
-				"combined_notes"
-			],
-			[
-				"updat",
-				"update_attribute"
-			],
-			[
-				"Node",
-				"Node"
-			],
-			[
-				"combin",
-				"combine_notes"
 			]
 		]
 	},
@@ -523,47 +523,50 @@
 			"file": "app/models/work.rb",
 			"settings":
 			{
-				"buffer_size": 29385,
+				"buffer_size": 28939,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/views/works/_terminal.html.haml",
+			"file": "app/models/node.rb",
 			"settings":
 			{
-				"buffer_size": 870,
+				"buffer_size": 2742,
 				"line_ending": "Unix"
 			}
 		},
 		{
+			"contents": "// Place all the behaviors and hooks related to the matching controller here.\n// All this logic will automatically be available in application.js.\n// You can use CoffeeScript in this file: http://coffeescript.org/\nvar i = 0;\nvar lineText = \"\";\nvar prevLine = 0;\nvar num_lines = 0;\nvar test_data;\nvar changes_made;\nvar num_lines_selected = 1; //default is one, when no selection count the cursor\n\n$( document ).ready(function() {\n  num_lines = getNumLines();\n  changes_made = false;\n  test_data = {};\n\n//  $ ('#work_markup').get(0).onkeypress= pressFunction;\n  if ($(\"#work_markup\").length !== 0){\n    $ ('#work_markup').get(0).onkeyup= upFunction;\n    $ ('#work_markup').get(0).onclick= clickFunction;\n    $ ('#work_markup').get(0).onselect= selectFunction;\n  }\n  $('#category_list').bind(\"ajax:success\", function(evt, data, status, xhr){\n//  alert('hello');\n  });\n\n  $(\"#toggle\").click(function(){\n    $(\"#panel\").slideToggle(\"slow\");\n    });\n\n  $(\"#guide-button\").click(function(){\n    $(document).foundation('joyride', 'start');\n  });\n\n  dragHeight();\n  //http://jsfiddle.net/wSTcJ/2/\n  //var ele = gon.elements;\n  //ele = JSON.stringify(ele);\n  //$( \".test\" ).text(ele);\n\n});\n\nvar test_data;\nvar test_xhr;\nvar test_obj;\nvar test_ajaxOptions;\nvar test_error;\n\nfunction dragHeight(){\n  $('#bar').on('mousedown', function(e){\n    var $markup_text = $ (\"#work_markup\"),\n        startConsoleHeight = $markup_text.height(),\n        pY = e.pageY;\n    \n    $(document).on('mouseup', function(e){\n        $(document).off('mouseup').off('mousemove');\n    });\n    $(document).on('mousemove', function(me){\n      var my = (me.pageY - pY);\n      var consoleHeight = startConsoleHeight-my;\n   \n      $markup_text.css({\n        height: consoleHeight,\n      });\n    });\n  });\n}\n\n\nfunction submitForm(){\n  $(this).parents(\"form\").submit();\n  console.log($(this));\n}\n\nfunction toggleSpinner(){\n  $(\"#spinner\").toggle();\n}\n\n//sets the stuff for works/:id/categories\n$(function() {\n  $('#myModal').bind('opened', function() {\n    //this could also go in a ajaxComplete global call\n    //console.log(\"myModal opened\");\n    if ( $(\".edit_form\").length !== 0 ){\n      $(\".edit_form\").find('#category_name').get(0).onblur= submitForm;\n      $(\".edit_form\").find('#category_color').get(0).onblur= submitForm;\n    }\n    $(\"#spinner\").hide();\n\n    $.minicolors.defaults = $.extend($.minicolors.defaults, {\n      changeDelay: 200,\n      defaultValue: \"#c0c0c0\",\n      position: \"bottom left\"\n    });\n\n    $('#category_color').minicolors();\n\n    $(\"form\").bind(\"ajax:beforeSend\", function(){\n      $(\"#spinner\").show();\n      $(\"#response\").hide();\n    });\n    $(\"form\").bind(\"ajax:success\", function(evt, data, status, xhr){\n      $(\"#response\").html(\"Saved!\").show().fadeOut(\"slow\");\n      test_data = data;\n    });\n    $(\"form\").bind(\"ajax:complete\", function(){\n      $(\"#spinner\").hide();\n      //$('#myModal').foundation('reveal', 'close');\n    });\n\n    $(\".new_form form\").bind(\"ajax:complete\", function() {\n      $('#myModal').foundation('reveal', 'close');\n    });\n\n    $(\"form\").bind(\"ajax:error\", function(xhr, ajaxOptions, thrownError){\n      //find a way to get the actual error being returned by the rails controller\n      $(\"#response\").html(\"Error: Repeated name.\").show().fadeOut(\"slow\");\n      $(\"#spinner\").hide();\n      test_xhr = xhr;\n      test_ajaxOptions = ajaxOptions;\n      test_error = thrownError;\n    });\n    $(document).foundation();\n  });\n});\n\n/**\n* Function called on keyup. This function now uses the changes in length and the selections made to determine whether changes\n* have been made, and calls the appropriate functions. An improvement over the original, which used specific buttons presses\n* to determine changes.\n*/\nfunction upFunction(e){\n  var code = e.code || e.which;\n  //alert(code);\n  var el = this;\n  if (el == undefined)\n    return;\n\n  var curr_num_lines = getNumLines();\n  var num_lines_changed = curr_num_lines - num_lines;\n\n  var text;\n  currLine = getCurrentLine(el);\n  curr_line = currLine;\n  prev_line = prevLine;\n  text = getLineText(prevLine);\n\n  if ((code < 37) || (code > 40)){ //if it's not an arrow key, assume something has been changed\n    changes_made = true;\n  }\n\n // console.log(\"num_lines_changed:\" + num_lines_changed);\n // console.log(\"num_lines_selected:\" + num_lines_selected);\n // console.log(\"changes made?\" + changes_made);\n  if (changes_made){\n  //  console.log(\"line changed?\" + checkLineChanged(currLine));\n    if (num_lines_changed !== 0 || num_lines_selected !== 1){ //if the current number of lines has changed, or we selected some\n      //if adding or only modifying\n      if (num_lines_changed > 0){ // if some have been added\n        num_lines_changed = curr_line - prev_line+1; //only works b/c you always add down, use the +1 to account for last line\n        num_lines_modified = num_lines_selected;\n\n      //  console.log(\"modified\"+num_lines_modified);\n\n        total_changes = getChanges(num_lines_changed, num_lines_modified);\n        console.log(\"added_lines\" + total_changes.change_line_nums);\n        console.log(\"mod_lines\" + total_changes.mod_line_nums);\n        modElement(total_changes.mod_line_nums, total_changes.mod_line_text);\n        addElement(total_changes.change_line_nums, total_changes.change_line_text);\n      }\n\n      //if deleting\n      else if (num_lines_changed < 0){ //if some have been deleted\n        num_lines_deleted = Math.abs(num_lines_changed);\n        // if deleting one line, you always modify the first and delete the second. otherwise, modify the first, deal with rest\n        num_lines_modified = Math.max(1, num_lines_selected-num_lines_deleted); //modifying all selected lines not being deleted\n        num_lines_changed = num_lines_deleted + num_lines_modified;// + Math.abs(curr_line-prev_line);\n        \n      //  console.log(\"deleted\" + num_lines_deleted);\n      //  console.log(\"modified\"+ num_lines_modified);\n      //  console.log(\"changed\" + num_lines_changed);\n      \n        total_changes = getChanges(num_lines_changed, num_lines_modified);\n        console.log(\"deleted_lines\" + total_changes.change_line_nums);\n        console.log(\"mod_lines\" + total_changes.mod_line_nums);\n        \n        modElement(total_changes.mod_line_nums, total_changes.mod_line_text);\n        delElement(total_changes.change_line_nums, total_changes.change_line_text);\n      }\n      else{\n        num_lines_changed = curr_line - prev_line+1; //use the +1 to account for last line\n        num_lines_modified = num_lines_selected;\n\n      //  console.log(\"modified\"+num_lines_modified);\n\n        total_changes = getChanges(num_lines_changed, num_lines_modified);\n        console.log(\"mod_lines\" + total_changes.mod_line_nums);\n        \n        modElement(total_changes.mod_line_nums, total_changes.mod_line_text);\n      }\n      changes_made = false;\n    }\n\n    else if (checkLineChanged(currLine)){ //otherwise, if he's just changed lines\n     // if (changes_made){ //if he's not just arrowing around\n      text = getLineText(prevLine);\n      console.log(\"updating element at \" + prev_line);\n      modElement(prevLine, text);\n    //    changes_made = false;\n    //  }\n      changes_made = false;\n    }\n  }\n  prevLine = currLine;\n  num_lines = curr_num_lines;\n  num_lines_selected = 1;\n\n  console.log(\"--------------\");\n\n  return;\n}\n\n//returns a collection of the changed lines, those modified and those added or deleted (\"changed\")\nfunction getChanges(change_length, mod_point){\n  mod_line_nums = [];\n  mod_line_text = [];\n  change_line_nums = [];\n  change_line_text = [];\n\n  var starting_ind = Math.min(prev_line, curr_line);\n\n  //runs from the prev_line up past curr_line to all ones being changed (added or deleted)\n  for (i=0; i < change_length; i++){\n    line_ind = starting_ind+i;\n  //  console.log(\"i:\" + i + \" line_ind:\" + line_ind);\n    if (i < mod_point){ //before the threshold where you start adding\n      mod_line_nums.push(line_ind);\n      mod_line_text.push(getLineText(line_ind));\n    //  console.log(\"mod\");\n    }\n    else{\n      change_line_nums.push(line_ind);\n      change_line_text.push(getLineText(line_ind));\n    //  console.log(\"change\");\n    }\n  }\n  return{\n    mod_line_nums: mod_line_nums,\n    mod_line_text: mod_line_text,\n    change_line_nums: change_line_nums,\n    change_line_text: change_line_text\n  };\n}\n\n//function called on click. Gets the current line and sends it to checkChanged\nfunction clickFunction(e){\n  var currLine = getCurrentLine(this);\n//  checkLineChanged(currLine);\n//  if (this == undefined)\n//    return;\n  num_lines_selected = 1; //returns to default, in case just clicking, if it is selected that's taken care of in subsequent onselect\n  prevLine = currLine;\n}\n\n//returns the number of lines being selected\nfunction selectFunction(e){\n\n  console.log(e);\n  var range = getInputSelection(e.srcElement);\n  console.log(\"Range: \" + range.start + \",\" + range.end);\n  var start_line = getLineNumber(range.start, e.srcElement);\n  var end_line = getLineNumber(range.end-1, e.srcElement); //end is inclusive, make it exclusive with -1\n\n  console.log(start_line +\"  \" + end_line);\n  num_lines_selected = Math.abs(end_line - start_line) + 1;\n  return (num_lines_selected); //returns the number of lines highlighted, +1 so counts the first line\n}\n\n\n//ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller\nfunction modElement(line_num, text){\n  console.log(\"update\" + line_num + text);\n  $.ajax({\n    type:\"GET\",\n    url:\"mod_element\",\n    data: {line_number: line_num, line_content: text},\n    dataType:\"json\",\n    success: function(data){\n      modInGraph(data);\n    }\n  });\n}\n\n//ajax call that takes in a line number and its text, and sends them to the addelement function in the works controller\nfunction addElement(line_num, text){\n  console.log(\"add\");\n  $.ajax({\n    type:\"GET\",\n    url:\"add_element\",\n    data: {line_number: line_num, line_content: text},\n    dataType:\"json\",\n    success: function(data){\n      modInGraph(data);\n    }\n  });\n}\n\n//ajax call that takes in a line number and sends it to the delelement function in the works controller\nfunction delElement(line_num){\n  console.log(\"del\");\n  $.ajax({\n    type:\"GET\",\n    url:\"del_element\",\n    data: {line_number: line_num},\n    dataType:\"json\",\n    success: function(data){\n      modInGraph(data);\n    }\n  });\n}\n\n\n//function that runs if the ajax is successful, will eventually update the graph\nfunction modInGraph(data){\n  console.log(JSON.stringify(data));\n  \n  //console.log(\"data=\" + data);\n  test_data = data;\n  var pos_y; //these two will be random\n  var pos_x;\n  var edge_id_string;\n\n\n  //delete the edges\n  for (i = 0; i < data.remove_edges.length; i++){\n    rem_edge = data.remove_edges[i];\n    if ((rem_edge != null) && (rem_edge != undefined)){\n      edge_id_string = \"#\" + rem_edge.id;\n      cy.remove(edge_id_string);\n    }\n  }\n\n  //delete the edges bieng modified (WILL PROBABLY DROP THIS)\n  for (i = 0; i < data.modify_edges.length; i++){\n    mod_edge = data.modify_edges[i];\n    if ((mod_edge != null) && (mod_edge != undefined)){\n      edge_id_string = \"#\" + mod_edge.id;\n      cy.remove(edge_id_string);\n    }\n  }\n\n  //modify the mod notes. Saves position, removes, adds back in with new data\n  var mod_node;\n  for (i = 0, len = data.modify_nodes.length; i < len; ++i){\n    mod_node = data.modify_nodes[i];\n    if ((mod_node != null) && (mod_node != undefined)){\n      //save the position, so the replacement can be set at it\n      var mod_graph_node = cy.$(\"#\" + mod_node.id);\n      pos_x = mod_graph_node.position().x;\n      pos_y = mod_graph_node.position().y;\n    \n      cy.remove(mod_graph_node);\n      mod_node.id = mod_node.id.toString();\n      console.log(mod_node);\n      cy.add({\n        group: \"nodes\",\n        data: mod_node,\n        position:{ x: pos_x, y: pos_y}\n      }).addClass(\"starting\");\n    \n    }\n  }\n\n  pos_y = 50; //these two will be random\n  pos_x = 60;\n\n  //delete the nodes\n  var rem_node;\n  for (i = 0, len = data.remove_nodes.length; i < len; ++i){\n    rem_node = data.remove_nodes[i];\n    if ((rem_node != null) && (rem_node != undefined) && rem_node.id !== null){\n      //save the position, so the replacement can be set at it\n      var rem_graph_node = cy.$(\"#\" + rem_node.id);\n      //pos_x = rem_graph_node.position().x;\n      //pos_y = rem_graph_node.position().y;\n    \n      cy.remove(rem_graph_node);\n    }\n  }\n \n  //var add_node = data.add.node;\n  //add the edges\n  for (i = 0, len = data.add_nodes.length; i < len; ++i){\n    add_node = data.add_nodes[i];\n    if ((add_node != null) && (add_node != undefined)) {\n      //add the new node\n      add_node.id = add_node.id.toString();\n    //  data.add.node.id = data.add.node.id.toString(); //convert the id to a string\n      cy.add({\n        group: \"nodes\",\n        data: add_node,\n        position:{ x: pos_x, y: pos_y}\n      }).addClass(\"starting\");\n    }\n  }\n\n  //add the edges being modified (WILL PROBABLY DROP THIS AS WELL)\n  for (i = 0; i < data.modify_edges.length; i++){\n    mod_edge = data.modify_edges[i];\n    console.log(mod_edge);\n    if ((mod_edge != null) && (mod_edge != undefined)){\n      mod_edge.id = data.modify_edges[i].id.toString();\n      mod_edge.source = data.modify_edges[i].source.toString();\n      mod_edge.target = data.modify_edges[i].target.toString();\n      console.log(mod_edge);\n     \n      //maybe have this check instead that both nodes exist in the graph, otherwise you get an error\n       console.log(\"source:\" + mod_edge.source + \" target\" + mod_edge.target + \" id: \" + mod_edge.id)\n      if ( mod_edge.source !== \"\" && mod_edge.target !== \"\" && mod_edge.id !== \"\" ){ //ignore if edge goes nowhere\n        cy.add({\n          group: \"edges\",\n          data: mod_edge\n        });\n      }\n    }\n  }\n\n\n  //add the new edges, first converting their values to strings\n  for (i = 0; i < data.add_edges.length; i++){\n    add_edge = data.add_edges[i];\n    console.log(add_edge);\n    if ((add_edge != null) && (add_edge != undefined)){\n      add_edge.id = data.add_edges[i].id.toString();\n      add_edge.source = data.add_edges[i].source.toString();\n      add_edge.target = data.add_edges[i].target.toString();\n      console.log(add_edge);\n     \n      //maybe have this check instead that both nodes exist in the graph, otherwise you get an error\n      console.log(\"source:\" + add_edge.source + \" target\" + add_edge.target + \" id: \" + add_edge.id);\n      if ( add_edge.source !== \"\" && add_edge.target !== \"\" && add_edge.id !== \"\" ){ //ignore if edge goes nowhere\n        cy.add({\n          group: \"edges\",\n          data: add_edge\n        });\n      }\n    }\n  }\n\n}\n\n//gets the caret pos this is for text areas\n(function ($, undefined) {\n    $.fn.getCursorPosition = function() {\n        var el = $(this).get(0);\n        var pos = 0;\n        if('selectionStart' in el) {\n            pos = el.selectionStart;\n        } else if('selection' in document) {\n            el.focus();\n            var Sel = document.selection.createRange();\n            var SelLength = document.selection.createRange().text.length;\n            Sel.moveStart('character', -el.value.length);\n            pos = Sel.text.length - SelLength;\n        }\n        return pos;\n    };\n  })(jQuery);\n\n//using the text and the caret position, gets the line number\nfunction getCurrentLine(el){\n  //var caretPos = getCaretCharacterOffsetWithin(el);\n  var caret_pos = $(\"#work_markup\").getCursorPosition();\n  return getLineNumber(caret_pos, el);\n}\n\n//gets the line number given a position and the DOM element\nfunction getLineNumber(pos, el){\n  if (pos == null)\n    return -1;\n  //console.log(caretPos);\n\n  var curr_line = 0;\n  var text = \"\";\n  if (el != undefined){\n    text = el.value;\n  }\n\n  //go through, checking for a newline, adding one for each\n  for (var i = 0; i < pos; i++){\n    if (text[i] === \"\\n\"){\n      curr_line++;\n    }\n  }\n  return curr_line;\n}\n\n//returns the text at the given line, by breaking it into an array of strings (one each line) returning the one at lineNum\nfunction getLineText(lineNum){\n  var lines = $(\"#work_markup\").val().split(/\\r\\n|\\r|\\n/);\n  return lines[lineNum];\n\n}\n\n//compares the line numbers, see if it's changed\nfunction checkLineChanged(currLine){\n  if (currLine != prevLine){\n    return true;\n  }\n  return false;\n}\n\n//returns the number of lines in work_markup's text, by splitting with a regexp and taking length\nfunction getNumLines(){\n  if ($(\"#work_markup\").length !== 0){\n    var num_lines = $(\"#work_markup\").val().split(/\\r\\n|\\r|\\n/).length;\n    return num_lines;\n  }\n  return 0;\n}\n\n/* CYTOSCAPE STUFF */\n$(loadCy = function(){\n  options = {\n    \n    layout: {\n      name: 'arbor',\n      liveUpdate: false, // whether to show the layout as it's running\n      ready: undefined, // callback on layoutready \n      stop: undefined, // callback on layoutstop\n      maxSimulationTime: 4000, // max length in ms to run the layout\n      fit: true, // reset viewport to fit defaualt simulationBounds\n      padding: [ 50, 50, 50, 50 ], // top, right, bottom, left\n      simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by defaualt\n      ungrabifyWhileSimulating: true, // so you can't drag nodes during layout\n\n      // forces used by arbor (use arbor defaualt on undefined)\n      repulsion: undefined,\n      stiffness: undefined,\n      friction: undefined,\n      gravity: true,\n      fps: undefined,\n      precision: undefined,\n\n      // static numbers or functions that dynamically return what these\n      // values should be for each element\n      nodeMass: undefined,\n      edgeLength: undefined,\n\n      stepSize: 1, // size of timestep in simulation\n\n      // function that returns true if the system is stable to indicate\n      // that the layout can be stopped\n      stableEnergy: function( energy ){\n          var e = energy;\n          return (e.max <= 0.5) || (e.mean <= 0.3);\n      }\n    },\n\n    showOverlay: false,\n    panningEnabled: true,\n    boxSelectionEnabled: false,\n    minZoom: 0.5,\n    maxZoom: 2,\n\n    style: cytoscape.stylesheet()\n      .selector('node')\n        .css({\n          'content': 'data(title)',\n          'font-family': 'helvetica',\n          'font-size': 14,\n          \n          'width': 'mapData(weight, 0, 200, 10, 80)',\n          'height': 'mapData(height, 0, 200, 10, 80)',\n          //'width': 'mapData(weight, 30000, 0, 30, 100)',\n          //'height': 'mapData(height, 30000, 0, 30, 100)',\n          'background-color': \"#fff\",\n          'z-index' : 1\n        })\n    \n      .selector(':selected')\n        .css({\n          'background-color': '#fff',\n          'line-color': '#000',\n          'target-arrow-color': '#000',\n          'text-outline-color': '#000'\n        })\n      .selector('edge')\n        .css({\n          'width': 3,\n          'target-arrow-shape': 'none'\n        })\n      .selector('.starting')\n        .css({\n          'text-outline-width': 3,\n          'text-outline-color': 'data(color)',\n          'border-color':'data(color)',\n          'border-width':3,\n          'background-color': '#fff',\n          'text-valign': 'center',\n          'text-halign' : 'center',\n          'color': '#fff',\n\n          //this needs to be there, otherwise it doesn't draw the notes correctly the first time.\n          'note-font-size': \"16px\",\n          'note-font-weight': \"bold\",\n          'note-text-outline-width': 0,\n          \n        })\n      .selector('.focused')\n       .css({\n          'width' : '300px',\n          'height' : 'auto',\n          'shape' : 'roundrectangle',\n          'border-width' : \"3px\",\n          'border-color' : \"data(color)\",\n          'background-color' : '#fff',\n          'background-opacity' : 1,\n          \"opacity\" : 1,\n          \"z-index\" : 5,\n\n          'content' : 'data(title)',\n          'text-outline-width': 3,\n          'text-outline-color': 'data(color)',\n          'color': '#fff',\n          'text-valign' : \"top\",\n          'font-size':\"18px\",\n\n          'notes': 'data(notes)',\n          'note-text-outline-width': 0,\n          'note-text-outline-color':\"#fff\",\n          'note-color': '#444',\n          'note-font-size': \"16px\",\n          'note-font-weight': \"bold\",\n        })\n      .selector('.less-focused')\n        .css({\n          'z-index' : 3,\n          'background-color':\"#dddddd\"\n        })\n\n      .selector('.big-text')\n        .css({\n          'font-size':30\n        })\n\n      .selector('.little-text')\n        .css({\n          'font-size':16\n\n        })\n\n      .selector('.faded')\n        .css({\n          'opacity': 0.9,\n          'text-opacity': 0.9,\n          'z-index': 1,\n       }),\n   \n    elements:gon.elements,\n\n    ready: function(){\n      window.cy = this;\n      cy.elements().unselectify();\n\n      //works during the layout drawing\n      cy.on('position', 'node', function(e){\n        setTextSize();\n      });\n\n      //when manipulating background. Not drag, that would be working double for node dragging\n      cy.on('pan', function(e){\n        setTextSize();\n      });\n\n      cy.on('zoom', function(e){\n        setTextSize();\n      });\n\n      //centers the node further from the middle when clicking edge\n      cy.on('tap', 'edge', function(e){\n        var edge = e.cyTarget;\n        var src = edge.source();\n        var targ = edge.target();\n\n        //center of canvas\n        var cont = $('#cy')[0];\n        //var cont = document.getElementById(cy);\n        var cent_x = (cont.offsetWidth)/2;\n        var cent_y = (cont.offsetHeight)/2;\n     \n        //x and y of the two nodes\n        var src_x = src.renderedPosition(\"x\");\n        var src_y = src.renderedPosition(\"y\");\n        var targ_x = targ.renderedPosition(\"x\");\n        var targ_y = targ.renderedPosition(\"y\");\n       \n        //distance function, sans sqrt\n        var src_dist = (cent_x - src_x) * (cent_x - src_x) + (cent_y - src_y) * (cent_y - src_y);\n        var targ_dist = (cent_x - targ_x) * (cent_x - targ_x) + (cent_y - targ_y) * (cent_y - targ_y);\n\n        //whichever node is further away, center it\n        if (src_dist >= targ_dist){\n          cy.center(src);\n        } else {\n          cy.center(targ);\n        }\n      });\n      \n      //bring focus to the element as they're clicked, prioritizing the most recent click\n      cy.on('tap', 'node', function(e){\n        var curr_node = e.cyTarget;\n        var prev_foci = cy.elements('node.focused');\n\n        prev_foci.not(curr_node).addClass('less-focused'); //middleground all focused nodes except current\n\n        if (curr_node.hasClass('less-focused')){ //if it's been middlegrounded, foreground\n          curr_node.removeClass('less-focused');\n        }\n        else { //otherwise, swap between foreground and background\n          curr_node.toggleClass('focused');\n        }\n      });\n\n      //resets the nodes when background is clicked\n      cy.on('tap', function(e){\n        if( e.cyTarget === cy ){\n          cy.elements().removeClass('focused');\n          cy.elements().removeClass('less-focused');\n        }\n      });\n\n      //add the class, hide the graph and show the spinner when loading\n      cy.on('load',function(){\n        cy.elements().addClass(\"starting\");\n        cy.elements().hide();\n        $(\"#spinner\").fadeIn(\"slow\");\n      });\n\n      //take out the spinner and show graph when ready\n      cy.on('layoutstop', function(){\n        $(\"#spinner\").fadeOut(\"300\");\n        cy.elements().show();\n      });\n\n    }\n  };\n  $('#cy').cytoscape(options);\n});\n\n//to be called within the cytoscape declaration. changes the size of the text as necessary\nfunction setTextSize(){\n  var nodes = cy.elements('node');\n  var cont = $('#cy')[0];\n\n  var cent_x = (cont.offsetWidth)/2;\n  var cent_y = (cont.offsetHeight)/2;\n\n  for (var i = 0; i < nodes.length; i++){\n    var node = nodes[i];\n    var pos = nodes[i].renderedPosition();\n    \n    //x and y of the two nodes\n    var pos_x = node.renderedPosition(\"x\");\n    var pos_y = node.renderedPosition(\"y\");\n \n    //distance function, sans sqrt\n    var cent_dist = (cent_x - pos_x) * (cent_x - pos_x) + (cent_y - pos_y) * (cent_y - pos_y);\n    if (cent_dist < 50000){\n      node.addClass('big-text');\n      node.removeClass('little-text');\n    }\n    else{\n      node.addClass('little-text');\n      node.removeClass('big-text');\n    }\n  }\n}\n\n\n//GETTING THE CARET POSITION\nfunction getCaretCharacterOffsetWithin(element) {\n    var caretOffset = 0;\n    var doc = element.ownerDocument || element.document;\n    var win = doc.defaultView || doc.parentWindow;\n    var sel;\n    if (typeof win.getSelection != \"undefined\") {\n        var range = win.getSelection().getRangeAt(0);\n        var preCaretRange = range.cloneRange();\n        preCaretRange.selectNodeContents(element);\n        preCaretRange.setEnd(range.endContainer, range.endOffset);\n        caretOffset = preCaretRange.toString().length;\n    } else if ( (sel = doc.selection) && sel.type != \"Control\") {\n        var textRange = sel.createRange();\n        var preCaretTextRange = doc.body.createTextRange();\n        preCaretTextRange.moveToElementText(element);\n        preCaretTextRange.setEndPoint(\"EndToEnd\", textRange);\n        caretOffset = preCaretTextRange.text.length;\n    }\n    return caretOffset;\n}\n\n//GETTING THE SELECTION\nfunction getInputSelection(el) {\n    var start = 0, end = 0, normalizedValue, range,\n        textInputRange, len, endRange;\n\n    if (typeof el.selectionStart == \"number\" && typeof el.selectionEnd == \"number\") {\n        start = el.selectionStart;\n        end = el.selectionEnd;\n    } else {\n        range = document.selection.createRange();\n\n        if (range && range.parentElement() == el) {\n            len = el.value.length;\n            normalizedValue = el.value.replace(/\\r\\n/g, \"\\n\");\n\n            // Create a working TextRange that lives only in the input\n            textInputRange = el.createTextRange();\n            textInputRange.moveToBookmark(range.getBookmark());\n\n            // Check if the start and end of the selection are at the very end\n            // of the input, since moveStart/moveEnd doesn't return what we want\n            // in those cases\n            endRange = el.createTextRange();\n            endRange.collapse(false);\n\n            if (textInputRange.compareEndPoints(\"StartToEnd\", endRange) > -1) {\n                start = end = len;\n            } else {\n                start = -textInputRange.moveStart(\"character\", -len);\n                start += normalizedValue.slice(0, start).split(\"\\n\").length - 1;\n\n                if (textInputRange.compareEndPoints(\"EndToEnd\", endRange) > -1) {\n                    end = len;\n                } else {\n                    end = -textInputRange.moveEnd(\"character\", -len);\n                    end += normalizedValue.slice(0, end).split(\"\\n\").length - 1;\n                }\n            }\n        }\n    }\n\n    return {\n        start: start,\n        end: end\n    };\n}\n\n\n",
 			"file": "app/assets/javascripts/works.js",
+			"file_size": 26851,
+			"file_write_time": 1398702320000000,
 			"settings":
 			{
-				"buffer_size": 26486,
+				"buffer_size": 26850,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/controllers/works_controller.rb",
+			"file": "app/assets/stylesheets/works.css.scss",
 			"settings":
 			{
-				"buffer_size": 5340,
+				"buffer_size": 2923,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/views/works/show.html.haml",
+			"file": "app/assets/javascripts/categories.js",
 			"settings":
 			{
-				"buffer_size": 44,
+				"buffer_size": 1805,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/controllers/work_groups_controller.rb",
+			"file": "app/views/works/takenotes.html.haml",
 			"settings":
 			{
-				"buffer_size": 1907,
+				"buffer_size": 1492,
 				"line_ending": "Unix"
 			}
 		}
@@ -624,30 +627,39 @@
 	},
 	"file_history":
 	[
+		"/home/liam/projs/noteworks/app/views/works/takenotes.html.haml",
+		"/home/liam/projs/noteworks/app/controllers/works_controller.rb",
+		"/home/liam/projs/noteworks/app/models/category.rb",
+		"/home/liam/projs/noteworks/app/assets/javascripts/works.js",
+		"/home/liam/projs/noteworks/app/views/works/show.json.rabl",
+		"/home/liam/projs/noteworks/app/views/works/_terminal.html.haml",
+		"/home/liam/projs/noteworks/app/views/works/show.html.haml",
+		"/home/liam/projs/noteworks/app/controllers/work_groups_controller.rb",
+		"/home/liam/projs/noteworks/app/views/home/about.html.haml",
+		"/home/liam/projs/noteworks/app/controllers/home_controller.rb",
+		"/home/liam/projs/noteworks/config/routes.rb",
+		"/home/liam/projs/noteworks/app/assets/stylesheets/foundation_and_overrides.css.scss",
+		"/home/liam/projs/noteworks/app/views/shared/_nav.html.haml",
+		"/home/liam/projs/noteworks/app/views/layouts/application.html.haml",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/works.css.scss",
 		"/home/liam/projs/noteworks/app/views/works/show.html.erb",
 		"/home/liam/projs/noteworks/Gemfile",
-		"/home/liam/projs/noteworks/app/assets/javascripts/works.js",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/application.scss",
 		"/home/liam/projs/noteworks/app/assets/javascripts/application.js",
 		"/home/liam/projs/noteworks/app/models/node.rb",
 		"/home/liam/projs/noteworks/db/migrate/20140423135215_remove_type_from_node.rb",
 		"/home/liam/projs/noteworks/app/models/example_node.rb",
 		"/home/liam/projs/noteworks/app/models/work.rb",
-		"/home/liam/projs/noteworks/app/assets/stylesheets/foundation_and_overrides.css.scss",
-		"/home/liam/projs/noteworks/app/models/category.rb",
 		"/home/liam/projs/noteworks/app/views/works/create.js.erb",
 		"/home/liam/projs/noteworks/app/views/work_groups/_form.html.haml",
 		"/home/liam/projs/noteworks/app/views/categories/_category_list.html.haml",
 		"/home/liam/projs/noteworks/app/views/categories/edit.html.haml",
-		"/home/liam/projs/noteworks/app/controllers/works_controller.rb",
 		"/home/liam/projs/noteworks/app/controllers/categories_controller.rb",
 		"/home/liam/projs/noteworks/app/controllers/users_controller.rb",
 		"/home/liam/projs/noteworks/app/models/link.rb",
 		"/home/liam/projs/noteworks/app/assets/javascripts/home.js",
 		"/home/liam/projs/noteworks/app/views/work_groups/_work_group_list.html.haml",
 		"/home/liam/projs/noteworks/app/views/works/toggle_privacy.js.erb",
-		"/home/liam/projs/noteworks/app/views/works/_terminal.html.haml",
 		"/home/liam/projs/noteworks/app/views/works/_privacy_button_content.html.haml",
 		"/home/liam/projs/noteworks/db/migrate/20131114224438_create_categories.rb",
 		"/home/liam/projs/noteworks/db/migrate/20140323224500_add_work_to_category.rb",
@@ -655,7 +667,6 @@
 		"/home/liam/projs/noteworks/sources/makeInitialModels",
 		"/home/liam/projs/noteworks/db/migrate/20131120195933_create_nodes.rb",
 		"/home/liam/projs/noteworks/app/views/works/_work_list.html.haml",
-		"/home/liam/projs/noteworks/app/views/shared/_nav.html.haml",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/home.css.scss",
 		"/home/liam/projs/noteworks/app/views/home/index.html.haml",
 		"/home/liam/projs/noteworks/app/views/works/update.js.erb",
@@ -682,12 +693,9 @@
 		"/home/liam/projs/noteworks/app/views/works/_form.html.haml",
 		"/home/liam/projs/noteworks/app/views/categories/_form.html.haml",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/categories.css.scss",
-		"/home/liam/projs/noteworks/app/views/works/takenotes.html.haml",
 		"/home/liam/projs/noteworks/app/views/works/category_list.html.haml",
 		"/home/liam/projs/noteworks/app/models/key.rb",
 		"/home/liam/projs/noteworks/app/models/link_collection.rb",
-		"/home/liam/projs/noteworks/config/routes.rb",
-		"/home/liam/projs/noteworks/app/controllers/work_groups_controller.rb",
 		"/home/liam/projs/noteworks/app/views/works/toggle_privacy.js.haml",
 		"/home/liam/projs/noteworks/app/views/works/_privacy_button_content.html.erb",
 		"/home/liam/projs/noteworks/app/views/works/_privacy_button.html.haml",
@@ -703,12 +711,10 @@
 		"/home/liam/projs/noteworks/vendor/assets/javascripts/cytoscape.js-2.0.4/cytoscape-2-1-wrapping-fix.js",
 		"/home/liam/projs/noteworks/vendor/assets/javascripts/cytoscape.js-2.0.4/cytoscape-2-1-wrapping.js",
 		"/home/liam/projs/noteworks/app/assets/javascripts/mod_cytoscape.js",
-		"/home/liam/projs/noteworks/app/views/works/show.json.rabl",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/user.css.scss",
 		"/home/liam/projs/noteworks/app/views/work_groups/edit.js.erb",
 		"/home/liam/projs/noteworks/app/views/work_groups/new.html.haml",
 		"/home/liam/projs/noteworks/app/views/categories/create.js.erb",
-		"/home/liam/projs/noteworks/app/views/layouts/application.html.haml",
 		"/home/liam/projs/noteworks/app/models/work_group.rb",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/style.css.scss",
 		"/home/liam/projs/noteworks/app/views/works/data.tsv",
@@ -732,7 +738,6 @@
 		"/home/liam/projs/noteworks/app/assets/fonts/telegrafico/telegrafico-webfont.ttf",
 		"/home/liam/projs/noteworks/app/assets/fonts/telegrafico/stylesheet.css",
 		"/home/liam/projs/noteworks/app/views/layouts/_nav.html.haml",
-		"/home/liam/projs/noteworks/app/controllers/home_controller.rb",
 		"/home/liam/projs/noteworks/app/views/categories/update.js.erb",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/scaffolds.css.scss",
 		"/home/liam/projs/noteworks/app/views/categories/index.html.haml",
@@ -749,9 +754,7 @@
 		"/home/liam/projs/noteworks/app/models/place_holder.rb",
 		"/home/liam/projs/noteworks/app/views/works/_link.rabl",
 		"/home/liam/projs/noteworks/app/views/links/show.json.rabl",
-		"/home/liam/projs/noteworks/app/views/works/_nodedisplay.html.haml",
-		"/home/liam/projs/noteworks/app/views/categories/show.html.haml",
-		"/home/liam/projs/noteworks/app/views/works/_form.html.erb"
+		"/home/liam/projs/noteworks/app/views/works/_nodedisplay.html.haml"
 	],
 	"find":
 	{
@@ -769,6 +772,11 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"combine",
+			"Ordering",
+			" $",
+			"// ",
+			"top",
 			"#toggle",
 			"type",
 			"rake",
@@ -891,12 +899,7 @@
 			"getTextFromRegexp",
 			"binding.pry",
 			"<",
-			"name",
-			"binding",
-			"el",
-			"insert_ele",
-			"get_ordering",
-			"populate_"
+			"name"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1010,7 +1013,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -1018,15 +1021,15 @@
 					"file": "app/models/work.rb",
 					"settings":
 					{
-						"buffer_size": 29385,
+						"buffer_size": 28939,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								29385,
-								29385
+								7527,
+								7527
 							]
 						],
 						"settings":
@@ -1127,25 +1130,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 16181.0,
+						"translation.y": 4073.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "app/views/works/_terminal.html.haml",
+					"file": "app/models/node.rb",
 					"settings":
 					{
-						"buffer_size": 870,
+						"buffer_size": 2742,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								810,
-								810
+								2736,
+								2736
 							]
 						],
 						"settings":
@@ -1242,12 +1245,12 @@
 							},
 							"sublimelinter_wrap_find": true,
 							"synced": false,
-							"syntax": "Packages/Rails/Ruby Haml.tmLanguage",
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1256.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1257,15 +1260,15 @@
 					"file": "app/assets/javascripts/works.js",
 					"settings":
 					{
-						"buffer_size": 26486,
+						"buffer_size": 26850,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								20908,
-								20908
+								14657,
+								14657
 							]
 						],
 						"settings":
@@ -1367,25 +1370,25 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 14407.0,
+						"translation.y": 8983.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "app/controllers/works_controller.rb",
+					"file": "app/assets/stylesheets/works.css.scss",
 					"settings":
 					{
-						"buffer_size": 5340,
+						"buffer_size": 2923,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								288,
-								288
+								1799,
+								1799
 							]
 						],
 						"settings":
@@ -1482,30 +1485,148 @@
 							},
 							"sublimelinter_wrap_find": true,
 							"synced": false,
-							"syntax": "Packages/Ruby/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/Sass/Syntaxes/Sass.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1782.0,
+						"translation.y": 1584.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "app/views/works/show.html.haml",
+					"file": "app/assets/javascripts/categories.js",
 					"settings":
 					{
-						"buffer_size": 44,
+						"buffer_size": 1805,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								23,
-								23
+								1125,
+								1125
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"incomplete_sync": null,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"remote_loading": false,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"synced": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "app/views/works/takenotes.html.haml",
+					"settings":
+					{
+						"buffer_size": 1492,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								73,
+								73
 							]
 						],
 						"settings":
@@ -1611,126 +1732,6 @@
 						"zoom_level": 1.0
 					},
 					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "app/controllers/work_groups_controller.rb",
-					"settings":
-					{
-						"buffer_size": 1907,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								50,
-								50
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"incomplete_sync": null,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"remote_loading": false,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": true,
-							"sublimelinter_gutter_marks_theme": "simple",
-							"sublimelinter_mark_style": "none",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"synced": false,
-							"syntax": "Packages/Ruby/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
 				}
 			]
 		}
@@ -1803,6 +1804,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 280.0,
+	"side_bar_width": 323.0,
 	"status_bar_visible": true
 }
