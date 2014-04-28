@@ -53,7 +53,7 @@ class Work < ActiveRecord::Base
 		end
 	end
 
-	#parser shit
+	#parser begins
 	def modify_element(lines_number, lines_content)
 		from_insert_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		from_remove_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}

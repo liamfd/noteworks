@@ -9,6 +9,15 @@
   -# = render 'nodedisplay'
 
 %ol.joyride-list{data:{joyride:true}}
+  %li{data:{text:"Next"}}
+    %h3 Syntax Help:
+    %p Indent anything you want to be owned by anything else. So if you want a Node to have Notes, space the notes in three lines.
+    %h5 Nodes > . Category , Title
+    %p The category can be defined by you, right as you type. The title can be anything, but we recommend you make it unique.
+    %h5 Links > :Node Title , Other Node Title , etc
+    %p Just list the names you want linked to the owner of this Link Collection.
+    %h5 Notes > - Your notes here
+    %p All the things you want to say, right in a row.
   %li{data:{id:"category-list-button", text:"Next", options:"tip_location: top"}}
     %h4 Category List
     %p Click this to see and edit all the categories associated with this work.
@@ -20,4 +29,4 @@
     %p You know this one. It launches the guide, whenever you want it.
   %li{data:{button:"End"}}
     %h4 That's it.
-    %p Hope you enjoyed it. If you still have questions, feel free to check out the about link above, for more details on syntax and what we're all about.
+    %p Hope you enjoyed it. If you still have questions, feel free to check out the about link above, for more details on what we're all about.

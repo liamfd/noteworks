@@ -2,7 +2,7 @@ object @work
 child :nodes, :root => :nodes, :object_root => :datas do
 	node(:id) { |n| n.id.to_s() }
 	node(:title) { |n| n.title }
-	node(:notes) { |n| n.combined_notes }
+	node(:notes) { |n| n.combine_notes_in_order }
 	node(:color) { |n| n.category.color }
 end
 node :edges do 

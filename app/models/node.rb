@@ -15,31 +15,56 @@ class Node < ActiveRecord::Base
 
   belongs_to :node, class_name: "Node"
 
-  #adds a single node to the end of the current combined_notes string
+  #adds a single note to the end of the current combined_notes string
   def add_note_to_combined(new_note)
     @new_piece = " //- " << new_note.body.strip
     @combined = self.combined_notes + @new_piece
-    puts @combined
+    #puts @combined
     self.update_attribute(:combined_notes, @combined);
     self.reload
   end
 
   #generates combined_notes from all of the current notes
   def combine_notes
-    @notes = self.notes
-    @full_text = ""
+    notes = self.notes
+    full_text = ""
 
-    for @note in @notes
-      @full_text << " //- "
-      @full_text << @note.body.strip
+    for note in notes
+      full_text << " //- "
+      full_text << note.body.strip
      # if @note != @notes[-1]
       #  @full_text << " //- "
      # end
     end
 
-    self.combined_notes = @full_text
-   # puts self.combined_notes
+    self.combined_notes = full_text
+    puts self.combined_notes
     self.save 
+  end
+
+  def combine_notes_in_order
+    ordering = work.get_ordering
+    location = -1
+
+    ordering.each_with_index do |element, i|
+      if element.id.to_i == id && element.model == "Node"
+        location = i
+      end
+    end
+
+    if location != -1
+      children = self.work.find_element_children(location, self.depth, ordering)
+    end
+  
+    combined = ""
+    children.each do |child|
+      if child[:node].is_a?(Note)
+        new_piece = " //- " << child[:node].body.strip
+        combined << new_piece
+      end
+    end
+    update_attributes(combined_notes: combined)
+    return combined
   end
 
   def to_cytoscape_hash
@@ -47,7 +72,7 @@ class Node < ActiveRecord::Base
     toNode = {};
     toNode[:id] = self.id
     toNode[:title] = self.title
-    toNode[:notes] = self.combined_notes
+    toNode[:notes] = self.combine_notes_in_order
     toNode[:color] = self.category.color
    # toNode[:id] = self.id
     #toNode[:title] = self.title
