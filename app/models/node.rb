@@ -15,33 +15,6 @@ class Node < ActiveRecord::Base
 
   belongs_to :node, class_name: "Node"
 
-  #adds a single note to the end of the current combined_notes string
-  def old_add_note_to_combined(new_note)
-    new_piece = " //- " << new_note.body.strip
-    combined = self.combined_notes + new_piece
-    #puts @combined
-    self.update_attribute(:combined_notes, combined);
-    self.reload
-  end
-
-  #generates combined_notes from all of the current notes
-  def old_combine_notes
-    notes = self.notes
-    full_text = ""
-
-    for note in notes
-      full_text << " //- "
-      full_text << note.body.strip
-     # if @note != @notes[-1]
-      #  @full_text << " //- "
-     # end
-    end
-
-    self.combined_notes = full_text
-    puts self.combined_notes
-    self.save 
-  end
-
   def combine_notes_in_order
     ordering = work.get_ordering
     location = -1
@@ -95,5 +68,35 @@ class Node < ActiveRecord::Base
     toReturn[:edges] = toEdges
     return toReturn
   end
+
+
+  #adds a single note to the end of the current combined_notes string
+  def old_add_note_to_combined(new_note)
+    new_piece = " //- " << new_note.body.strip
+    combined = self.combined_notes + new_piece
+    #puts @combined
+    self.update_attribute(:combined_notes, combined);
+    self.reload
+  end
+
+  #generates combined_notes from all of the current notes
+  def old_combine_notes
+    notes = self.notes
+    full_text = ""
+
+    for note in notes
+      full_text << " //- "
+      full_text << note.body.strip
+     # if @note != @notes[-1]
+      #  @full_text << " //- "
+     # end
+    end
+
+    self.combined_notes = full_text
+    puts self.combined_notes
+    self.save 
+  end
+
+
 
 end

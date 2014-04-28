@@ -530,7 +530,7 @@ $(loadCy = function(){
     
     layout: {
       name: 'arbor',
-      liveUpdate: true, // whether to show the layout as it's running
+      liveUpdate: false, // whether to show the layout as it's running
       ready: undefined, // callback on layoutready 
       stop: undefined, // callback on layoutstop
       maxSimulationTime: 4000, // max length in ms to run the layout
@@ -668,10 +668,12 @@ $(loadCy = function(){
       window.cy = this;
       cy.elements().unselectify();
 
+      //works during the layout drawing
       cy.on('position', 'node', function(e){
         setTextSize();
       });
 
+      //when manipulating background. Not drag, that would be working double for node dragging
       cy.on('pan', function(e){
         setTextSize();
       });
@@ -733,8 +735,17 @@ $(loadCy = function(){
         }
       });
 
-      cy.on('load', function(e) {
+      //add the class, hide the graph and show the spinner when loading
+      cy.on('load',function(){
         cy.elements().addClass("starting");
+        cy.elements().hide();
+        $("#spinner").fadeIn("slow");
+      });
+
+      //take out the spinner and show graph when ready
+      cy.on('layoutstop', function(){
+        $("#spinner").fadeOut("300");
+        cy.elements().show();
       });
 
     }
