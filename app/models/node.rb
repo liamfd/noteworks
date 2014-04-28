@@ -17,10 +17,10 @@ class Node < ActiveRecord::Base
 
   #adds a single note to the end of the current combined_notes string
   def add_note_to_combined(new_note)
-    @new_piece = " //- " << new_note.body.strip
-    @combined = self.combined_notes + @new_piece
+    new_piece = " //- " << new_note.body.strip
+    combined = self.combined_notes + new_piece
     #puts @combined
-    self.update_attribute(:combined_notes, @combined);
+    self.update_attribute(:combined_notes, combined);
     self.reload
   end
 

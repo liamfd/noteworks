@@ -1,7 +1,7 @@
 class WorksController < ApplicationController
   before_action :set_work, only: [:show, :edit, :update, :destroy, :takenotes, :updatenotes, 
     :mod_element, :add_element, :del_element, :category_list, :toggle_privacy]
-  before_action :decide_visibility
+  before_action :decide_visibility, except: [:new, :create]
   before_action :check_owner, only: [:edit, :update, :destroy, :takenotes, :updatenotes, 
     :mod_element, :add_element, :del_element, :category_list, :toggle_privacy] 
 
@@ -44,6 +44,10 @@ class WorksController < ApplicationController
     @group= WorkGroup.find(work_params[:group_id])
     @works = @group.works
 
+    #check that this is indeed the user before saving
+    user = @work.work_group.user
+    render status: :forbidden, text: "This is not yours to modify." unless user == current_user
+    
     @work.save #figure out why this is necessary later
     if @work.save
       respond_with @group, :layout => false

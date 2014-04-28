@@ -2,7 +2,7 @@ class Category < ActiveRecord::Base
   has_many :nodes
   belongs_to :work
 
-  before_save :color_randomizer
+  before_save :set_color_and_name
   before_destroy :set_nodes_category_to_default
 
   def set_nodes_category_to_default
@@ -13,11 +13,15 @@ class Category < ActiveRecord::Base
   end
 
   #bottom, private
-  def color_randomizer
+  def set_color_and_name
     if self.color == nil || self.color == ""
-      self.color = "#" + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99)
+      self.color = "#808080" #neutral grey
     end
     self.name = self.name.downcase
+    #randomizer
+    #if self.color == nil || self.color == ""
+    #  self.color = "#" + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99)
+    #end
   end
 
   def merge_with_category(merge_to_name)
