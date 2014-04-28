@@ -90,20 +90,6 @@ class Work < ActiveRecord::Base
 					from_remove[:remove_nodes] = []
 				end
 
-					#WHILE I SHOULD BE DOING THIS WITH THE EDGES, ADD/REMOVE IS THE SAME,
-					#AND IDEALLY THEY WILL BE UNNECESSARY WHEN THE JS IS PROPER, AS THE NODE
-					#WILL REMAIN ON MODIFY, EDGES CAN BE LEFT ALONE
-					#if from_insert[:add_edges] == from_remove[:remove_edges]
-					#	from_insert[:modify_edges] = from_insert[:add_edges]
-					#	from_insert[:add_edges] = []
-					#	from_remove[:remove_edges] = []
-					#end
-					#from_insert[:add_edges].zip(from_remove[:remove_edges]).each do |add_edge, rem_edge|
-					#	if ((add_edge[:source] == rem_edge[:source]) && (add_edge[:target] == rem_edge[:target]))
-					#		mod_edges << add_edge
-					#	end
-					#end
-
 	 		#if you have a note and are modding it
 			elsif first_char == '-' && ordering_el.model == "Note" && curr_el.is_a?(Note)
 				from_remove = remove_element(number, false)
@@ -205,13 +191,11 @@ class Work < ActiveRecord::Base
 				
 				elsif child[:node].is_a?(LinkCollection)
 					#if it's a link collection, remove all those links, gonna reassign
-					#binding.pry
 					child[:node].links.each do |link|
 						to_modify[:modify_edges].append(link.to_cytoscape_hash)
 						#remove_edges.append({ id: link.id, source: link.parent_id.to_s, target: link.child_id.to_s })
 					end
 				end
-				#binding.pry
 				owner_id = nil #resets it to make the above check false for non-nodes
 			end
 
@@ -600,10 +584,12 @@ class Work < ActiveRecord::Base
 			#if it's a node, gets its category and title, builds a string with a comma
 			if element.is_a?(Node)
 				type_char = "."
-				category_text = element.category.name.capitalize
-				delimiter = ", "
+				category_text = ""
+				if element.category.name != ""
+					category_text = element.category.name.capitalize + ","
+				end
 				title = element.title
-				info << category_text + delimiter + title
+				info = category_text + title
 
 			#if it's a note, gets its body
 			elsif element.is_a?(Note)
@@ -647,9 +633,10 @@ class Work < ActiveRecord::Base
 		if pure_text.include?(",") #split by the comma if there is one
 			category_name = pure_text.partition(",").first
 			title = pure_text.partition(",").last
-		else #default to splitting by the first whitespace
-			category_name = pure_text.partition(" ").first
-			title = pure_text.partition(" ").last
+		else #default to no category
+		#	category_name = pure_text.partition(" ").first
+			title = pure_text
+			category_name = ""
 		end
 
 		#need to make these only the categories that belong to the user
