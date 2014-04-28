@@ -1,5 +1,6 @@
 Noteweb::Application.routes.draw do
   root "home#index"
+  get "/about", to: "home#about", as: "about"
 
   get "works/:id/takenotes", to: "works#takenotes", as: "work_takenotes"
   get "works/:id/categories", to: "works#category_list", as: "work_categories"

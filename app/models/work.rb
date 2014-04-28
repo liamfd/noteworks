@@ -634,6 +634,103 @@ class Work < ActiveRecord::Base
 		return markup_text
 	end
 
+
+	#builds a node with category, title, and returns it
+	def build_node(node, text)
+		#node.type = :BasicNode
+
+		whitespace = text.partition(".").first
+		pure_text = text.partition(".").last
+		node.depth = (whitespace.length)/3 #+2?
+
+		#get the category string, use it to pull a category id
+		if pure_text.include?(",") #split by the comma if there is one
+			category_name = pure_text.partition(",").first
+			title = pure_text.partition(",").last
+		else #default to splitting by the first whitespace
+			category_name = pure_text.partition(" ").first
+			title = pure_text.partition(" ").last
+		end
+
+		#need to make these only the categories that belong to the user
+		category = self.categories.find_by name: category_name.downcase
+		if category == nil
+			category = self.categories.create(name: category_name.downcase)
+		end
+		node.category = category
+		title = title.strip	
+		
+		node.title = title
+		node.work_id = self.id
+		return node
+	end
+
+	#builds a note, getting its parent, attaching its data, and then returns the note
+	def build_note(note, text)
+		content = get_text_from_regexp(text, /-(.*)/)
+		#content = text.match(/-(.*)/).captures.first
+		note.body = content.rstrip
+
+		whitespace = get_text_from_regexp(text, /(.*)-/)
+		#whitespace = text.match(/(.*)-/).captures.first
+		note.depth = (whitespace.length)/3 #+2?
+
+		return note
+	end
+
+	def build_link_collection(link_coll, text, parent_node)
+		#build link collection
+		whitespace = get_text_from_regexp(text, /(.*):/)
+		link_coll_depth = (whitespace.length)/3 #+2?
+
+		#link_coll = self.link_collections.build
+
+		#if it has a parent node, set it to it
+		if parent_node != nil
+			link_coll.node = parent_node
+			parent_node.reload
+		end
+		
+		#link_names = get_text_from_regexp(text, /:(.*)/)
+		#new_nodes = link_coll.set_links(link_names)
+
+		link_coll.depth = link_coll_depth
+		link_coll.save
+		#return new_nodes
+	end
+
+	#takes a string and a regexp, returns the result or nothing if no result
+	def get_text_from_regexp(text, expression)
+		wanted = ""
+		if text != nil
+			matched = text.match(expression)
+			if matched != nil
+				wanted = matched.captures.first
+			end
+		end
+		return wanted
+	end
+
+	#takes in a hash of arrays, returns a version that has all repeated values removed (last one remains)
+	def uniqify_arrays_in_hash(hash, sub_key)
+		#iterates over each of the top level values in the hash
+		new_hash = {}
+		hash.map do |key,value|
+			#using the sub key, removes all but the last added value
+			new_hash[key] = value.reverse.uniq {|sub_value| sub_value[sub_key]}
+		end
+		return new_hash
+	end
+
+	#merges two hashes of arrays
+	def merge_two_hashes(h1, h2)
+		h1.merge(h2) do |key, v1, v2|
+		  v1 + v2
+		end
+	end
+
+
+	#OUTDATED CODE
 	def parse_text(text)
 		Node.destroy_all(work_id: self.id)
 		Link.destroy_all(work_id: self.id)
@@ -757,71 +854,6 @@ class Work < ActiveRecord::Base
 		#o = populate_ordering
 	end
 
-
-	#builds a node with category, title, and returns it
-	def build_node(node, text)
-		#node.type = :BasicNode
-
-		whitespace = text.partition(".").first
-		pure_text = text.partition(".").last
-		node.depth = (whitespace.length)/3 #+2?
-
-		#get the category string, use it to pull a category id
-		if pure_text.include?(",") #split by the comma if there is one
-			category_name = pure_text.partition(",").first
-			title = pure_text.partition(",").last
-		else #default to splitting by the first whitespace
-			category_name = pure_text.partition(" ").first
-			title = pure_text.partition(" ").last
-		end
-
-		#need to make these only the categories that belong to the user
-		category = self.categories.find_by name: category_name.downcase
-		if category == nil
-			category = self.categories.create(name: category_name.downcase)
-		end
-		node.category = category
-		title = title.strip	
-		
-		node.title = title
-		node.work_id = self.id
-		return node
-	end
-
-	#builds a note, getting its parent, attaching its data, and then returns the note
-	def build_note(note, text)
-		content = get_text_from_regexp(text, /-(.*)/)
-		#content = text.match(/-(.*)/).captures.first
-		note.body = content.rstrip
-
-		whitespace = get_text_from_regexp(text, /(.*)-/)
-		#whitespace = text.match(/(.*)-/).captures.first
-		note.depth = (whitespace.length)/3 #+2?
-
-		return note
-	end
-
-	def build_link_collection(link_coll, text, parent_node)
-		#build link collection
-		whitespace = get_text_from_regexp(text, /(.*):/)
-		link_coll_depth = (whitespace.length)/3 #+2?
-
-		#link_coll = self.link_collections.build
-
-		#if it has a parent node, set it to it
-		if parent_node != nil
-			link_coll.node = parent_node
-			parent_node.reload
-		end
-		
-		#link_names = get_text_from_regexp(text, /:(.*)/)
-		#new_nodes = link_coll.set_links(link_names)
-
-		link_coll.depth = link_coll_depth
-		link_coll.save
-		#return new_nodes
-	end
-
 	#fills ordering according to stored nodes and notes. OUTDATED, KEEPING FOR PARSETEXT, USE get_ordering
 	#this only works if the node ids line up to the order, so not if any inserted
 	def populate_ordering
@@ -835,36 +867,5 @@ class Work < ActiveRecord::Base
 			end
 		end
 		return ordering
-	end
-
-
-	#takes a string and a regexp, returns the result or nothing if no result
-	def get_text_from_regexp(text, expression)
-		wanted = ""
-		if text != nil
-			matched = text.match(expression)
-			if matched != nil
-				wanted = matched.captures.first
-			end
-		end
-		return wanted
-	end
-
-	#takes in a hash of arrays, returns a version that has all repeated values removed (last one remains)
-	def uniqify_arrays_in_hash(hash, sub_key)
-		#iterates over each of the top level values in the hash
-		new_hash = {}
-		hash.map do |key,value|
-			#using the sub key, removes all but the last added value
-			new_hash[key] = value.reverse.uniq {|sub_value| sub_value[sub_key]}
-		end
-		return new_hash
-	end
-
-	#merges two hashes of arrays
-	def merge_two_hashes(h1, h2)
-		h1.merge(h2) do |key, v1, v2|
-		  v1 + v2
-		end
 	end
 end
