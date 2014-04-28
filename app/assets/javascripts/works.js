@@ -69,7 +69,6 @@ function dragHeight(){
 
 function submitForm(){
   $(this).parents("form").submit();
-  console.log($(this));
 }
 
 function toggleSpinner(){
@@ -80,7 +79,6 @@ function toggleSpinner(){
 $(function() {
   $('#myModal').bind('opened', function() {
     //this could also go in a ajaxComplete global call
-    //console.log("myModal opened");
     if ( $(".edit_form").length !== 0 ){
       $(".edit_form").find('#category_name').get(0).onblur= submitForm;
       $(".edit_form").find('#category_color').get(0).onblur= submitForm;
@@ -241,14 +239,10 @@ function clickFunction(e){
 
 //returns the number of lines being selected
 function selectFunction(e){
-
-  console.log(e);
   var range = getInputSelection(e.srcElement);
-  console.log("Range: " + range.start + "," + range.end);
   var start_line = getLineNumber(range.start, e.srcElement);
   var end_line = getLineNumber(range.end-1, e.srcElement); //end is inclusive, make it exclusive with -1
 
-  console.log(start_line +"  " + end_line);
   num_lines_selected = Math.abs(end_line - start_line) + 1;
   return (num_lines_selected); //returns the number of lines highlighted, +1 so counts the first line
 }
@@ -384,7 +378,6 @@ function getInputSelection(el) {
 
 //ajax call that takes in a line number and its text, and sends them to the modelements function in the works controller
 function modElement(line_num, text){
-  console.log("update" + line_num + text);
   $.ajax({
     type:"GET",
     url:"mod_element",
@@ -398,7 +391,6 @@ function modElement(line_num, text){
 
 //ajax call that takes in a line number and its text, and sends them to the addelement function in the works controller
 function addElement(line_num, text){
-  console.log("add");
   $.ajax({
     type:"GET",
     url:"add_element",
@@ -412,7 +404,6 @@ function addElement(line_num, text){
 
 //ajax call that takes in a line number and sends it to the delelement function in the works controller
 function delElement(line_num){
-  console.log("del");
   $.ajax({
     type:"GET",
     url:"del_element",
@@ -432,8 +423,8 @@ function delElement(line_num){
 
 //function that runs if the ajax is successful, will update the graph
 function modInGraph(data){
-  console.log(JSON.stringify(data));
-  test_data = data;
+//  console.log(JSON.stringify(data));
+//  test_data = data;
   var pos_y;
   var pos_x;
   var edge_id_string;
@@ -469,7 +460,6 @@ function modInGraph(data){
     
       cy.remove(mod_graph_node);
       mod_node.id = mod_node.id.toString();
-      console.log(mod_node);
       cy.add({
         group: "nodes",
         data: mod_node,
@@ -513,15 +503,12 @@ function modInGraph(data){
   //add the edges being modified (WILL PROBABLY DROP THIS AS WELL)
   for (i = 0; i < data.modify_edges.length; i++){
     mod_edge = data.modify_edges[i];
-    console.log(mod_edge);
     if ((mod_edge != null) && (mod_edge != undefined)){
       mod_edge.id = data.modify_edges[i].id.toString();
       mod_edge.source = data.modify_edges[i].source.toString();
       mod_edge.target = data.modify_edges[i].target.toString();
-      console.log(mod_edge);
      
       //maybe have this check instead that both nodes exist in the graph, otherwise you get an error
-       console.log("source:" + mod_edge.source + " target" + mod_edge.target + " id: " + mod_edge.id)
       if ( mod_edge.source !== "" && mod_edge.target !== "" && mod_edge.id !== "" ){ //ignore if edge goes nowhere
         cy.add({
           group: "edges",
@@ -534,15 +521,12 @@ function modInGraph(data){
   //add the new edges, first converting their values to strings
   for (i = 0; i < data.add_edges.length; i++){
     add_edge = data.add_edges[i];
-    console.log(add_edge);
     if ((add_edge != null) && (add_edge != undefined)){
       add_edge.id = data.add_edges[i].id.toString();
       add_edge.source = data.add_edges[i].source.toString();
       add_edge.target = data.add_edges[i].target.toString();
-      console.log(add_edge);
      
       //maybe have this check instead that both nodes exist in the graph, otherwise you get an error
-      console.log("source:" + add_edge.source + " target" + add_edge.target + " id: " + add_edge.id);
       if ( add_edge.source !== "" && add_edge.target !== "" && add_edge.id !== "" ){ //ignore if edge goes nowhere
         cy.add({
           group: "edges",
