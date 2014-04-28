@@ -14,14 +14,15 @@ class Category < ActiveRecord::Base
 
   #bottom, private
   def set_color_and_name
-    if self.color == nil || self.color == ""
-      self.color = "#808080" #neutral grey
-    end
     self.name = self.name.downcase
-    #randomizer
-    #if self.color == nil || self.color == ""
-    #  self.color = "#" + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99)
-    #end
+
+    if self.color == nil || self.color == ""
+      if self.name == "" #neutral grey if its the default
+        self.color = "#808080"
+      else #otherwise, random
+        self.color = "#" + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99) + "%02x" % (rand * 0x99)
+      end
+    end
   end
 
   def merge_with_category(merge_to_name)
