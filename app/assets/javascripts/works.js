@@ -322,7 +322,7 @@ function delElement(line_num){
 
 //function that runs if the ajax is successful, will eventually update the graph
 function modInGraph(data){
-  $("#test_box").text(JSON.stringify(data));
+  console.log(JSON.stringify(data));
   
   //console.log("data=" + data);
   test_data = data;

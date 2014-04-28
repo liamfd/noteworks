@@ -16,7 +16,7 @@ class Node < ActiveRecord::Base
   belongs_to :node, class_name: "Node"
 
   #adds a single note to the end of the current combined_notes string
-  def add_note_to_combined(new_note)
+  def old_add_note_to_combined(new_note)
     new_piece = " //- " << new_note.body.strip
     combined = self.combined_notes + new_piece
     #puts @combined
@@ -25,7 +25,7 @@ class Node < ActiveRecord::Base
   end
 
   #generates combined_notes from all of the current notes
-  def combine_notes
+  def old_combine_notes
     notes = self.notes
     full_text = ""
 

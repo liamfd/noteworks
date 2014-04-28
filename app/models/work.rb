@@ -168,13 +168,12 @@ class Work < ActiveRecord::Base
 			owner_id = nil
 			remove_edges = []
 
-			#FIND CHILDREN, ADOPT THEM (FROM EXISTING PARENT, THE WORD IS KIDNAP)
+			#FIND CHILDREN, ADOPT THEM (FROM EXISTING PARENT)
 			children = find_element_children(line_number, new_node.depth, ordering)
 			children.each do |child|
 				#removes the old edges
 				if child[:node].is_a?(Node) #add the old edges to be removed, since that connection is broken
 					old_parent_edge = child[:node].parent_relationships.find_by link_collection_id: nil #doesn't mess with ones that have link_coll
-					#binding.pry
 					if old_parent_edge != nil
 						remove_edges.append(old_parent_edge.to_cytoscape_hash)
 						#remove_edges.append({ id: old_parent_edge.id, source: old_parent_edge.parent_id.to_s, target: old_parent_edge.child_id.to_s })
@@ -187,7 +186,11 @@ class Work < ActiveRecord::Base
 				change_parent(child[:node], new_node)
 				#updates the now changed parents if necessary
 				if owner_id != nil #if there's a real parent at the end, modify it in the graph
-					to_modify[:modify_nodes].append(Node.find(owner_id).to_cytoscape_hash[:node])
+					node_hash = Node.find(owner_id).to_cytoscape_hash
+					to_modify[:modify_nodes].append(node_hash[:node])
+					node_hash[:edges].each do |edge|
+						to_modify[:modify_edges].append(edge)
+					end
 				
 				elsif child[:node].is_a?(LinkCollection)
 					#if it's a link collection, remove all those links, gonna reassign
@@ -199,10 +202,9 @@ class Work < ActiveRecord::Base
 				owner_id = nil #resets it to make the above check false for non-nodes
 			end
 
-			new_node.combine_notes
+			#new_node.combine_notes
 			to_modify[:add_nodes].append(new_node.to_cytoscape_hash[:node])
 			to_modify[:add_edges] = new_node.to_cytoscape_hash[:edges]
-			#binding.pry
 			to_modify[:remove_edges] = remove_edges
 
 			return to_modify
@@ -224,7 +226,7 @@ class Work < ActiveRecord::Base
 			if parent_node != nil #if it has a parent, set it. ignore otherwise
 				new_note.node_id = parent_node.id
 				new_note.save
-				parent_node.combine_notes
+			#	parent_node.combine_notes
 			#else
 			#	new_note.node_id = nil
 			#	new_note.save
@@ -291,6 +293,7 @@ class Work < ActiveRecord::Base
 
 		ordering = get_ordering
 		el = get_element_in_ordering(line_number, ordering)
+
 		if (el.is_a?(Node))
 			to_modify[:remove_nodes].append(el.to_cytoscape_hash[:node])
 			to_modify[:remove_edges] = el.to_cytoscape_hash[:edges]
@@ -317,7 +320,12 @@ class Work < ActiveRecord::Base
 					end
 				
 				elsif child[:node].is_a?(Note) && new_parent != nil #if there's a real parent at the end, modify it in the graph
-					to_modify[:modify_nodes].append(new_parent.to_cytoscape_hash[:node])
+					#to_modify[:modify_nodes].append(new_parent.to_cytoscape_hash[:node])
+					node_hash = new_parent.to_cytoscape_hash
+					to_modify[:modify_nodes].append(node_hash[:node])
+					node_hash[:edges].each do |edge|
+						to_modify[:modify_edges].append(edge)
+					end
 				
 				elsif child[:node].is_a?(LinkCollection) && new_parent != nil #if adopted, modify the edges
 					child[:node].links.each do |link|
@@ -358,7 +366,6 @@ class Work < ActiveRecord::Base
 			end
 
 			if owner != nil
-				owner.combine_notes
 				to_modify[:modify_nodes].append(owner.to_cytoscape_hash[:node])
 				to_modify[:modify_edges] = owner.to_cytoscape_hash[:edges]
 			end	
@@ -478,24 +485,23 @@ class Work < ActiveRecord::Base
 			end
 		
 		elsif child.is_a?(Note)
-			prev_parent_id = child.node_id
+			#prev_parent_id = child.node_id
 			if (parent != nil) #if it has a new parent parent already
 				child.node_id = parent.id
 				child.save
 				parent.notes << child
 				parent.save
-				parent.combine_notes
 			else #if it doesn't have a parent, don't set it to anything
 				child.node_id = nil
 				child.save			
 			end
 
 			#update the notes of the other node, if it exists
-			if Node.exists?(prev_parent_id) #automatically false if nil, so if it has no prev_parent, works even if it thinks it does
-				prev_parent = Node.find(prev_parent_id)
-				prev_parent.combine_notes()
-				prev_parent.save
-			end
+			#if Node.exists?(prev_parent_id) #automatically false if nil, so if it has no prev_parent, works even if it thinks it does
+			#	prev_parent = Node.find(prev_parent_id)
+			#	prev_parent.combine_notes()
+			#	prev_parent.save
+			#end
 		
 		elsif child.is_a?(LinkCollection)
 			if (parent != nil) #if it has a new parent
@@ -717,7 +723,10 @@ class Work < ActiveRecord::Base
 	end
 
 
+
+
 	#OUTDATED CODE
+
 	def parse_text(text)
 		Node.destroy_all(work_id: self.id)
 		Link.destroy_all(work_id: self.id)
@@ -794,7 +803,7 @@ class Work < ActiveRecord::Base
 					stack.push(currNodeDepth)
 				
 					new_note.node_id = parentNode.id
-					parentNode.add_note_to_combined(new_note)
+					#parentNode.add_note_to_combined(new_note)
 				end
 				new_note.save
 				new_ordering.push(ObjectPlace.new("Note", new_note.id))				
