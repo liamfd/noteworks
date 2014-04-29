@@ -135,6 +135,13 @@ form.edit_work{
 	}
 }
 
+.inline-header{
+	display:inline;
+}
+.inline-header.subheader{
+	margin-left:10px;
+	color:$secondary-color;
+}
 ::-webkit-scrollbar {
     width: 10px;
 }
