@@ -694,20 +694,6 @@ $(loadCy = function(){
       window.cy = this;
       cy.elements().unselectify();
 
-      //works during the layout drawing
-      cy.on('position', 'node', function(e){
-        setTextSize();
-      });
-
-      //when manipulating background. Not drag, that would be working double for node dragging
-      cy.on('pan', function(e){
-        setTextSize();
-      });
-
-      cy.on('zoom', function(e){
-        setTextSize();
-      });
-
       //centers the node further from the middle when clicking edge
       cy.on('tap', 'edge', function(e){
         var edge = e.cyTarget;
@@ -761,16 +747,39 @@ $(loadCy = function(){
         }
       });
 
+      cy.on('zoom', function(e){
+        setTextSize();
+      });
+
+      // use when the spinner loader is showing, in conjunction with on layout stop
+      cy.on('tapdrag', function(e){
+        setTextSize();
+      });
+
+      /* USE THESE WHEN THE GRAPH IS SHOWN DRAWING
+      //works during the layout drawing
+      cy.on('position', 'node', function(e){
+        setTextSize();
+      });
+
+      //when manipulating background. Not drag, that would be working double for node dragging
+      cy.on('pan', function(e){
+        setTextSize();
+      });
+
+       */
+
       //add the class, hide the graph and show the spinner when loading
       cy.on('load',function(){
         cy.elements().addClass("starting");
         cy.elements().hide();
-        $("#spinner").fadeIn("slow");
+        $("#work_load_spinner").show();
       });
 
       //take out the spinner and show graph when ready
       cy.on('layoutstop', function(){
-        $("#spinner").fadeOut("300");
+        $("#work_load_spinner").fadeOut("300");
+        setTextSize();
         cy.elements().show();
       });
 
