@@ -1,5 +1,5 @@
 class Stack < ActiveRecord::Base
-
+#legacy, used in old parser
 	after_initialize :makeArray
 
 	def makeArray
