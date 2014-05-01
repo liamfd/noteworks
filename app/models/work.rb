@@ -134,7 +134,7 @@ class Work < ActiveRecord::Base
 
 	#FRONT FACING FUNCTIONS
 
-
+	#to be called from the AJAX, changes an element, recycling if possible
 	def modify_element(lines_number, lines_content)
 		from_insert_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 		from_remove_total = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
@@ -226,7 +226,7 @@ class Work < ActiveRecord::Base
 		ordering = get_ordering
 		first_char = get_text_from_regexp(line_content, /[ ,\t]*(.)/)
 
-
+		#node
 		if first_char == "."
 			#shouldn't need this
 			if in_element != nil && in_element.is_a?(Node) #only use the in_el if it's not nil and the right type
@@ -296,6 +296,7 @@ class Work < ActiveRecord::Base
 
 			return to_modify
 
+		#note
 		elsif first_char == '-'
 			if in_element != nil && in_element.is_a?(Note) #only use the in_el if it's not nil and the right type
 				new_note = in_element
@@ -327,7 +328,7 @@ class Work < ActiveRecord::Base
 			#to_modify[:remove_edges] = []
 			return to_modify
 	
-
+		#link collection
 		elsif first_char == ':'
 			#build link collection
 			link_coll = self.link_collections.build
@@ -366,6 +367,7 @@ class Work < ActiveRecord::Base
 			set_order(ordering)
 			return to_modify
 
+		#place holder
 		else
 			place_holder = self.place_holders.create(text:line_content)
 			ordering.insert(line_number, ObjectPlace.new("PlaceHolder", place_holder.id))
@@ -374,7 +376,7 @@ class Work < ActiveRecord::Base
 		end
 	end
 
-
+	#gets an element out of the ordering
 	def remove_element(line_number, del_obj=true)
 		to_modify = {modify_nodes: [], add_nodes: [], remove_nodes: [], modify_edges: [], remove_edges: [], add_edges: []}
 
@@ -551,6 +553,7 @@ class Work < ActiveRecord::Base
 		return children
 	end
 
+	#changes an arbitrary element from one node to another, building relation if two nodes
 	def change_parent(child, parent)
 		if child.is_a?(Node) #if its a node, modify the relation so its parent is the new_node
 			
@@ -656,6 +659,7 @@ class Work < ActiveRecord::Base
 		return curr_el
 	end
 
+	#prints the ordering (for testing purposes)
 	def print_ordering(ordering)
 		ordering.each do |item|
 			if item.model == "Node"
@@ -722,6 +726,7 @@ class Work < ActiveRecord::Base
 		return note
 	end
 
+	#builds a link collection
 	def build_link_collection(link_coll, text, parent_node)
 		#build link collection
 		whitespace = get_text_from_regexp(text, /(.*):/)
@@ -791,6 +796,7 @@ class Work < ActiveRecord::Base
 
 	#OUTDATED CODE - OLD PARSER LOGIC
 
+	#Old faithful. Takes in a block of text, parses it line by line. destroys and recreates the elements.
 	def parse_text(text)
 		Node.destroy_all(work_id: self.id)
 		Link.destroy_all(work_id: self.id)

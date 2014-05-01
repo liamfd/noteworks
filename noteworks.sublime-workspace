@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"margin",
+				"margin-left"
+			],
+			[
+				"inline",
+				"inline-header"
+			],
+			[
 				"offset",
 				"offsetHeight"
 			],
@@ -134,10 +142,6 @@
 			[
 				"categories",
 				"categories"
-			],
-			[
-				"margin",
-				"margin-bottom"
 			],
 			[
 				"sans",
@@ -510,10 +514,6 @@
 			[
 				"out",
 				"out_JSON"
-			],
-			[
-				"toAdd",
-				"toAddEdges"
 			]
 		]
 	},
@@ -544,13 +544,18 @@
 			}
 		},
 		{
-			"contents": "\n-#group = locals[:group]\n-switch = 1\n-if \n-group.works.each do |work|\n	-if switch > 0\n		.work-row-even \n			-#make this a partial, DRY friend. Though that would be nested 4 deep\n			=link_to work.name, work_takenotes_path(work), {class:[ \"group-mod-button\", \"small-7 small-offset-3 columns\"]} \n\n			=link_to(edit_work_path(work, :group_id => group.id), {:class=> [\"group-mod-button\", 'small-1 columns'] , data:{\"reveal-id\" => \"groupModal\", \"reveal-ajax\" => true}} ) do\n				%i{class:\"fi-pencil\"}\n			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ \"group-mod-button\", \"small-1 columns\"] ,  remote: true) do\n				%i{class:\"fi-x\"} \n			\n	-else\n		.work-row-odd\n			=link_to work.name, work_takenotes_path(work), {class:[ \"group-mod-button\", \"small-7 small-offset-3 columns\"]} \n\n			=link_to(edit_work_path(work, :group_id => group.id), {:class=> [\"group-mod-button\", 'small-1 columns'] , data:{\"reveal-id\" => \"groupModal\", \"reveal-ajax\" => true}} ) do\n				%i{class:\"fi-pencil\"}\n			=link_to(work_path(work, :group_id => group.id), method: :delete, :class=> [ \"group-mod-button\", \"small-1 columns\"], remote: true) do\n				%i{class:\"fi-x\"}\n			\n\n	-switch = switch*-1 #swaps between it, so the color alternates\n\n-#old new button. Now included in the work-group row\n-#.work-row\n-#	=link_to(new_work_path(:group_id => group.id), {class: [\"group-mod-button\", \"small-3 small-offset-3 columns\"], data:{\"reveal-id\" => \"groupModal\", \"reveal-ajax\" => true}}) do\n-#		%i{class:\"fi-plus\"}",
 			"file": "app/views/works/_work_list.html.haml",
-			"file_size": 1485,
-			"file_write_time": 1398720953000000,
 			"settings":
 			{
 				"buffer_size": 1489,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/views/works/takenotes.html.haml",
+			"settings":
+			{
+				"buffer_size": 1749,
 				"line_ending": "Unix"
 			}
 		}
@@ -611,12 +616,15 @@
 	},
 	"file_history":
 	[
+		"/home/liam/projs/noteworks/app/assets/stylesheets/works.css.scss",
+		"/home/liam/projs/noteworks/app/assets/javascripts/works.js",
+		"/home/liam/projs/noteworks/app/models/stack.rb",
+		"/home/liam/projs/noteworks/new_cytoscape_modifed.js",
+		"/home/liam/projs/noteworks/Gemfile",
 		"/home/liam/projs/noteworks/db/migrate/20140428211405_remove_combined_notes_from_nodes.rb",
 		"/home/liam/projs/noteworks/app/assets/javascripts/force_directed.js",
 		"/home/liam/projs/noteworks/app/views/works/takenotes.html.haml",
 		"/home/liam/projs/noteworks/app/assets/javascripts/categories.js",
-		"/home/liam/projs/noteworks/app/assets/stylesheets/works.css.scss",
-		"/home/liam/projs/noteworks/app/assets/javascripts/works.js",
 		"/home/liam/projs/noteworks/app/controllers/works_controller.rb",
 		"/home/liam/projs/noteworks/app/models/category.rb",
 		"/home/liam/projs/noteworks/app/views/works/show.json.rabl",
@@ -630,7 +638,6 @@
 		"/home/liam/projs/noteworks/app/views/shared/_nav.html.haml",
 		"/home/liam/projs/noteworks/app/views/layouts/application.html.haml",
 		"/home/liam/projs/noteworks/app/views/works/show.html.erb",
-		"/home/liam/projs/noteworks/Gemfile",
 		"/home/liam/projs/noteworks/app/assets/stylesheets/application.scss",
 		"/home/liam/projs/noteworks/app/assets/javascripts/application.js",
 		"/home/liam/projs/noteworks/app/models/node.rb",
@@ -736,9 +743,7 @@
 		"/home/liam/projs/noteworks/app/views/nodes/edit.html.erb",
 		"/home/liam/projs/noteworks/app/assets/images/ajax-loader.gif",
 		"/home/liam/projs/noteworks/app/views/nodes/_form.html.erb",
-		"/home/liam/projs/noteworks/app/views/categories/index.html.erb",
-		"/home/liam/projs/noteworks/app/models/place_holder.rb",
-		"/home/liam/projs/noteworks/app/views/works/_link.rabl"
+		"/home/liam/projs/noteworks/app/views/categories/index.html.erb"
 	],
 	"find":
 	{
@@ -756,6 +761,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"find(",
+			"find",
+			"exists?",
+			"find",
 			"combine",
 			"markup",
 			"console.log",
@@ -879,11 +888,7 @@
 			"lcoll",
 			"\"lcoll\"",
 			"lcoll",
-			"markup",
-			"binding.pry",
-			"add_edge",
-			"removed",
-			"bindin"
+			"markup"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -997,6 +1002,7 @@
 	"groups":
 	[
 		{
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -1011,8 +1017,8 @@
 						"selection":
 						[
 							[
-								9952,
-								9952
+								20709,
+								20709
 							]
 						],
 						"settings":
@@ -1113,7 +1119,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 6507.0,
+						"translation.y": 13767.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1130,8 +1136,8 @@
 						"selection":
 						[
 							[
-								172,
-								172
+								748,
+								748
 							]
 						],
 						"settings":
@@ -1469,6 +1475,126 @@
 							"synced": false,
 							"syntax": "Packages/Rails/Ruby Haml.tmLanguage",
 							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "app/views/works/takenotes.html.haml",
+					"settings":
+					{
+						"buffer_size": 1749,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								395,
+								395
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"incomplete_sync": null,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"remote_loading": false,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"synced": false,
+							"syntax": "Packages/Rails/Ruby Haml.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
